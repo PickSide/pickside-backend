@@ -6,7 +6,7 @@
 			"utils/*": ["/src/utils/*"]
 		},
 		"allowJs": true,
-		"noImplicitAny": true,
+		"noImplicitAny": false,
 		"module": "commonjs",
 		"esModuleInterop": true,
 		"target": "es6",
