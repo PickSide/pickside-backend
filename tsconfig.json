@@ -3,7 +3,8 @@
 		"paths": {
 			"controllers/*": ["/src/controllers/*"],
 			"models/*": ["/src/models/*"],
-			"utils/*": ["/src/utils/*"]
+			"utils/*": ["/src/utils/*"],
+			"scripts/*": ["/src/scripts/*"]
 		},
 		"allowJs": true,
 		"noImplicitAny": false,

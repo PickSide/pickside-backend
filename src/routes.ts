@@ -5,17 +5,19 @@ import LocaleController from './controllers/LocaleController'
 import LogoutController from './controllers/LogoutController'
 import RefreshTokenController from './controllers/RefreshTokenController'
 import UserController from './controllers/User'
+import { authenticateToken } from './utils/authenticateToken'
 
-const routes = Router()
+const authRoutes = Router()
+const apiRoutes = Router()
 
-routes.post('/auth', AuthController.handleLogin)
+// Authentication routes used for authentication only
+authRoutes.post('/auth', AuthController.handleLogin)
+authRoutes.get('/logout', LogoutController.handleLogout)
+authRoutes.get('/refresh', RefreshTokenController.handleRefreshToken)
 
-routes.get('/logout', LogoutController.handleLogout)
-routes.get('/refresh', RefreshTokenController.handleRefreshToken)
+// Api routes used for API rest calls
+apiRoutes.get('/config/:userId', AppConfigController.index)
+apiRoutes.get('/user', UserController.index)
+apiRoutes.get('/locales', LocaleController.index)
 
-routes.get('/config/:userId', AppConfigController.index)
-routes.get('/user', UserController.index)
-
-routes.get('/locales', LocaleController.index)
-
-export default routes
+export default { apiRoutes, authRoutes }

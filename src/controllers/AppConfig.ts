@@ -1,19 +1,20 @@
-import axios from 'axios'
+import { Request, Response } from 'express'
+import { SendResponseJson, SendStatusWithMessage, Status } from '../utils/responses'
 import AppConfig from '../models/AppConfig'
 
-const index = async (req: any, resp: any) => {
+const index = async (req: Request, res: Response) => {
 	const { userId } = req.params
 	const userConfig = await AppConfig.findOne({ userId })
-	return resp.status(200).json(userConfig)
+	return SendResponseJson(res, userConfig)
 }
-const store = async (req: any, resp: any) => {
-	return resp.json('dev')
+const store = async (req: Request, res: Response) => {
+	return SendStatusWithMessage(res, Status.NoContent, 'Stored successfully')
 }
-const update = async (req: any, resp: any) => {
-	return resp.json('dev')
+const update = async (req: Request, res: Response) => {
+	return SendStatusWithMessage(res, Status.NoContent, 'Updated successfully')
 }
-const destroy = async (req: any, resp: any) => {
-	return resp.json({ status: 'The dev was deleted successfully' })
+const destroy = async (req: Request, res: Response) => {
+	return SendStatusWithMessage(res, Status.NoContent, 'Deleted successfully')
 }
 export default {
 	index,

@@ -1,4 +1,4 @@
-import { model, Document, Schema } from 'mongoose'
+import { model, Document, Schema, Types } from 'mongoose'
 
 export interface ISport extends Document {
 	id: string
@@ -7,7 +7,7 @@ export interface ISport extends Document {
 }
 
 const SportSchema = new Schema({
-	id: { type: String, require: true },
+	id: { type: Types.ObjectId, require: true },
 	value: { type: String, require: true },
 	description: { type: String, require: true },
 })

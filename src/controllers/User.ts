@@ -1,18 +1,19 @@
-import axios from 'axios'
 import User from '../models/User'
+import { Request, Response } from 'express'
+import { SendStatusWithMessage, Status } from '../utils/responses'
 
-const index = async (req: any, resp: any) => {
-	let users = await User.find()
-	return resp.json(users)
+const index = async (req: Request, res: Response) => {
+	const users = await User.find()
+	return SendStatusWithMessage(res, Status.Ok, { results: users })
 }
-const store = async (req: any, resp: any) => {
-	return resp.json('dev')
+const store = async (req: Request, res: Response) => {
+	return SendStatusWithMessage(res, Status.NoContent, 'Stored successfully')
 }
-const update = async (req: any, resp: any) => {
-	return resp.json('dev')
+const update = async (req: Request, res: Response) => {
+	return SendStatusWithMessage(res, Status.NoContent, 'Updated successfully')
 }
-const destroy = async (req: any, resp: any) => {
-	return resp.json({ status: 'The dev was deleted successfully' })
+const destroy = async (req: Request, res: Response) => {
+	return SendStatusWithMessage(res, Status.NoContent, 'Deleted successfully')
 }
 export default {
 	index,

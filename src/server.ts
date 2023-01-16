@@ -1,9 +1,9 @@
-import express from 'express'
-import routes from './routes'
 import cors from 'cors'
+import databaseUtils from './utils/databaseUtils'
+import express from 'express'
+import Routes from './routes'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
-import databaseUtils from './utils/databaseUtils'
 
 const app = express()
 
@@ -13,6 +13,6 @@ connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!
 
 app.use(cors())
 app.use(express.json())
-app.use(routes)
+app.use(Routes.apiRoutes)
 
-app.listen(process.env.LISTEN_PORT)
+app.listen(process.env.API_SERVER_PORT)

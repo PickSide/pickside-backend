@@ -5,7 +5,7 @@ import { getSecrets } from '../utils/secrets'
 const handleRefreshToken = async (req: any, res: any) => {
 	const cookies = req.cookies
 	if (!cookies?.jwt) {
-		return res.sendStatus(401)
+		return res.SendStatusWithMessage(401)
 	}
 
 	const refreshToken = cookies.jwt
@@ -15,14 +15,14 @@ const handleRefreshToken = async (req: any, res: any) => {
 
 	if (!foundUser) {
 		jwt.verify(refreshToken, getSecrets['REFRESH_TOKEN_SECRET'], async (err, decoded) => {
-			if (err) return res.sendStatus(403) //Forbidden
+			if (err) return res.SendStatusWithMessage(403) //Forbidden
 			console.log('attempted refresh token reuse!')
 			const hackedUser = await User.findOne({ username: decoded.username }).exec()
 			hackedUser ? (hackedUser.refreshToken = []) : hackedUser
 			const result = await hackedUser?.save()
 			console.log(result)
 		})
-		return res.sendStatus(403) //Forbidden
+		return res.SendStatusWithMessage(403) //Forbidden
 	}
 
 	const newRefreshTokenArray = foundUser.refreshToken.filter((rt) => rt !== refreshToken)
@@ -34,7 +34,7 @@ const handleRefreshToken = async (req: any, res: any) => {
 			const result = await foundUser.save()
 			console.log(result)
 		}
-		if (err || foundUser.username !== decoded.username) return res.sendStatus(403)
+		if (err || foundUser.username !== decoded.username) return res.SendStatusWithMessage(403)
 
 		// Refresh token was still valid
 		const accessToken = jwt.sign(

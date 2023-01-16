@@ -1,26 +1,33 @@
 import User from '../models/User'
+import { Request, Response } from 'express'
+import { sign } from 'jsonwebtoken'
 import { compare } from 'bcrypt'
-import jwt from 'jsonwebtoken'
 import { getSecrets } from '../utils/secrets'
+import { Status, SendStatusOnly, SendStatusWithMessage } from '../utils/responses'
 
-const handleLogin = async (req, res) => {
+const handleLogin = async (req: Request, res: Response) => {
 	const cookies = req.cookies
 	console.log(`cookie available at login: ${JSON.stringify(cookies)}`)
 	const { username, password } = req.body
-	if (!username || !password) return res.status(400).json({ message: 'Username and password are required.' })
+
+	if (!username || !password) {
+		return SendStatusWithMessage(res, Status.BadRequest, 'Username and password are required.')
+	}
 
 	const foundUser = await User.findOne({ username }).exec()
 
 	console.log(foundUser)
 
-	if (!foundUser) return res.sendStatus(401) //Unauthorized
-	// evaluate password
+	if (!foundUser) {
+		return SendStatusWithMessage(res, Status.Unauthorized, 'Username or password incorrect.')
+	}
+
 	const match = await compare(password, foundUser.password)
 
-	if (password === foundUser.password) {
+	if (match) {
 		//const roles = Object.values(foundUser.roles).filter(Boolean)
 		// create JWTs
-		const accessToken = jwt.sign(
+		const accessToken = sign(
 			{
 				UserInfo: {
 					username: foundUser.username,
@@ -30,7 +37,7 @@ const handleLogin = async (req, res) => {
 			getSecrets()['ACCESS_TOKEN_SECRET'],
 			{ expiresIn: '10s' },
 		)
-		const newRefreshToken = jwt.sign({ username: foundUser.username }, getSecrets()['REFRESH_TOKEN_SECRET'], {
+		const newRefreshToken = sign({ username: foundUser.username }, getSecrets()['REFRESH_TOKEN_SECRET'], {
 			expiresIn: '1d',
 		})
 
@@ -56,7 +63,7 @@ const handleLogin = async (req, res) => {
 				newRefreshTokenArray = []
 			}
 
-			res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
+			res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true })
 		}
 
 		// Saving refreshToken with current username
@@ -65,12 +72,12 @@ const handleLogin = async (req, res) => {
 		console.log(result)
 
 		// Creates Secure Cookie with refresh token
-		res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
+		res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 24 * 60 * 60 * 1000 })
 
 		// Send authorization roles and access token to username
 		res.json({ accessToken, connectedUser: foundUser })
 	} else {
-		res.sendStatus(401)
+		SendStatusOnly(res, Status.Unauthorized)
 	}
 }
 

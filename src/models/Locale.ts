@@ -1,4 +1,4 @@
-import { model, Document, Schema } from 'mongoose'
+import { model, Document, Schema, Types } from 'mongoose'
 
 export interface ILocale extends Document {
 	id: string
@@ -8,7 +8,7 @@ export interface ILocale extends Document {
 }
 
 const LocaleSchema = new Schema({
-	id: { type: String, require: true },
+	id: { type: Types.ObjectId, require: true },
 	value: { type: String, require: true },
 	description: { type: String, require: true },
 	flagCode: { type: String, require: true },
