@@ -27,7 +27,7 @@ export function SendStatusWithMessage(res: Response, statusCode: Status, message
 		return
 	}
 
-	res.sendStatus(statusCode).json(message)
+	res.status(statusCode).json(message)
 }
 
 export function SendStatusOnly(res: Response, statusCode: Status) {

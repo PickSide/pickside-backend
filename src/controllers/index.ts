@@ -1,5 +1,5 @@
 import AppConfigController from './AppConfig'
 import LocaleController from './LocaleController'
-import UserController from './User'
+import UserController from './UserController'
 
 export { AppConfigController, LocaleController, UserController }

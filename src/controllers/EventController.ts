@@ -1,21 +1,15 @@
+import Event from '../models/Event'
 import { Request, Response } from 'express'
-import { SendResponseJson, SendStatusWithMessage, Status } from '../utils/responses'
-import AppConfig, { IAppConfig } from '../models/AppConfig'
+import { SendStatusWithMessage, SendResponseJson, Status } from '../utils/responses'
 
 const index = async (req: Request, res: Response) => {
-	const { userId } = req.params
-	const userConfig = userId
-		? await AppConfig.findOne({ userId }).exec()
-		: await AppConfig.findOne({ userId: null }).exec()
-	return SendResponseJson(res, userConfig)
+	const events = await Event.find()
+	return SendResponseJson(res, { results: events })
 }
 const store = async (req: Request, res: Response) => {
 	return SendStatusWithMessage(res, Status.NoContent, 'Stored successfully')
 }
 const update = async (req: Request, res: Response) => {
-	const data = req.body as IAppConfig
-	const updated = await AppConfig.findByIdAndUpdate({ _id: data.userId })
-	console.log(updated)
 	return SendStatusWithMessage(res, Status.NoContent, 'Updated successfully')
 }
 const destroy = async (req: Request, res: Response) => {
