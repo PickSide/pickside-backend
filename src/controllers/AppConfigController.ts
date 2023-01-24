@@ -6,7 +6,7 @@ const index = async (req: Request, res: Response) => {
 	const { userId } = req.params
 	const userConfig = userId
 		? await AppConfig.findOne({ userId }).exec()
-		: await AppConfig.findOne({ userId: null }).exec()
+		: await AppConfig.findOne({ isGuest: true }).exec()
 	return SendResponseJson(res, userConfig)
 }
 const store = async (req: Request, res: Response) => {

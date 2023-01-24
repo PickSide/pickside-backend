@@ -1,4 +1,5 @@
 import AppConfig from '../models/AppConfig'
+import AppTheme from '../models/AppTheme'
 import AvailableCity from '../models/AvailableCity'
 import Event from '../models/Event'
 import Locale from '../models/Locale'
@@ -241,12 +242,24 @@ async function populateCollections() {
 		},
 	])
 
+	const appThemes = await AppTheme.insertMany([
+		{
+			id: new Types.ObjectId(),
+			value: 'dark',
+			description: 'Dark mode',
+		},
+		{
+			id: new Types.ObjectId(),
+			value: 'light',
+			description: 'Light mode',
+		},
+	])
+
 	await AppConfig.insertMany([
 		{
 			id: new Types.ObjectId(),
 			allowLocationTracking: true,
-			darkModeEnabled: true,
-			defaultDarkMode: false,
+			defaultTheme: appThemes[1].value,
 			defautltLocation: availableCities[0],
 			locale: locales[0],
 			userId: users[0],
@@ -254,8 +267,7 @@ async function populateCollections() {
 		{
 			id: new Types.ObjectId(),
 			allowLocationTracking: false,
-			darkModeEnabled: false,
-			defaultDarkMode: true,
+			defaultTheme: appThemes[0].value,
 			defautltLocation: availableCities[0],
 			locale: locales[0],
 			userId: users[1],
@@ -263,11 +275,10 @@ async function populateCollections() {
 		{
 			id: new Types.ObjectId(),
 			allowLocationTracking: false,
-			darkModeEnabled: false,
-			defaultDarkMode: false,
+			defaultTheme: appThemes[0].value,
 			defautltLocation: availableCities[0],
+			isGuest: true,
 			locale: locales[0],
-			userId: null,
 		},
 	])
 

@@ -1,4 +1,4 @@
-import AppConfigController from './AppConfig'
+import AppConfigController from './AppConfigController'
 import LocaleController from './LocaleController'
 import UserController from './UserController'
 

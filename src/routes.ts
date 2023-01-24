@@ -1,5 +1,6 @@
 import { Router } from 'express'
-import AppConfigController from './controllers/AppConfig'
+import AppConfigController from './controllers/AppConfigController'
+import AppThemeController from './controllers/AppThemeController'
 import AuthController from './controllers/AuthController'
 import EventController from './controllers/EventController'
 import LocaleController from './controllers/LocaleController'
@@ -21,10 +22,12 @@ authRoutes.get('/refresh', RefreshTokenController.handleRefreshToken)
 authRoutes.put('/configs', AppConfigController.update)
 
 // Api routes used for API rest calls
+apiRoutes.get('/configs/', AppConfigController.index)
 apiRoutes.get('/configs/:userId', AppConfigController.index)
 apiRoutes.get('/events', EventController.index)
 apiRoutes.get('/locales', LocaleController.index)
 apiRoutes.get('/sports', SportController.index)
+apiRoutes.get('/themes', AppThemeController.index)
 apiRoutes.get('/user', UserController.index)
 
 export default { apiRoutes, authRoutes }
