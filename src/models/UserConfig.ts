@@ -1,21 +1,20 @@
 import { model, Document, Schema, Types } from 'mongoose'
 
-export interface IAppConfig extends Document {
+export interface IUserConfig extends Document {
 	allowLocationTracking: boolean
 	defaultTheme: string
 	defautltLocation: string
 	locale: string
 	userId: string
-	//connctedUserLocation: Coordinates
 }
 
-const AppConfigSchema = new Schema(
+const UserConfigSchema = new Schema(
 	{
 		allowLocationTracking: { type: Boolean, require: true },
 		defaultTheme: { type: String, ref: 'AppTheme', require: true },
 		defautltLocation: { type: Types.ObjectId, ref: 'AvailableCity', require: true },
 		isGuest: { type: Boolean, require: false },
-		locale: { type: Types.ObjectId, ref: 'Locale', require: true },
+		locale: { type: String, ref: 'Locale', require: true },
 		userId: { type: Types.ObjectId, ref: 'User', require: false },
 	},
 	{
@@ -31,4 +30,4 @@ const AppConfigSchema = new Schema(
 	},
 )
 
-export default model<IAppConfig>('Config', AppConfigSchema)
+export default model<IUserConfig>('Config', UserConfigSchema)

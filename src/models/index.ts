@@ -1,7 +1,7 @@
-import AppConfig from './AppConfig'
+import UserConfig from './UserConfig'
 import AppTheme from './AppTheme'
 import Locale from './Locale'
 import User from './User'
 import Sport from './Sport'
 
-export { AppConfig, AppTheme, Locale, User, Sport }
+export { UserConfig, AppTheme, Locale, User, Sport }

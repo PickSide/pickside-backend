@@ -10,8 +10,8 @@ const store = async (req: Request, res: Response) => {
 	return SendStatusWithMessage(res, Status.NoContent, 'Stored successfully')
 }
 const update = async (req: Request, res: Response) => {
-	// const data = req.body as IAppConfig
-	// const updated = await AppConfig.findByIdAndUpdate({ _id: data.userId })
+	// const data = req.body as IUserConfig
+	// const updated = await UserConfig.findByIdAndUpdate({ _id: data.userId })
 	// console.log(updated)
 	return SendStatusWithMessage(res, Status.NoContent, 'Updated successfully')
 }

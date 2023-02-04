@@ -8,7 +8,6 @@ import LogoutController from './controllers/LogoutController'
 import RefreshTokenController from './controllers/RefreshTokenController'
 import SportController from './controllers/SportController'
 import UserController from './controllers/UserController'
-import { authenticateToken } from './utils/authenticateToken'
 
 const authRoutes = Router()
 const apiRoutes = Router()
@@ -20,6 +19,11 @@ authRoutes.get('/refresh', RefreshTokenController.handleRefreshToken)
 
 // Authentication routes used for authentication only
 authRoutes.put('/configs', AppConfigController.update)
+
+apiRoutes.put('/events/:eventId', EventController.update)
+
+apiRoutes.post('/events', EventController.store)
+apiRoutes.post('/users/create', UserController.store)
 
 // Api routes used for API rest calls
 apiRoutes.get('/configs/', AppConfigController.index)

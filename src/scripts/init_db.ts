@@ -1,4 +1,4 @@
-import AppConfig from '../models/AppConfig'
+import UserConfig from '../models/UserConfig'
 import AppTheme from '../models/AppTheme'
 import AvailableCity from '../models/AvailableCity'
 import Event from '../models/Event'
@@ -48,7 +48,7 @@ async function dropCollections(connection: Connection) {
 async function initCollections() {
 	console.log('initializing collections...')
 
-	await AppConfig.createCollection()
+	await UserConfig.createCollection()
 	await AvailableCity.createCollection()
 	await Event.createCollection()
 	await Locale.createCollection()
@@ -255,13 +255,13 @@ async function populateCollections() {
 		},
 	])
 
-	await AppConfig.insertMany([
+	await UserConfig.insertMany([
 		{
 			id: new Types.ObjectId(),
 			allowLocationTracking: true,
 			defaultTheme: appThemes[1].value,
 			defautltLocation: availableCities[0],
-			locale: locales[0],
+			locale: locales[1].value,
 			userId: users[0],
 		},
 		{
@@ -269,7 +269,7 @@ async function populateCollections() {
 			allowLocationTracking: false,
 			defaultTheme: appThemes[0].value,
 			defautltLocation: availableCities[0],
-			locale: locales[0],
+			locale: locales[0].value,
 			userId: users[1],
 		},
 		{
@@ -278,7 +278,7 @@ async function populateCollections() {
 			defaultTheme: appThemes[0].value,
 			defautltLocation: availableCities[0],
 			isGuest: true,
-			locale: locales[0],
+			locale: locales[0].value,
 		},
 	])
 
