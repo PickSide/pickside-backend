@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "server.ts",
 	"scripts": {
-		"all": "concurrently --kill-others \"npm run server\" \"npm run authServer\"",
+		"start": "concurrently --kill-others \"npm run server\" \"npm run authServer\"",
 		"build": "npx tsc",
 		"authServer": "NODE_ENV=dev && nodemon src/authServer.ts",
 		"server": "NODE_ENV=dev && nodemon src/server.ts",
