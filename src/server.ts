@@ -14,5 +14,7 @@ connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!
 app.use(cors())
 app.use(express.json())
 app.use(Routes.apiRoutes)
+app.use(Routes.authRoutes)
 
 app.listen(process.env.API_SERVER_PORT)
+app.listen(process.env.AUTH_SERVER_PORT)
