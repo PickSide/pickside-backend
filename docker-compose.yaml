@@ -8,9 +8,5 @@ services:
     ports: 
       - '4000:4000'
       - '8000:8000'
-    # might not work on windows
-    # volumes:
-    #   - ./src:/app
-    #   - ./app/node_modules
     stdin_open: true
     tty: true

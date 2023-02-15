@@ -4,11 +4,10 @@
 	"description": "",
 	"main": "server.ts",
 	"scripts": {
-		"start": "concurrently --kill-others \"npm run server\" \"npm run authServer\"",
+		"start": "concurrently --kill-others \"npm run server\"",
 		"build": "npx tsc",
-		"authServer": "NODE_ENV=dev && nodemon src/authServer.ts",
-		"server": "NODE_ENV=dev && nodemon src/server.ts",
-		"createdb": "NODE_ENV=dev && nodemon src/scripts/init_db.ts"
+		"server": "nodemon src/server.ts",
+		"createdb": "nodemon src/scripts/init_db.ts"
 	},
 	"keywords": [],
 	"type": "commonjs",
@@ -27,6 +26,7 @@
 		"jsonwebtoken": "^9.0.0",
 		"lodash": "^4.17.21",
 		"mongoose": "^6.8.3",
+		"node-vault": "^0.9.22",
 		"ts-node": "^10.9.1",
 		"typescript": "^4.9.4"
 	},
