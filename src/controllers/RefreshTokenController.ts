@@ -1,11 +1,12 @@
 import User from '../models/User'
 import jwt from 'jsonwebtoken'
 import { getSecrets } from '../utils/secrets'
+import { MessageResponse, SendResponse, Status } from '../utils/responses'
 
 const handleRefreshToken = async (req: any, res: any) => {
 	const cookies = req.cookies
 	if (!cookies?.jwt) {
-		return res.SendStatusWithMessage(401)
+		return SendResponse(res, Status.Unauthorized, MessageResponse('Unauthorized'))
 	}
 
 	const refreshToken = cookies.jwt
@@ -15,28 +16,28 @@ const handleRefreshToken = async (req: any, res: any) => {
 
 	if (!foundUser) {
 		jwt.verify(refreshToken, getSecrets['REFRESH_TOKEN_SECRET'], async (err, decoded) => {
-			if (err) return res.SendStatusWithMessage(403) //Forbidden
-			console.log('attempted refresh token reuse!')
+			if (err) {
+				return SendResponse(res, Status.Forbidden, MessageResponse('Forbidden'))
+			}
 			const hackedUser = await User.findOne({ username: decoded.username }).exec()
 			hackedUser ? (hackedUser.refreshToken = []) : hackedUser
-			const result = await hackedUser?.save()
-			console.log(result)
+			await hackedUser?.save()
 		})
-		return res.SendStatusWithMessage(403) //Forbidden
+		return SendResponse(res, Status.Forbidden, MessageResponse('Forbidden'))
 	}
 
 	const newRefreshTokenArray = foundUser.refreshToken.filter((rt) => rt !== refreshToken)
 
 	jwt.verify(refreshToken, getSecrets['REFRESH_TOKEN_SECRET'], async (err, decoded) => {
 		if (err) {
-			console.log('expired refresh token')
 			foundUser.refreshToken = [...newRefreshTokenArray]
-			const result = await foundUser.save()
-			console.log(result)
+			await foundUser.save()
 		}
-		if (err || foundUser.username !== decoded.username) return res.SendStatusWithMessage(403)
 
-		// Refresh token was still valid
+		if (err || foundUser.username !== decoded.username) {
+			return SendResponse(res, Status.Forbidden, MessageResponse('Forbidden'))
+		}
+
 		const accessToken = jwt.sign(
 			{
 				UserInfo: {
@@ -50,13 +51,12 @@ const handleRefreshToken = async (req: any, res: any) => {
 		const newRefreshToken = jwt.sign({ username: foundUser.username }, getSecrets['REFRESH_TOKEN_SECRET'], {
 			expiresIn: '1d',
 		})
-		// Saving refreshToken with current user
+
 		foundUser.refreshToken = [...newRefreshTokenArray, newRefreshToken]
-		const result = await foundUser.save()
+		await foundUser.save()
 
-		// Creates Secure Cookie with refresh token
+
 		res.cookie('jwt', newRefreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 })
-
 		res.json({ accessToken })
 	})
 }

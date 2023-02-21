@@ -16,5 +16,5 @@ app.use(express.json())
 app.use(Routes.apiRoutes)
 app.use(Routes.authRoutes)
 
-app.listen(process.env.API_SERVER_PORT)
-app.listen(process.env.AUTH_SERVER_PORT)
+app.listen(process.env.API_SERVER_PORT, () => console.log('Connected to API server'))
+app.listen(process.env.AUTH_SERVER_PORT, () => console.log('Connected to AUTH server'))

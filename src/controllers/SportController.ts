@@ -1,19 +1,19 @@
 import Sport from '../models/Sport'
 import { Request, Response } from 'express'
-import { SendStatusWithMessage, SendResponseJson, Status } from '../utils/responses'
+import { MessageResponse, SendResponse, Status } from '../utils/responses'
 
 const index = async (req: Request, res: Response) => {
 	const sports = await Sport.find()
-	return SendResponseJson(res, { results: sports })
+	return SendResponse(res, Status.Ok, { results: sports })
 }
 const store = async (req: Request, res: Response) => {
-	return SendStatusWithMessage(res, Status.NoContent, 'Stored successfully')
+	return SendResponse(res, Status.NoContent, MessageResponse('Stored successfully'))
 }
 const update = async (req: Request, res: Response) => {
-	return SendStatusWithMessage(res, Status.NoContent, 'Updated successfully')
+	return SendResponse(res, Status.NoContent, MessageResponse('Updated successfully'))
 }
 const destroy = async (req: Request, res: Response) => {
-	return SendStatusWithMessage(res, Status.NoContent, 'Deleted successfully')
+	return SendResponse(res, Status.NoContent, MessageResponse('Deleted successfully'))
 }
 export default {
 	index,

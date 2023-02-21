@@ -1,18 +1,31 @@
 {
 	"compilerOptions": {
 		"paths": {
-			"@configs/*": ["/src/config/*"],
-			"@controllers/*": ["/src/controllers/*"],
-			"@models/*": ["/src/models/*"],
-			"@utils/*": ["/src/utils/*"],
-			"@scripts/*": ["/src/scripts/*"]
+			"@configs/*": [
+				"/src/config/*"
+			],
+			"@controllers/*": [
+				"/src/controllers/*"
+			],
+			"@middleware/*": [
+				"/src/middleware/*"
+			],
+			"@models/*": [
+				"/src/models/*"
+			],
+			"@utils/*": [
+				"/src/utils/*"
+			],
+			"@scripts/*": [
+				"/src/scripts/*"
+			]
 		},
 		"allowJs": true,
 		"noImplicitAny": false,
 		"module": "commonjs",
 		"esModuleInterop": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
 		"target": "esnext",
 		"strict": true,
 		"moduleResolution": "node",
@@ -20,7 +33,15 @@
 		"outDir": "dist",
 		"baseUrl": "src",
 	},
-	"typeRoots": ["node_modules/@types"],
-	"exclude": ["node_modules", "build", "scripts"],
-	"include": ["src/**/*"]
+	"typeRoots": [
+		"node_modules/@types"
+	],
+	"exclude": [
+		"node_modules",
+		"build",
+		"scripts"
+	],
+	"include": [
+		"src/**/*"
+	]
 }
