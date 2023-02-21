@@ -1,12 +1,12 @@
 import User from '../models/User'
 import { Request, Response } from 'express'
-import { SendResponseJson, SendStatusWithMessage, Status } from '../utils/responses'
+import { MessageResponse, SendResponse, Status } from '../utils/responses'
 import { omit } from 'lodash'
 import { hashSync } from 'bcrypt'
 
 const index = async (req: Request, res: Response) => {
 	const users = await User.find()
-	return SendStatusWithMessage(res, Status.Ok, { results: users })
+	return SendResponse(res, Status.Ok, { results: users })
 }
 const store = async (req: Request, res: Response) => {
 	console.log(req.body)
@@ -19,21 +19,21 @@ const store = async (req: Request, res: Response) => {
 	console.log(userExists)
 
 	if (!!userExists) {
-		return SendStatusWithMessage(res, Status.Conflict, 'Username or email already exists.')
+		return SendResponse(res, Status.Conflict, MessageResponse('Username or email already exists.'))
 	}
 
 	const created = await User.create({ ...user, password: hashed })
 
-	return SendResponseJson(res, {
+	return SendResponse(res, Status.Ok, {
 		username: created.username,
 		password: original,
 	})
 }
 const update = async (req: Request, res: Response) => {
-	return SendStatusWithMessage(res, Status.NoContent, 'Updated successfully')
+	return SendResponse(res, Status.NoContent, MessageResponse('Updated successfully'))
 }
 const destroy = async (req: Request, res: Response) => {
-	return SendStatusWithMessage(res, Status.NoContent, 'Deleted successfully')
+	return SendResponse(res, Status.NoContent, MessageResponse('Deleted successfully'))
 }
 export default {
 	index,

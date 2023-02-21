@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { CookieOptions, Request, Response } from 'express'
 
 export enum Status {
 	Ok = 200,
@@ -22,26 +22,29 @@ export enum Status {
 	NetworkAuthenticationRequired = 511,
 }
 
-export function SendStatusWithMessage(res: Response, statusCode: Status, message?: any) {
-	if (!res) {
-		return
-	}
-
-	res.status(statusCode).json({ message })
+interface CookieProps {
+	name: string
+	val: string
+	cookieOpts: CookieOptions
 }
 
-export function SendStatusOnly(res: Response, statusCode: Status) {
+export function SendResponse(res: Response, statusCode?: Status, json?: any, cookie?: CookieProps) {
 	if (!res) {
 		return
 	}
 
-	res.sendStatus(statusCode)
+	let response = res
+
+	if (statusCode) response = response.status(statusCode)
+	if (json) response = response.json(json)
+	if (cookie) response = response.cookie(cookie.name, cookie.val, cookie.cookieOpts)
+
+	return response
 }
 
-export function SendResponseJson(res: Response, jsonObject: any) {
-	if (!res) {
-		return
+export function MessageResponse(msg: string) {
+	return {
+		message: msg,
+		timeStamp: Date.now()
 	}
-
-	res.json(jsonObject)
 }

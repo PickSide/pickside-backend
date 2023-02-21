@@ -1,27 +1,26 @@
 import jwt from 'jsonwebtoken'
 import User from '../models/User'
+import { MessageResponse, SendResponse, Status } from '../utils/responses'
 
 const handleLogout = async (req, res) => {
-	// On client, also delete the accessToken
-
 	const cookies = req.cookies
-	if (!cookies?.jwt) return res.SendStatusWithMessage(204) //No content
+	if (!cookies?.jwt) {
+		return SendResponse(res, Status.NoContent, MessageResponse('No content'))
+	}
 	const refreshToken = cookies.jwt
 
-	// Is refreshToken in db?
 	const foundUser = await User.findOne({ refreshToken }).exec()
 	if (!foundUser) {
 		res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
-		return res.SendStatusWithMessage(204)
+		return SendResponse(res, Status.NoContent, MessageResponse('No content'))
 	}
 
 	// Delete refreshToken in db
 	foundUser.refreshToken = foundUser.refreshToken.filter((rt) => rt !== refreshToken)
-	const result = await foundUser.save()
-	console.log(result)
+	await foundUser.save()
 
 	res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
-	res.SendStatusWithMessage(204)
+	return SendResponse(res, Status.NoContent, MessageResponse('No content'))
 }
 
 export default {
