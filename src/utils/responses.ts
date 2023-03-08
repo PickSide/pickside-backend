@@ -42,9 +42,10 @@ export function SendResponse(res: Response, statusCode?: Status, json?: any, coo
 	return response
 }
 
-export function MessageResponse(msg: string) {
+export function MessageResponse(msg: string, extra?: any) {
 	return {
 		message: msg,
-		timeStamp: Date.now()
+		timeStamp: Date.now(),
+		...extra
 	}
 }
