@@ -7,15 +7,15 @@ import { SendResponse, Status } from '../utils/responses'
 
 const handleLogin = async (req: Request, res: Response) => {
 	const cookies = req.cookies
-	const { username, password } = req.body
+	const { username, password } = req.body.data
+
+	console.log(req.body)
 
 	if (!username || !password) {
 		return SendResponse(res, Status.BadRequest, 'Username and password are required.')
 	}
 
 	const user = await User.findOne({ username }).exec()
-
-	console.log(user)
 
 	if (!user) {
 		return SendResponse(res, Status.Unauthorized, 'Username or password incorrect.')
