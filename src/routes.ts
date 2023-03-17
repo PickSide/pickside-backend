@@ -1,36 +1,35 @@
 import { Router } from 'express'
-import AppConfigController from './controllers/AppConfigController'
-import AppThemeController from './controllers/AppThemeController'
-import AuthController from './controllers/AuthController'
-import EventController from './controllers/EventController'
-import LocaleController from './controllers/LocaleController'
-import LogoutController from './controllers/LogoutController'
-import RefreshTokenController from './controllers/RefreshTokenController'
-import SportController from './controllers/SportController'
-import UserController from './controllers/UserController'
+import {
+	AccountController,
+	ActivityController,
+	AreaController,
+	AuthController,
+	LevelController,
+	LocaleController,
+	SessionController,
+	SportController,
+} from './controllers'
 
 const apiRoutes = Router()
+const authRoutes = Router()
 
 // Authentication routes used for authentication only
-apiRoutes.post('/auth', AuthController.handleLogin)
-apiRoutes.get('/logout', LogoutController.handleLogout)
-apiRoutes.get('/refresh', RefreshTokenController.handleRefreshToken)
+// authRoutes.post('/login', AuthController.authenticate)
+// authRoutes.post('/logout', AuthController.logout)
+// authRoutes.get('/token', AuthController.getAccessToken)
 
-// Authentication routes used for authentication only
-apiRoutes.put('/configs', AppConfigController.update)
+// PUT
+// apiRoutes.put('/activities/:activityId', ActivityController.update)
 
-apiRoutes.put('/events/:eventId', EventController.update)
+// POST
+// apiRoutes.post('/activities', ActivityController.create)
+// apiRoutes.post('/users/create', AccountController.create)
+// apiRoutes.post('/session/create', SessionController.create)
 
-apiRoutes.post('/events', EventController.store)
-apiRoutes.post('/users/create', UserController.store)
+// GET
+apiRoutes.get('/user', AccountController.get)
+// apiRoutes.get('/activities', ActivityController.get)
+// apiRoutes.get('/locales', LocaleController.get)
+// apiRoutes.get('/sports', SportController.get)
 
-// Api routes used for API rest calls
-apiRoutes.get('/configs/', AppConfigController.index)
-apiRoutes.get('/configs/:userId', AppConfigController.index)
-apiRoutes.get('/events', EventController.index)
-apiRoutes.get('/locales', LocaleController.index)
-apiRoutes.get('/sports', SportController.index)
-apiRoutes.get('/themes', AppThemeController.index)
-apiRoutes.get('/user', UserController.index)
-
-export default { apiRoutes }
+export default { apiRoutes, authRoutes }
