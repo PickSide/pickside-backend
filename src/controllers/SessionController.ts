@@ -10,25 +10,18 @@ interface SessionProps {
 	accessToken: string
 }
 
-const SESSION_TTL = Math.floor(Date.now() / 1000) + 60 * 60
+export const SESSION_TTL = Math.floor(Date.now() / 1000) + 60 * 60
 
-const get = async (req: Request, res: Response) => {}
-const create = async (req: Request, res: Response) => {
+export const get = async (req: Request, res: Response) => {}
+export const create = async (req: Request, res: Response) => {
 	const data = req.body.data
 	return createSession(data)
 }
-const update = async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response) => {
 	// Not implemented
 }
-const remove = async (req: Request, res: Response) => {
+export const remove = async (req: Request, res: Response) => {
 	// Not implemented
-}
-
-export default {
-	get,
-	create,
-	update,
-	remove,
 }
 
 async function createSession(data: SessionProps) {

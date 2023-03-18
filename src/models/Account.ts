@@ -7,8 +7,8 @@ export interface IAccount extends Document {
 	username: string
 	password: string
 	refreshTokens: string[]
-	profile: IAccountProfile
 	configs: IAccountConfigs
+	profile: IAccountProfile
 }
 
 export interface IAccountConfigs extends Document {
@@ -18,14 +18,14 @@ export interface IAccountConfigs extends Document {
 }
 
 export interface IAccountProfile extends Document {
-	sexe: 'male' | 'female'
 	firstName: string
 	lastName: string
-	localeRegion: string
 	level: number
-	reliability: number
-	matchPlayed: number
+	localeRegion: string
 	matchOrganized: number
+	matchPlayed: number
+	reliability: number
+	sexe: 'male' | 'female'
 }
 
 export default model<IAccount>('Account', AccountSchema)
