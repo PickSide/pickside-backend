@@ -5,14 +5,25 @@ import Routes from './routes'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
 
-const app = express()
+const api = express()
+const auth = express()
 
 config()
 
 connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))
 
-app.use(cors())
-app.use(express.json())
-app.use(Routes.apiRoutes)
+api
+	.use(cors())
+	.use(express.json())
+	.use(Routes.apiRoutes)
+	.listen(process.env.API_SERVER_PORT, () =>
+		console.log('Connected to Api server on port', process.env.API_SERVER_PORT),
+	)
 
-app.listen(process.env.API_SERVER_PORT, () => console.log('Connected to API server'))
+auth
+	.use(cors())
+	.use(express.json())
+	.use(Routes.authRoutes)
+	.listen(process.env.AUTH_SERVER_PORT, () =>
+		console.log('Connected to Auth server on port', process.env.AUTH_SERVER_PORT),
+	)

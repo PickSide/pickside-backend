@@ -1,23 +1,17 @@
 import { Request, Response } from 'express'
-import { MessageResponse, SendResponse, Status } from '../utils/responses'
+import { SendResponse, Status } from '../utils/responses'
 import Locale from '../models/Locale'
 
-const index = async (req: Request, res: Response) => {
+export const get = async (req: Request, res: Response) => {
 	const locales = await Locale.find()
-	return SendResponse(res, Status.Ok, { results: locales })
+	SendResponse(res, Status.Ok, { results: locales })
 }
-const store = async (req: Request, res: Response) => {
-	return SendResponse(res, Status.NoContent, MessageResponse('Stored successfully'))
+export const store = async (req: Request, res: Response) => {
+	// Not implemented
 }
-const update = async (req: Request, res: Response) => {
-	return SendResponse(res, Status.NoContent, MessageResponse('Updated successfully'))
+export const update = async (req: Request, res: Response) => {
+	// Not implemented
 }
-const destroy = async (req: Request, res: Response) => {
-	return SendResponse(res, Status.NoContent, MessageResponse('Deleted successfully'))
-}
-export default {
-	index,
-	store,
-	update,
-	destroy,
+export const destroy = async (req: Request, res: Response) => {
+	// Not implemented
 }

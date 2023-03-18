@@ -1,4 +1,4 @@
-import { CookieOptions, Request, Response } from 'express'
+import { Response } from 'express'
 
 export enum Status {
 	Ok = 200,
@@ -22,13 +22,39 @@ export enum Status {
 	NetworkAuthenticationRequired = 511,
 }
 
-interface CookieProps {
-	name: string
-	val: string
-	cookieOpts: CookieOptions
+export enum AppContext {
+	Account = 'Account',
+	Activity = 'Activity',
+	Level = 'Level',
+	Locale = 'Locale',
+	Session = 'Session',
+	Sport = 'Sport',
+	User = 'User',
 }
 
-export function SendResponse(res: Response, statusCode?: Status, json?: any, cookie?: CookieProps) {
+export const DefaultServerResponseMap = {
+	200: `Ok.`,
+	201: `Ressource was successfully created.`,
+	202: `Accepted`,
+	204: `No content`,
+
+	400: `Bad request`,
+	401: `Unauthorized action`,
+	402: `Payment required`,
+	403: `Forbidden action`,
+	404: `Ressource not found`,
+	405: `Method not allowed`,
+	408: `Request timeout`,
+	409: `Conflict. Ressource already exists`,
+
+	500: `Internal server error.`,
+	501: `Endpoint not implemented.`,
+	502: `Bad gateway.`,
+	503: `Service is currently unavailable.`,
+	511: `Network authentication is required.`,
+}
+
+export function SendResponse(res: Response, statusCode?: Status, json?: any) {
 	if (!res) {
 		return
 	}
@@ -37,7 +63,6 @@ export function SendResponse(res: Response, statusCode?: Status, json?: any, coo
 
 	if (statusCode) response = response.status(statusCode)
 	if (json) response = response.json(json)
-	if (cookie) response = response.cookie(cookie.name, cookie.val, cookie.cookieOpts)
 
 	return response
 }
@@ -46,6 +71,6 @@ export function MessageResponse(msg: string, extra?: any) {
 	return {
 		message: msg,
 		timeStamp: Date.now(),
-		...extra
+		...extra,
 	}
 }

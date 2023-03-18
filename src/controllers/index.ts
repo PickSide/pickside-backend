@@ -1,5 +1,8 @@
-import AppConfigController from './AppConfigController'
-import LocaleController from './LocaleController'
-import UserController from './UserController'
-
-export { AppConfigController, LocaleController, UserController }
+export * as AccountController from './AccountController'
+export * as ActivityController from './ActivityController'
+export * as AreaController from './AreaController'
+export * as AuthController from './AuthController'
+export * as LevelController from './LevelController'
+export * as LocaleController from './LocaleController'
+export * as SessionController from './SessionController'
+export * as SportController from './SportController'

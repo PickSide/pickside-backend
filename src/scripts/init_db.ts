@@ -1,14 +1,12 @@
-import UserConfig from '../models/UserConfig'
-import AppTheme from '../models/AppTheme'
-import AvailableCity from '../models/AvailableCity'
-import Event from '../models/Event'
+import Account from '../models/Account'
+import Area from '../models/Area'
+import Activity from '../models/Activity'
 import Locale from '../models/Locale'
 import Sport from '../models/Sport'
-import User from '../models/User'
 import databaseUtils from '../utils/databaseUtils'
 import { connect, Connection, Types } from 'mongoose'
 import { config } from 'dotenv'
-import { hashSync } from 'bcrypt'
+import { createAccount } from './helper'
 
 async function run() {
 	config()
@@ -48,12 +46,11 @@ async function dropCollections(connection: Connection) {
 async function initCollections() {
 	console.log('initializing collections...')
 
-	await UserConfig.createCollection()
-	await AvailableCity.createCollection()
-	await Event.createCollection()
+	await Account.createCollection()
+	await Area.createCollection()
+	await Activity.createCollection()
 	await Locale.createCollection()
 	await Sport.createCollection()
-	await User.createCollection()
 
 	console.log('collections initialized')
 }
@@ -61,7 +58,59 @@ async function initCollections() {
 async function populateCollections() {
 	console.log('populating collections...')
 
-	const availableCities = await AvailableCity.insertMany([
+	const accounts = await createAccount([
+		{ firstName: 'Ali', lastName: 'Idrici', username: 'ali' },
+		{ firstName: 'Omer', lastName: 'Bos', username: 'bos' },
+		{ firstName: 'Tony', lastName: 'Hakim', username: 'tony' },
+		{ firstName: 'Niloofar', lastName: 'hakim', username: 'niloo' },
+		{ firstName: 'Ian', lastName: 'Piluganov', username: 'ian' },
+		{ firstName: 'Rafic', lastName: 'Haddad', username: 'rafic' },
+		{ firstName: 'Marc', lastName: 'Bartik', username: 'marc' },
+		{ firstName: 'Fadi', lastName: 'Bartik', username: 'fadi' },
+		{ firstName: 'Philippe', lastName: 'Kuret', username: 'phil' },
+		{ firstName: 'Rami', lastName: 'Kuret', username: 'rami' },
+		{ firstName: 'Kevin', lastName: 'Moniz', username: 'kevin' },
+		{ firstName: 'Karim', lastName: 'Abou-Khalil', username: 'karim' },
+		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo' },
+	])
+
+	await Activity.insertMany([
+		{
+			id: new Types.ObjectId(),
+			title: 'Soccer game 5v5',
+			type: 'soccer',
+			organiser: (await accounts[0]).id,
+			levelRequired: 4,
+			location: { lat: 45.5753494, lng: -73.6467868 },
+			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
+			numberOfRegisteredPlayers: 5,
+			maxPlayersCapacity: 10,
+		},
+		{
+			id: new Types.ObjectId(),
+			title: 'Bball game 5v5',
+			type: 'basketball',
+			organiser: (await accounts[1]).id,
+			levelRequired: 2,
+			location: { lat: 45.5586107, lng: -73.6863638 },
+			participants: [accounts[1], accounts[2], accounts[3]],
+			numberOfRegisteredPlayers: 3,
+			maxPlayersCapacity: 10,
+		},
+		{
+			id: new Types.ObjectId(),
+			title: 'Soccer game 7v7',
+			type: 'soccer',
+			organiser: (await accounts[1]).id,
+			levelRequired: 4,
+			location: { lat: 45.5348851, lng: -73.6469004 },
+			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
+			numberOfRegisteredPlayers: 7,
+			maxPlayersCapacity: 14,
+		},
+	])
+
+	await Area.insertMany([
 		{
 			id: new Types.ObjectId(),
 			name: 'montreal',
@@ -94,7 +143,7 @@ async function populateCollections() {
 		},
 	])
 
-	const locales = await Locale.insertMany([
+	await Locale.insertMany([
 		{
 			id: new Types.ObjectId(),
 			value: 'en',
@@ -102,220 +151,6 @@ async function populateCollections() {
 			flagCode: 'us',
 		},
 		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
-	])
-
-	const users = await User.insertMany([
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Antoine',
-			lastName: 'Hakim',
-			email: 'tonyown10@gmail.com',
-			username: 'tony',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 5,
-			reliability: 5,
-			matchPlayed: 20,
-			matchOrganized: 30,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Niloofar',
-			lastName: 'Khastavan',
-			email: 'iamoninstagramallday1@gmail.com',
-			username: 'user1',
-			password: hashSync('123', 10),
-			sexe: 'female',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Marc',
-			lastName: 'B',
-			email: 'marcb@gmail.com',
-			username: 'user2',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Rafic',
-			lastName: 'H',
-			email: 'rafich@gmail.com',
-			username: 'user3',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Philippe',
-			lastName: 'K',
-			email: 'philippek@gmail.com',
-			username: 'user3',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Fadi',
-			lastName: 'B',
-			email: 'fadib@gmail.com',
-			username: 'user3',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Ian',
-			lastName: 'P',
-			email: 'ianp@gmail.com',
-			username: 'user3',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Rami',
-			lastName: 'K',
-			email: 'ramik@gmail.com',
-			username: 'user3',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-		{
-			id: new Types.ObjectId(),
-			firstName: 'Omer',
-			lastName: 'B',
-			email: 'omerb@gmail.com',
-			username: 'user3',
-			password: hashSync('123', 10),
-			sexe: 'male',
-			level: 1,
-			reliability: 2,
-			matchPlayed: 2,
-			matchOrganized: 0,
-			localeRegion: 'montreal',
-			refreshToken: [],
-		},
-	])
-
-	const appThemes = await AppTheme.insertMany([
-		{
-			id: new Types.ObjectId(),
-			value: 'dark',
-			description: 'Dark mode',
-		},
-		{
-			id: new Types.ObjectId(),
-			value: 'light',
-			description: 'Light mode',
-		},
-	])
-
-	await UserConfig.insertMany([
-		{
-			id: new Types.ObjectId(),
-			allowLocationTracking: true,
-			defaultTheme: appThemes[1].value,
-			defautltLocation: availableCities[0],
-			locale: locales[1].value,
-			userId: users[0],
-		},
-		{
-			id: new Types.ObjectId(),
-			allowLocationTracking: false,
-			defaultTheme: appThemes[0].value,
-			defautltLocation: availableCities[0],
-			locale: locales[0].value,
-			userId: users[1],
-		},
-		{
-			id: new Types.ObjectId(),
-			allowLocationTracking: false,
-			defaultTheme: appThemes[0].value,
-			defautltLocation: availableCities[0],
-			isGuest: true,
-			locale: locales[0].value,
-		},
-	])
-
-	await Event.insertMany([
-		{
-			id: new Types.ObjectId(),
-			title: 'Soccer game 5v5',
-			type: 'soccer',
-			organiser: (await users[0]).id,
-			levelRequired: 4,
-			location: { lat: 45.5753494, lng: -73.6467868 },
-			participants: [users[1], users[2], users[3], users[4], users[5]],
-			numberOfRegisteredPlayers: 5,
-			maxPlayersCapacity: 10,
-		},
-		{
-			id: new Types.ObjectId(),
-			title: 'Bball game 5v5',
-			type: 'basketball',
-			organiser: (await users[1]).id,
-			levelRequired: 2,
-			location: { lat: 45.5586107, lng: -73.6863638 },
-			participants: [users[1], users[2], users[3]],
-			numberOfRegisteredPlayers: 3,
-			maxPlayersCapacity: 10,
-		},
-		{
-			id: new Types.ObjectId(),
-			title: 'Soccer game 7v7',
-			type: 'soccer',
-			organiser: (await users[1]).id,
-			levelRequired: 4,
-			location: { lat: 45.5348851, lng: -73.6469004 },
-			participants: [users[1], users[2], users[3], users[4], users[5], users[6], users[7]],
-			numberOfRegisteredPlayers: 7,
-			maxPlayersCapacity: 14,
-		},
 	])
 
 	await Sport.insertMany([
@@ -345,4 +180,5 @@ async function populateCollections() {
 }
 
 run()
+
 process.exit

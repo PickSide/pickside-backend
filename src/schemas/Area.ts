@@ -1,13 +1,6 @@
-import { model, Document, Schema, Types } from 'mongoose'
+import { Schema } from 'mongoose'
 
-export interface IAvailableCity extends Document {
-	name: string
-	country: string
-	state: string
-	centerCoordinates: any
-}
-
-const AvailableCitySchema = new Schema(
+export const AreaSchema = new Schema(
 	{
 		name: { type: String, require: true },
 		centerCoordinates: { type: Object, require: true },
@@ -26,5 +19,3 @@ const AvailableCitySchema = new Schema(
 		},
 	},
 )
-
-export default model<IAvailableCity>('City', AvailableCitySchema)

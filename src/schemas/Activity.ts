@@ -1,18 +1,6 @@
-import { model, Document, Schema, Types } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 
-export interface ISportEvent extends Document {
-	title: string
-	sport: string
-	organiser: string
-	participants: any[]
-	price: number
-	levelRequired: number
-	numberOfRegisteredPlayers: number
-	maxPlayersCapacity: number
-	location: object
-}
-
-const SportEventSchema = new Schema(
+export const ActivitySchema = new Schema(
 	{
 		title: { type: String, require: true },
 		sport: { type: String, require: true },
@@ -36,5 +24,3 @@ const SportEventSchema = new Schema(
 		},
 	},
 )
-
-export default model<ISportEvent>('Event', SportEventSchema)
