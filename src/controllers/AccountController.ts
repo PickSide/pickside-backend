@@ -13,7 +13,7 @@ export const create = async (req: Request, res: Response) => {
 	const pwd = req.body.data.password
 
 	if (!!(await Account.findOne({ $or: [{ email: user.email }, { username: user.username }] }))) {
-		SendResponse(res, Status.Conflict, MessageResponse('Username or email already exists.'))
+		return SendResponse(res, Status.Conflict, MessageResponse('Username or email already exists.'))
 	}
 	const account = await Account.create({
 		email: user.email,
@@ -28,7 +28,7 @@ export const create = async (req: Request, res: Response) => {
 			locationTracking: false,
 		},
 	})
-	SendResponse(res, Status.Ok, MessageResponse('Account created successfully', { payload: { ...account } }))
+	return SendResponse(res, Status.Ok, MessageResponse('Account created successfully', { payload: { ...account } }))
 }
 export const update = async (req: Request, res: Response) => {}
 export const remove = async (req: Request, res: Response) => {}

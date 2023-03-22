@@ -1,6 +1,7 @@
 export * from './Account'
 export * from './Activity'
 export * from './Area'
+export * from './Email'
 export * from './Level'
 export * from './Locale'
 export * from './Session'

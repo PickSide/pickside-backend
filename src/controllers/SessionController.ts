@@ -2,7 +2,7 @@ import Session from '../models/Session'
 import { sign } from 'jsonwebtoken'
 import { Request, Response } from 'express'
 import { MessageResponse, SendResponse, Status } from '../utils/responses'
-import { getSecrets } from '../utils/secrets'
+import { secrets } from '../utils/secrets'
 
 interface SessionProps {
 	accountId?: string
