@@ -2,7 +2,7 @@ import { Schema } from 'mongoose'
 
 export const EmailSchema = new Schema(
 	{
-		usernameAssociated: { type: String, require: true },
+		userIdAssociated: { type: String, require: true },
 		value: { type: String, require: true },
 	},
 	{

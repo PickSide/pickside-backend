@@ -53,7 +53,6 @@ export const authenticate = async (req: Request, res: Response) => {
 export const getAccessToken = async (req: Request, res: Response) => {
 	const user = req.body.data
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
-
 	if (!!refreshToken) {
 		verify(refreshToken, secrets['REFRESH_TOKEN_SECRET'], async (err) => {
 			// if token is expired, invalidate token
@@ -71,7 +70,7 @@ export const getAccessToken = async (req: Request, res: Response) => {
 		//if token is valid
 		const tokenValid = await isTokenValid(refreshToken)
 		if (tokenValid) {
-			const emailVerified = !!(await VerifiedEmail.findOne({ usernameAssociated: user.username }))
+			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
 			const claims = getTokenClaims(user, emailVerified)
 			const accessToken = generateAT(claims)
 			return SendResponse(
@@ -83,7 +82,7 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			)
 		}
 	}
-	return SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+	return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
 }
 
 export const logout = async (req: Request, res: Response) => {
@@ -105,7 +104,7 @@ function generateRT(claims) {
 
 function getTokenClaims(data: IAccount, emailVerified: boolean = false): TokenClaims {
 	return {
-		...pick(data.toObject(), ['email', 'profile.firstName', 'profile.lastName', 'username']),
+		...pick(data, ['email', 'profile.firstName', 'profile.lastName', 'username']),
 		emailVerified,
 		iss: 'http://pickside.com',
 		sub: data.id,
