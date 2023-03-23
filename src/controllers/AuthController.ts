@@ -1,6 +1,5 @@
 import Account, { IAccount } from '../models/Account'
-import ValidToken from '../models/ValidToken'
-import VerifiedEmail, { IVerifiedEmail } from '../models/VerifiedEmail'
+import VerifiedEmail from '../models/VerifiedEmail'
 import { Request, Response } from 'express'
 import { JwtPayload, JsonWebTokenError, sign, TokenExpiredError, verify } from 'jsonwebtoken'
 import { compare } from 'bcrypt'
@@ -41,7 +40,11 @@ export const authenticate = async (req: Request, res: Response) => {
 		await addToValidTokens(accessToken)
 		await addToValidTokens(refreshToken)
 
-		return SendResponse(res, Status.Ok, { accessToken, connectedUser: user, refreshToken })
+		return SendResponse(res, Status.Ok, {
+			user: omit(user.toObject(), ['password', 'username']),
+			accessToken,
+			refreshToken,
+		})
 	} else {
 		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
 	}
@@ -102,7 +105,7 @@ function generateRT(claims) {
 
 function getTokenClaims(data: IAccount, emailVerified: boolean = false): TokenClaims {
 	return {
-		...pick(data, ['email', 'firstName', 'lastName', 'username']),
+		...pick(data.toObject(), ['email', 'profile.firstName', 'profile.lastName', 'username']),
 		emailVerified,
 		iss: 'http://pickside.com',
 		sub: data.id,
