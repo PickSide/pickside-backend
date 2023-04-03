@@ -16,7 +16,12 @@ export async function isTokenValid(token: string): Promise<boolean> {
 
 export async function revokeToken(token: string): Promise<void> {
 	await ValidToken.findOneAndDelete({ value: token }).exec()
-	await RevokedToken.create({ value: token })
+
+	const revokedTokenExists = await RevokedToken.findOne({ value: token })
+
+	if (!revokedTokenExists) {
+		await RevokedToken.create({ value: token })
+	}
 
 	return
 }

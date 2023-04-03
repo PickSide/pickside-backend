@@ -86,12 +86,12 @@ export const getAccessToken = async (req: Request, res: Response) => {
 }
 
 export const logout = async (req: Request, res: Response) => {
-	const { id: _id } = req.body.data
-	const user = await Account.findOne({ _id })
-	if (!!user) {
-		await user.save()
-	}
-	return
+	const { refreshToken } = req.body.data
+	await revokeToken(refreshToken)
+	return SendResponse(
+		res,
+		Status.Ok,
+	)
 }
 
 function generateAT(claims) {

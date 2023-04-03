@@ -4,7 +4,6 @@ import express from 'express'
 import Routes from './routes'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
-import https from 'https'
 
 const api = express()
 const auth = express()
@@ -14,7 +13,7 @@ config()
 connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))
 
 api
-	.use(cors())
+	.use(cors(corsOptions()))
 	.use(express.json())
 	.use(Routes.apiRoutes)
 	.listen(process.env.API_SERVER_PORT, () =>
@@ -22,9 +21,17 @@ api
 	)
 
 auth
-	.use(cors())
+	.use(cors(corsOptions()))
 	.use(express.json())
 	.use(Routes.authRoutes)
 	.listen(process.env.AUTH_SERVER_PORT, () =>
 		console.log('Connected to Auth server on port', process.env.AUTH_SERVER_PORT),
 	)
+
+function corsOptions() {
+	return {
+		methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
+		origin: 'http://localhost:3000',
+		optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+	}
+}
