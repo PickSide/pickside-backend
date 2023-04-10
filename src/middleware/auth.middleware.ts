@@ -14,7 +14,7 @@ import {
 export function validateAccessToken(req, res, next) {
 	const authHeader = req.headers['authorization']
 	const token = authHeader && authHeader.split(' ')[1]
-
+	console.log(authHeader)
 	if (!!token) {
 		verify(token, secrets['ACCESS_TOKEN_SECRET'], {}, async (err) => {
 			if (err?.name === TokenExpiredError.name) {

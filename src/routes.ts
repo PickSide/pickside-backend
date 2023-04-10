@@ -15,9 +15,9 @@ const apiRoutes = Router()
 const authRoutes = Router()
 
 // Authentication routes used for authentication only
-authRoutes.post('/login', AuthController.authenticate)
-authRoutes.post('/logout', AuthController.logout)
 authRoutes.get('/token', AuthController.getAccessToken)
+authRoutes.post('/login', AuthController.login)
+authRoutes.post('/logout', AuthController.logout)
 
 // PUT
 apiRoutes.put('/activities/:activityId', ActivityController.update)

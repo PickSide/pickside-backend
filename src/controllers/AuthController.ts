@@ -23,33 +23,6 @@ interface TokenClaims extends JwtPayload {
 	username?: string
 }
 
-export const authenticate = async (req: Request, res: Response) => {
-	const { username, password } = req.body.data
-	const user = await Account.findOne({ username }).exec()
-	if (!username || !password || !user) {
-		return SendResponse(res, Status.BadRequest, MessageResponse(DefaultServerResponseMap[Status.BadRequest]))
-	}
-
-	const match = await compare(password, user.password)
-	if (match) {
-		const emailVerified = !!(await VerifiedEmail.findOne({ usernameAssociated: username }).exec())
-		const claims = getTokenClaims(user, emailVerified)
-		const accessToken = generateAT(claims)
-		const refreshToken = generateRT(claims)
-
-		await addToValidTokens(accessToken)
-		await addToValidTokens(refreshToken)
-
-		return SendResponse(res, Status.Ok, {
-			user: omit(user.toObject(), ['password', 'username']),
-			accessToken,
-			refreshToken,
-		})
-	} else {
-		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
-	}
-}
-
 export const getAccessToken = async (req: Request, res: Response) => {
 	const user = req.body.data
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
@@ -85,13 +58,37 @@ export const getAccessToken = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
 }
 
+export const login = async (req: Request, res: Response) => {
+	const { username, password } = req.body.data
+	const user = await Account.findOne({ username }).exec()
+	if (!username || !password || !user) {
+		return SendResponse(res, Status.BadRequest, MessageResponse(DefaultServerResponseMap[Status.BadRequest]))
+	}
+
+	const match = await compare(password, user.password)
+	if (match) {
+		const emailVerified = !!(await VerifiedEmail.findOne({ usernameAssociated: username }).exec())
+		const claims = getTokenClaims(user, emailVerified)
+		const accessToken = generateAT(claims)
+		const refreshToken = generateRT(claims)
+
+		await addToValidTokens(accessToken)
+		await addToValidTokens(refreshToken)
+
+		return SendResponse(res, Status.Ok, {
+			user: omit(user.toObject(), ['password', 'username']),
+			accessToken,
+			refreshToken,
+		})
+	} else {
+		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+	}
+}
+
 export const logout = async (req: Request, res: Response) => {
 	const { refreshToken } = req.body.data
 	await revokeToken(refreshToken)
-	return SendResponse(
-		res,
-		Status.Ok,
-	)
+	return SendResponse(res, Status.Ok)
 }
 
 function generateAT(claims) {
