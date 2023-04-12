@@ -86,9 +86,12 @@ export const login = async (req: Request, res: Response) => {
 }
 
 export const logout = async (req: Request, res: Response) => {
-	const { refreshToken } = req.body.data
-	await revokeToken(refreshToken)
-	return SendResponse(res, Status.Ok)
+	const refreshToken = req.headers['authorization']?.split(' ')[1]
+	if (refreshToken) {
+		await revokeToken(refreshToken)
+		return SendResponse(res, Status.Ok, MessageResponse(DefaultServerResponseMap[Status.Ok]))
+	}
+	return SendResponse(res, Status.BadRequest)
 }
 
 function generateAT(claims) {

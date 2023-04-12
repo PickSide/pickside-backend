@@ -29,10 +29,10 @@ apiRoutes.post('/users/create', validateAccessToken, AccountController.create)
 
 // GET
 apiRoutes.get('/account', AccountController.get)
-apiRoutes.get('/activities', validateAccessToken, ActivityController.get)
+apiRoutes.get('/activities', ActivityController.get)
 apiRoutes.get('/areas', validateAccessToken, AreaController.get)
 apiRoutes.get('/levels', validateAccessToken, LevelController.get)
-apiRoutes.get('/locales', validateAccessToken, LocaleController.get)
-apiRoutes.get('/sports', validateAccessToken, SportController.get)
+apiRoutes.get('/locales', LocaleController.get)
+apiRoutes.get('/sports', SportController.get)
 
 export default { apiRoutes, authRoutes }
