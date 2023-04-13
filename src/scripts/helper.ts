@@ -1,8 +1,4 @@
 import Account from '../models/Account'
-import Area from '../models/Area'
-import Event from '../models/Activity'
-import Locale from '../models/Locale'
-import Sport from '../models/Sport'
 import { Types } from 'mongoose'
 import { hashSync } from 'bcrypt'
 
@@ -24,7 +20,7 @@ export function createAccount(props: AccountProps[]) {
 					refreshToken: [],
 					configs: {
 						defaultSport: 'soccer',
-						darkModeDefault: false,
+						darkModeDefault: true,
 						locationTracking: false,
 					},
 					profile: {
