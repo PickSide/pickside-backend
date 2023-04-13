@@ -2,7 +2,9 @@ import Account from '../models/Account'
 import Area from '../models/Area'
 import Activity from '../models/Activity'
 import Locale from '../models/Locale'
+import RevokedToken from '../models/RevokedToken'
 import Sport from '../models/Sport'
+import ValidToken from '../models/ValidToken'
 import databaseUtils from '../utils/databaseUtils'
 import { connect, Connection, Types } from 'mongoose'
 import { config } from 'dotenv'
@@ -50,7 +52,9 @@ async function initCollections() {
 	await Area.createCollection()
 	await Activity.createCollection()
 	await Locale.createCollection()
+	await RevokedToken.createCollection()
 	await Sport.createCollection()
+	await ValidToken.createCollection()
 
 	console.log('collections initialized')
 }

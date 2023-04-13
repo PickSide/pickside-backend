@@ -1,84 +1,113 @@
-import Account from '../models/Account'
+import Account, { IAccount } from '../models/Account'
+import VerifiedEmail from '../models/VerifiedEmail'
 import { Request, Response } from 'express'
-import { sign, verify } from 'jsonwebtoken'
+import { JwtPayload, JsonWebTokenError, sign, TokenExpiredError, verify } from 'jsonwebtoken'
 import { compare } from 'bcrypt'
-import { getSecrets } from '../utils/secrets'
-import { DefaultServerResponseMap, MessageResponse, SendResponse, Status } from '../utils/responses'
+import {
+	DefaultServerResponseMap,
+	MessageResponse,
+	SendResponse,
+	Status,
+	addToValidTokens,
+	isTokenValid,
+	revokeToken,
+	secrets,
+} from '../utils'
 import { omit, pick } from 'lodash'
 
-export const authenticate = async (req: Request, res: Response) => {
-	const { username, password } = req.body.data
-	if (!username || !password) {
-		return SendResponse(res, Status.BadRequest, MessageResponse(DefaultServerResponseMap[Status.BadRequest]))
-	}
+interface TokenClaims extends JwtPayload {
+	emailVerified?: boolean
+	email?: string
+	firstName?: string
+	lastName?: string
+	username?: string
+}
 
+export const getAccessToken = async (req: Request, res: Response) => {
+	const user = req.body.data
+	const refreshToken = req.headers['authorization']?.split(' ')[1]
+	if (!!refreshToken) {
+		verify(refreshToken, secrets['REFRESH_TOKEN_SECRET'], async (err) => {
+			// if token is expired, invalidate token
+			if (!!err) {
+				if (err.name === TokenExpiredError.name) {
+					await revokeToken(refreshToken)
+					return SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Forbidden]))
+				}
+				if (err.name === JsonWebTokenError.name) {
+					return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+				}
+			}
+		})
+
+		//if token is valid
+		const tokenValid = await isTokenValid(refreshToken)
+		if (tokenValid) {
+			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
+			const claims = getTokenClaims(user, emailVerified)
+			const accessToken = generateAT(claims)
+			return SendResponse(
+				res,
+				Status.Ok,
+				MessageResponse(DefaultServerResponseMap[Status.Ok], {
+					accessToken,
+				}),
+			)
+		}
+	}
+	return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+}
+
+export const login = async (req: Request, res: Response) => {
+	const { username, password } = req.body.data
 	const user = await Account.findOne({ username }).exec()
-	if (!user) {
-		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+	if (!username || !password || !user) {
+		return SendResponse(res, Status.BadRequest, MessageResponse(DefaultServerResponseMap[Status.BadRequest]))
 	}
 
 	const match = await compare(password, user.password)
 	if (match) {
-		const accessToken = generateAT(user.username)
-		const refreshToken = generateRT(user.username)
-		const cookieToken = req.cookies?.token
-		let RT_array = user.refreshTokens
+		const emailVerified = !!(await VerifiedEmail.findOne({ usernameAssociated: username }).exec())
+		const claims = getTokenClaims(user, emailVerified)
+		const accessToken = generateAT(claims)
+		const refreshToken = generateRT(claims)
 
-		if (cookieToken) {
-			RT_array = user.refreshTokens.filter((rt) => rt !== cookieToken)
-		} else {
-			RT_array = []
-		}
+		await addToValidTokens(accessToken)
+		await addToValidTokens(refreshToken)
 
-		user.refreshTokens = [...RT_array, refreshToken]
-		await user.save()
-
-		res.clearCookie('token', { httpOnly: true, sameSite: 'none', secure: true })
-		res.cookie('token', refreshToken, { httpOnly: true, secure: true, sameSite: 'none', maxAge: 24 * 60 * 60 * 1000 })
-		SendResponse(res, Status.Ok, { accessToken, connectedUser: user })
+		return SendResponse(res, Status.Ok, {
+			user: omit(user.toObject(), ['password', 'username']),
+			accessToken,
+			refreshToken,
+		})
 	} else {
-		SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
 	}
-}
-export const logout = async (req: Request, res: Response) => {
-	const { id: _id } = req.body.data
-	const cookieToken = req.cookies
-	const user = await Account.findOne({ _id })
-	if (!!user) {
-		user.refreshTokens = [...user.refreshTokens.filter((token) => token !== cookieToken)]
-		await user.save()
-	}
-	return
-}
-export const getAccessToken = async (req: Request, res: Response) => {
-	const { jwt: refreshToken } = req.cookies
-	if (refreshToken === null) {
-		SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
-	}
-	if (!!(await Account.findOne({ refreshToken: refreshToken }).exec())) {
-		SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Forbidden]))
-	}
-	verify(refreshToken, getSecrets()['REFRESH_TOKEN_SECRET'], (err, user) => {
-		if (err) {
-			SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Forbidden]))
-		} else {
-			const accessToken = generateAT(user.username)
-			SendResponse(
-				res,
-				Status.Forbidden,
-				MessageResponse(DefaultServerResponseMap[Status.Ok], {
-					accessToken,
-					...pick(user, ['id', 'firstName', 'lastName', 'username']),
-				}),
-			)
-		}
-	})
-	return
 }
 
-function generateAT(username) {
-	return sign({ username }, getSecrets()['ACCESS_TOKEN_SECRET'], { expiresIn: '30s' })
+export const logout = async (req: Request, res: Response) => {
+	const refreshToken = req.headers['authorization']?.split(' ')[1]
+	if (refreshToken) {
+		await revokeToken(refreshToken)
+		return SendResponse(res, Status.Ok, MessageResponse(DefaultServerResponseMap[Status.Ok]))
+	}
+	return SendResponse(res, Status.BadRequest)
 }
-function generateRT(username) {
-	return sign({ username }, getSecrets()['REFRESH_TOKEN_SECRET'], { expiresIn: '1d' })
+
+function generateAT(claims) {
+	return sign(claims, secrets['ACCESS_TOKEN_SECRET'], { expiresIn: '1m' })
+}
+
+function generateRT(claims) {
+	return sign(claims, secrets['REFRESH_TOKEN_SECRET'], { expiresIn: '1d' })
+}
+
+function getTokenClaims(data: IAccount, emailVerified: boolean = false): TokenClaims {
+	return {
+		...pick(data, ['email', 'profile.firstName', 'profile.lastName', 'username']),
+		emailVerified,
+		iss: 'http://pickside.com',
+		sub: data.id,
+		//aud: 'http://pickside.com',
+	}
 }

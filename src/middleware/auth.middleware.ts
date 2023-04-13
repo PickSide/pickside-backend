@@ -1,29 +1,34 @@
-import { config } from 'dotenv'
-import { auth, claimCheck, InsufficientScopeError } from 'express-oauth2-jwt-bearer'
+import { verify, TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken'
+import RevokedToken from '../models/RevokedToken'
+import ValidToken from '../models/ValidToken'
+import {
+	DefaultServerResponseMap,
+	MessageResponse,
+	SendResponse,
+	Status,
+	secrets,
+	isTokenValid,
+	revokeToken,
+} from '../utils'
 
-config()
-
-export const validateAccessToken = auth({
-    issuerBaseURL: process.env.AUTH0_ISSUER_BASE_URL,
-    audience: process.env.AUTH0_IDENTIFIER,
-})
-
-// export const checkRequiredPermissions = (requiredPermissions) => {
-//     return (req, res, next) => {
-//         const permissionCheck = claimCheck((payload) => {
-//             const permissions = payload.permissions || [];
-
-//             const hasPermissions = requiredPermissions.every((requiredPermission) =>
-//                 permissions.includes(requiredPermission)
-//             );
-
-//             if (!hasPermissions) {
-//                 throw new InsufficientScopeError();
-//             }
-
-//             return hasPermissions;
-//         });
-
-//         permissionCheck(req, res, next);
-//     };
-// };
+export function validateAccessToken(req, res, next) {
+	const authHeader = req.headers['authorization']
+	const token = authHeader && authHeader.split(' ')[1]
+	if (!!token) {
+		verify(token, secrets['ACCESS_TOKEN_SECRET'], {}, async (err) => {
+			if (err?.name === TokenExpiredError.name) {
+				await revokeToken(token)
+				return SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Forbidden]))
+			}
+			if (err?.name === JsonWebTokenError.name) {
+				return SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+			}
+			if (!isTokenValid(token)) {
+				return SendResponse(res, Status.Forbidden, MessageResponse('Token not valid.'))
+			}
+			next()
+		})
+	} else {
+		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+	}
+}

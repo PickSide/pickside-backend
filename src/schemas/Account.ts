@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose'
+import { compare } from 'bcrypt'
 
 export const AccountSchema = new Schema(
 	{

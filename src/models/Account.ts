@@ -6,7 +6,6 @@ export interface IAccount extends Document {
 	email: string
 	username: string
 	password: string
-	refreshTokens: string[]
 	configs: IAccountConfigs
 	profile: IAccountProfile
 }

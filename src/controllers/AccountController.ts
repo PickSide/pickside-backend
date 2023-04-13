@@ -1,19 +1,22 @@
 import Account from '../models/Account'
 import { Request, Response } from 'express'
-import { MessageResponse, SendResponse, Status } from '../utils/responses'
+import { DefaultServerResponseMap, MessageResponse, SendResponse, Status } from '../utils/responses'
 import { omit } from 'lodash'
 import { hashSync } from 'bcrypt'
 
 export const get = async (req: Request, res: Response) => {
-	const users = await Account.find()
-	return SendResponse(res, Status.Ok, { results: users })
+	const user = await Account.find().exec()
+	if (!user) {
+		return SendResponse(res, Status.NotFound, MessageResponse(DefaultServerResponseMap[Status.NotFound]))
+	}
+	return SendResponse(res, Status.Ok, { results: omit(user, ['password']) })
 }
 export const create = async (req: Request, res: Response) => {
 	const user = req.body.data
 	const pwd = req.body.data.password
 
 	if (!!(await Account.findOne({ $or: [{ email: user.email }, { username: user.username }] }))) {
-		SendResponse(res, Status.Conflict, MessageResponse('Username or email already exists.'))
+		return SendResponse(res, Status.Conflict, MessageResponse('Username or email already exists.'))
 	}
 	const account = await Account.create({
 		email: user.email,
@@ -28,7 +31,11 @@ export const create = async (req: Request, res: Response) => {
 			locationTracking: false,
 		},
 	})
-	SendResponse(res, Status.Ok, MessageResponse('Account created successfully', { payload: { ...account } }))
+	return SendResponse(
+		res,
+		Status.Ok,
+		MessageResponse('Account created successfully', { payload: { ...omit(account, ['password']) } }),
+	)
 }
 export const update = async (req: Request, res: Response) => {}
 export const remove = async (req: Request, res: Response) => {}
