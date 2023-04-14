@@ -2,10 +2,12 @@ import { Schema } from 'mongoose'
 
 export const AreaSchema = new Schema(
 	{
-		name: { type: String, require: true },
-		centerCoordinates: { type: Object, require: true },
 		country: { type: String, require: true },
 		state: { type: String, require: false },
+		city: { type: String, require: true },
+		district: { type: Array<String>, require: true },
+		districtCode: { type: String, require: true },
+		coords: { type: Array<Number>, require: true },
 	},
 	{
 		timestamps: true,

@@ -8,7 +8,7 @@ import ValidToken from '../models/ValidToken'
 import databaseUtils from '../utils/databaseUtils'
 import { connect, Connection, Types } from 'mongoose'
 import { config } from 'dotenv'
-import { createAccount } from './helper'
+import { createAccount, getAreas } from './helper'
 
 async function run() {
 	config()
@@ -77,6 +77,18 @@ async function populateCollections() {
 		{ firstName: 'Karim', lastName: 'Abou-Khalil', username: 'karim' },
 		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo' },
 	])
+
+	await getAreas().forEach(({ country, state, city, district, districtCode, coords }) => {
+		Area.create({
+			id: new Types.ObjectId(),
+			country,
+			state,
+			city,
+			district,
+			districtCode,
+			coords
+		})
+	})
 
 	await Activity.insertMany([
 		{
