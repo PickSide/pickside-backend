@@ -126,39 +126,6 @@ async function populateCollections() {
 		},
 	])
 
-	await Area.insertMany([
-		{
-			id: new Types.ObjectId(),
-			name: 'montreal',
-			country: 'canada',
-			state: 'quebec',
-			centerCoordinates: {
-				lat: 45.5590971,
-				lng: -73.5673919,
-			},
-		},
-		{
-			id: new Types.ObjectId(),
-			name: 'laval',
-			country: 'canada',
-			state: 'quebec',
-			centerCoordinates: {
-				lat: 45.6059216,
-				lng: -73.7795486,
-			},
-		},
-		{
-			id: new Types.ObjectId(),
-			name: 'new york',
-			country: 'usa',
-			state: 'nyc',
-			centerCoordinates: {
-				lat: 42.6542397,
-				lng: -80.3765374,
-			},
-		},
-	])
-
 	await Locale.insertMany([
 		{
 			id: new Types.ObjectId(),
