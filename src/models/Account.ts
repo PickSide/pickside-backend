@@ -12,6 +12,7 @@ export interface IAccount extends Document {
 
 export interface IAccountConfigs extends Document {
 	defaultSport: string
+	defaultLanguage: string
 	darkModeDefault: boolean
 	locationTracking: boolean
 }

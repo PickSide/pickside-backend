@@ -8,6 +8,7 @@ export const AccountSchema = new Schema(
 		password: { type: String, require: true },
 		configs: {
 			defaultSport: { type: String, default: 'soccer', require: false },
+			defaultLanguage: { type: String, default: 'fr', require: false },
 			darkModeDefault: { type: Boolean, default: false, require: false },
 			locationTracking: { type: Boolean, default: false, require: false },
 		},

@@ -8,7 +8,7 @@ import ValidToken from '../models/ValidToken'
 import databaseUtils from '../utils/databaseUtils'
 import { connect, Connection, Types } from 'mongoose'
 import { config } from 'dotenv'
-import { createAccount } from './helper'
+import { createAccount, getAreas } from './helper'
 
 async function run() {
 	config()
@@ -78,6 +78,18 @@ async function populateCollections() {
 		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo' },
 	])
 
+	await getAreas().forEach(({ country, state, city, district, districtCode, coords }) => {
+		Area.create({
+			id: new Types.ObjectId(),
+			country,
+			state,
+			city,
+			district,
+			districtCode,
+			coords
+		})
+	})
+
 	await Activity.insertMany([
 		{
 			id: new Types.ObjectId(),
@@ -111,39 +123,6 @@ async function populateCollections() {
 			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
 			numberOfRegisteredPlayers: 7,
 			maxPlayersCapacity: 14,
-		},
-	])
-
-	await Area.insertMany([
-		{
-			id: new Types.ObjectId(),
-			name: 'montreal',
-			country: 'canada',
-			state: 'quebec',
-			centerCoordinates: {
-				lat: 45.5590971,
-				lng: -73.5673919,
-			},
-		},
-		{
-			id: new Types.ObjectId(),
-			name: 'laval',
-			country: 'canada',
-			state: 'quebec',
-			centerCoordinates: {
-				lat: 45.6059216,
-				lng: -73.7795486,
-			},
-		},
-		{
-			id: new Types.ObjectId(),
-			name: 'new york',
-			country: 'usa',
-			state: 'nyc',
-			centerCoordinates: {
-				lat: 42.6542397,
-				lng: -80.3765374,
-			},
 		},
 	])
 
