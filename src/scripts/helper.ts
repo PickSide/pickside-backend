@@ -20,6 +20,7 @@ export function createAccount(props: AccountProps[]) {
 					refreshToken: [],
 					configs: {
 						defaultSport: 'soccer',
+						defaultLanguage: 'fr',
 						darkModeDefault: true,
 						locationTracking: false,
 					},
