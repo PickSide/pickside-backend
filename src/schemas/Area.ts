@@ -7,7 +7,7 @@ export const AreaSchema = new Schema(
 		city: { type: String, require: true },
 		district: { type: Array<String>, require: true },
 		districtCode: { type: String, require: true },
-		coords: { type: Array<Number>, require: true },
+		coords: { type: Object, require: true },
 	},
 	{
 		timestamps: true,
