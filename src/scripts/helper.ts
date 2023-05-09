@@ -1,4 +1,5 @@
 import Account from '../models/Account'
+import Playable, { IPlayable } from '../models/Playable'
 import { Types } from 'mongoose'
 import { hashSync } from 'bcrypt'
 
@@ -7,6 +8,17 @@ interface AccountProps {
 	lastName: string
 	username: string
 }
+
+interface PlayablesProps {
+	districtCode: string
+	type: string
+	coords: any
+	fieldName: string
+	schedule: any
+	available: boolean
+	isMultisportZone: boolean
+}
+
 
 export function createAccount(props: AccountProps[]) {
 	return Promise.all(
@@ -27,11 +39,11 @@ export function createAccount(props: AccountProps[]) {
 					profile: {
 						firstName,
 						lastName,
-						level: rand(5),
+						level: _rand(5),
 						localeRegion: 'montreal',
-						matchOrganized: rand(400),
-						matchPlayed: rand(50),
-						reliability: rand(5),
+						matchOrganized: _rand(400),
+						matchPlayed: _rand(50),
+						reliability: _rand(5),
 						sexe: 'male',
 					},
 				}),
@@ -39,7 +51,23 @@ export function createAccount(props: AccountProps[]) {
 	)
 }
 
-const _toCoordsObj = (lat, lng) => ({ lat, lng })
+export function createPlayables(props: PlayablesProps[]) {
+	return Promise.all(
+		props.map(
+			async ({ available, districtCode, coords, type, fieldName, schedule, isMultisportZone }) =>
+				await Playable.create({
+					id: new Types.ObjectId(),
+					districtCode,
+					available,
+					coords,
+					fieldName,
+					schedule,
+					type,
+					isMultisportZone
+				}),
+		),
+	)
+}
 
 export function getAreas() {
 	return [
@@ -58,18 +86,37 @@ export function getAreas() {
 		{ country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Mt-Royal'], districtCode: 'mtr', coords: _toCoordsObj(45.5071397, -73.6738939) },
 		{ country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Saint-Laurent'], districtCode: 'sl', coords: _toCoordsObj(45.4966238, -73.753911) },
 		{ country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Cote-des-Neiges', 'Hampstead', 'Notre-Dame-de-Grace'], districtCode: 'ndg', coords: _toCoordsObj(45.4673574, -73.6479913) },
-		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Fabreville'], districtCode: 'fbv', coords: {} },
-		{ country: 'Cana)a', state: 'Quebec', city: 'Laval', district: ['Duvernay'], districtCode: 'duv', coords: {} },
-		{ country: 'Cana)a', state: 'Quebec', city: 'Laval', district: ['Vimont'], districtCode: 'vim', coords: {} },
-		{ country: 'Cana)a', state: 'Quebec', city: 'Laval', district: ['Chomedey'], districtCode: 'chd', coords: {} },
-		{ country: 'Cana)a', state: 'Quebec', city: 'Laval', district: ['Auteuil'], districtCode: 'aut', coords: {} },
-		{ country: 'Cana)a', state: 'Quebec', city: 'Laval', district: ['Pont-Viau'], districtCode: 'pv', coords: {} },
-		{ country: 'Cana)a', state: 'Quebec', city: 'Laval', district: ['Laval-des-rapides'], districtCode: 'ldr', coords: {} },
-		// { country: 'C)nada', state: 'Quebec', city: 'Terrebone' },
-		// { country: 'Canada', state: 'Quebec', city: 'Longueuil' },
+		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Fabreville'], districtCode: 'fbv', coords: _toCoordsObj(45.5746574, -73.9735) },
+		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Duvernay'], districtCode: 'duv', coords: _toCoordsObj(45.5953843, -73.6799281) },
+		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Vimont'], districtCode: 'vim', coords: _toCoordsObj(45.6063861, -73.7456115) },
+		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Chomedey'], districtCode: 'chd', coords: _toCoordsObj(45.5383503, -73.7375266) },
+		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Auteuil'], districtCode: 'aut', coords: _toCoordsObj(45.6304957, -73.7627909) },
+		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Pont-Viau'], districtCode: 'pv', coords: _toCoordsObj(45.5709566, -73.6957849) },
+		{ country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Laval-des-rapides'], districtCode: 'ldr', coords: _toCoordsObj(45.5560382, -73.7275401) },
 	]
 }
 
-function rand(max) {
+export function getPlayables() {
+	return [
+
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
+	]
+}
+
+function _rand(max) {
 	return Math.floor(Math.random() * max) + 1
+}
+
+export function _toCoordsObj(lat, lng) {
+	return { lat, lng }
 }

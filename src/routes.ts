@@ -6,6 +6,8 @@ import {
 	AuthController,
 	LevelController,
 	LocaleController,
+	PlayableController,
+	SettingsTemplateController,
 	SessionController,
 	SportController,
 } from './controllers'
@@ -36,6 +38,8 @@ apiRoutes.get('/areas/cities', AreaController.getByCity)
 apiRoutes.get('/areas/district/:code', AreaController.getByDistrictCode)
 apiRoutes.get('/levels', validateAccessToken, LevelController.get)
 apiRoutes.get('/locales', LocaleController.get)
+apiRoutes.get('/playables', PlayableController.get)
 apiRoutes.get('/sports', SportController.get)
+apiRoutes.get('/settings', SettingsTemplateController.get)
 
 export default { apiRoutes, authRoutes }

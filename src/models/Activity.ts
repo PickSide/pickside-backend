@@ -3,14 +3,13 @@ import { ActivitySchema } from '../schemas'
 
 export interface IActivity extends Document {
 	title: string
+	description: string
 	sport: string
 	organiser: string
 	participants: any[]
-	price: number
-	levelRequired: number
-	numberOfRegisteredPlayers: number
-	maxPlayersCapacity: number
-	location: object
+	location: any
+	settings: any
+	time: Date
 }
 
 export default model<IActivity>('Activity', ActivitySchema)

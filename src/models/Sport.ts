@@ -4,6 +4,7 @@ import { SportSchema } from '../schemas'
 export interface ISport extends Document {
 	value: string
 	description: string
+	featureAvailable: boolean
 }
 
 export default model<ISport>('Sport', SportSchema)

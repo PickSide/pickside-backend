@@ -3,8 +3,8 @@ import { Request, Response } from 'express'
 import { MessageResponse, SendResponse, Status } from '../utils/responses'
 
 export const get = async (req: Request, res: Response) => {
-	const activitys = await Activity.find()
-	return SendResponse(res, Status.Ok, { results: activitys })
+	const activities = await Activity.find()
+	return SendResponse(res, Status.Ok, { results: activities })
 }
 export const create = async (req: Request, res: Response) => {
 	const activity = await Activity.create({ ...req.body.data })

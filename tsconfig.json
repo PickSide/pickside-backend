@@ -10,19 +10,39 @@
 		"moduleResolution": "node",
 		"noImplicitAny": false,
 		"paths": {
-			"configs": ["src/config/*"],
-			"controllers": ["src/controllers/*"],
-			"middleware": ["src/middleware/*"],
-			"models": ["src/models/*"],
-			"utils": ["src/utils/*"],
-			"schemas": ["../schemas/*"],
-			"scripts": ["src/scripts/*"]
+			"configs": [
+				"src/config/*"
+			],
+			"controllers": [
+				"src/controllers/*"
+			],
+			"middleware": [
+				"src/middleware/*"
+			],
+			"models": [
+				"src/models/*"
+			],
+			"utils": [
+				"src/utils/*"
+			],
+			"schemas": [
+				"../schemas/*"
+			],
+			"scripts": [
+				"src/scripts/*"
+			]
 		},
 		"outDir": "dist",
 		"sourceMap": true,
 		"strict": true,
 		"target": "es6"
 	},
-	"exclude": ["node_modules", "build", "scripts"],
-	"include": ["src/**/*.ts"]
+	"exclude": [
+		"node_modules",
+		"build",
+		"scripts"
+	],
+	"include": [
+		"src/**/*.ts"
+	]
 }

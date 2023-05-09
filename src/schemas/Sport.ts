@@ -4,6 +4,7 @@ export const SportSchema = new Schema(
 	{
 		value: { type: String, require: true },
 		description: { type: String, require: true },
+		featureAvailable: { type: Boolean, require: true }
 	},
 	{
 		timestamps: true,
