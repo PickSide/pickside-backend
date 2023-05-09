@@ -2,13 +2,15 @@ import Account from '../models/Account'
 import Area from '../models/Area'
 import Activity from '../models/Activity'
 import Locale from '../models/Locale'
+import Playable from '../models/Playable'
 import RevokedToken from '../models/RevokedToken'
 import Sport from '../models/Sport'
+import SettingsTemplate from '../models/SettingsTemplate'
 import ValidToken from '../models/ValidToken'
 import databaseUtils from '../utils/databaseUtils'
 import { connect, Connection, Types } from 'mongoose'
 import { config } from 'dotenv'
-import { createAccount, getAreas } from './helper'
+import { createAccount, createPlayables, getAreas, _toCoordsObj } from './helper'
 
 async function run() {
 	config()
@@ -52,7 +54,9 @@ async function initCollections() {
 	await Area.createCollection()
 	await Activity.createCollection()
 	await Locale.createCollection()
+	await Playable.createCollection()
 	await RevokedToken.createCollection()
+	await SettingsTemplate.createCollection()
 	await Sport.createCollection()
 	await ValidToken.createCollection()
 
@@ -78,6 +82,19 @@ async function populateCollections() {
 		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo' },
 	])
 
+	const playables = await createPlayables([
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.572681, -73.594074), fieldName: 'Dôme Hébert', schedule: {}, available: true, isMultisportZone: false },
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.572686, -73.594151), fieldName: 'Stade Hébert', schedule: {}, available: true, isMultisportZone: false },
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.5844653, -73.6085511), fieldName: 'Terrain de soccer du parc Coubertin', schedule: {}, available: true, isMultisportZone: false },
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.5884481, -73.5707134), fieldName: 'Terrain de soccer du parc Giuseppe-Garibaldi', schedule: {}, available: true, isMultisportZone: false },
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.578245, -73.604973), fieldName: 'Terrain de soccer du parc Luigi-Pirandello', schedule: {}, available: true, isMultisportZone: false },
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.5872102, -73.608256), fieldName: 'Terrain de soccer du parc Pie-XII', schedule: {}, available: true, isMultisportZone: false },
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.5971803, -73.5985679), fieldName: 'Terrains de soccer du parc Ferland', schedule: {}, available: true, isMultisportZone: false },
+		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.572575, -73.591777), fieldName: 'Terrains de soccer du parc Hébert', schedule: {}, available: true, isMultisportZone: false },
+	])
+
+	const templates = await SettingsTemplate.insertMany({})
+
 	await getAreas().forEach(({ country, state, city, district, districtCode, coords }) => {
 		Area.create({
 			id: new Types.ObjectId(),
@@ -94,68 +111,67 @@ async function populateCollections() {
 		{
 			id: new Types.ObjectId(),
 			title: 'Soccer game 5v5',
-			type: 'soccer',
-			organiser: (await accounts[0]).id,
-			levelRequired: 4,
-			location: { lat: 45.5753494, lng: -73.6467868 },
-			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5]],
-			numberOfRegisteredPlayers: 5,
-			maxPlayersCapacity: 10,
+			description: 'A 5v5 aside soccer game',
+			organiser: (await accounts[0]).username,
+			location: playables[0].id,
+			participants: [accounts[1].username, accounts[2].username, accounts[3].username, accounts[4].username, accounts[5].username],
+			settings: { ...templates[0]['SOCCER'] },
+			date: Date.now()
 		},
 		{
 			id: new Types.ObjectId(),
 			title: 'Bball game 5v5',
+			description: 'A 5v5 aside basketball game',
 			type: 'basketball',
-			organiser: (await accounts[1]).id,
-			levelRequired: 2,
-			location: { lat: 45.5586107, lng: -73.6863638 },
-			participants: [accounts[1], accounts[2], accounts[3]],
-			numberOfRegisteredPlayers: 3,
-			maxPlayersCapacity: 10,
+			organiser: (await accounts[1]).username,
+			location: playables[1].id,
+			participants: [accounts[1].username, accounts[2].username, accounts[3].username],
+			settings: { ...templates[0]['SOCCER'] },
+			date: Date.now()
 		},
 		{
 			id: new Types.ObjectId(),
 			title: 'Soccer game 7v7',
+			description: 'A 7v7 aside soccer game',
 			type: 'soccer',
-			organiser: (await accounts[1]).id,
-			levelRequired: 4,
-			location: { lat: 45.5348851, lng: -73.6469004 },
-			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
-			numberOfRegisteredPlayers: 7,
-			maxPlayersCapacity: 14,
+			organiser: (await accounts[1]).username,
+			location: playables[2].id,
+			participants: [accounts[1].username, accounts[2].username, accounts[3].username, accounts[4].username, accounts[5].username, accounts[6].username, accounts[7].username],
+			settings: { ...templates[0]['SOCCER'] },
+			date: Date.now()
 		},
 		{
 			id: new Types.ObjectId(),
 			title: 'Soccer game 7v7',
+			description: 'A 7v7 aside soccer game',
 			type: 'soccer',
-			organiser: (await accounts[1]).id,
-			levelRequired: 4,
-			location: { lat: 45.5348851, lng: -73.6469004 },
-			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
-			numberOfRegisteredPlayers: 7,
-			maxPlayersCapacity: 14,
+			organiser: (await accounts[1]).username,
+			location: playables[3].id,
+			participants: [accounts[1], accounts[2].username, accounts[3].username, accounts[4].username, accounts[5].username, accounts[6].username, accounts[7].username],
+			settings: { ...templates[0]['SOCCER'] },
+			date: Date.now()
 		},
 		{
 			id: new Types.ObjectId(),
 			title: 'Soccer game 7v7',
+			description: 'A 7v7 aside soccer game',
 			type: 'soccer',
-			organiser: (await accounts[1]).id,
-			levelRequired: 4,
-			location: { lat: 45.5348851, lng: -73.6469004 },
+			organiser: (await accounts[1]).username,
+			location: playables[4].id,
 			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
-			numberOfRegisteredPlayers: 7,
-			maxPlayersCapacity: 14,
+			settings: { ...templates[0]['SOCCER'] },
+			date: Date.now()
 		},
 		{
 			id: new Types.ObjectId(),
 			title: 'Soccer game 7v7',
+			description: 'A 7v7 aside soccer game',
 			type: 'soccer',
-			organiser: (await accounts[1]).id,
-			levelRequired: 4,
-			location: { lat: 45.5348851, lng: -73.6469004 },
+			organiser: (await accounts[1]).username,
+			location: playables[5].id,
 			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
-			numberOfRegisteredPlayers: 7,
-			maxPlayersCapacity: 14,
+			settings: { ...templates[0]['SOCCER'] },
+			date: Date.now()
 		},
 	])
 
@@ -169,26 +185,31 @@ async function populateCollections() {
 		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
 	])
 
+
 	await Sport.insertMany([
 		{
 			id: new Types.ObjectId(),
 			value: 'afootball',
 			description: 'American Football',
+			featureAvailable: false,
 		},
 		{
 			id: new Types.ObjectId(),
 			value: 'basketball',
 			description: 'Basketball',
+			featureAvailable: false,
 		},
 		{
 			id: new Types.ObjectId(),
 			value: 'soccer',
 			description: 'Soccer',
+			featureAvailable: true,
 		},
 		{
 			id: new Types.ObjectId(),
 			value: 'tennis',
 			description: 'Tennis',
+			featureAvailable: false,
 		},
 	])
 

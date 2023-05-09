@@ -3,14 +3,13 @@ import { Schema, Types } from 'mongoose'
 export const ActivitySchema = new Schema(
 	{
 		title: { type: String, require: true },
+		description: { type: String, require: true },
 		sport: { type: String, require: true },
-		organiser: { type: Types.ObjectId, ref: 'User', require: true },
-		participants: [{ type: Types.ObjectId, ref: 'User', require: false }],
-		price: { type: Number, require: true },
-		levelRequired: { type: Number, require: true },
-		numberOfRegisteredPlayers: { type: Number, require: true },
-		maxPlayersCapacity: { type: Number, require: true },
-		location: { type: Object, require: true },
+		organiser: { type: String, require: true },
+		participants: [{ type: String, require: false }],
+		location: { type: Types.ObjectId, ref: 'Playable', require: true },
+		settings: { type: Object, require: true },
+		time: { type: Date, require: true }
 	},
 	{
 		timestamps: true,
