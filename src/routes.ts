@@ -27,7 +27,7 @@ apiRoutes.put('/activities/:activityId', ActivityController.update)
 // POST
 apiRoutes.post('/activities', validateAccessToken, ActivityController.create)
 apiRoutes.post('/session/create', validateAccessToken, SessionController.create)
-apiRoutes.post('/users/create', validateAccessToken, AccountController.create)
+apiRoutes.post('/account/create', AccountController.create)
 
 // GET
 apiRoutes.get('/account', AccountController.get)

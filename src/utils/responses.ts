@@ -1,3 +1,4 @@
+import { timeStamp } from 'console'
 import { Response } from 'express'
 
 export enum Status {
@@ -54,7 +55,13 @@ export const DefaultServerResponseMap = {
 	511: `Network authentication is required.`,
 }
 
-export function SendResponse(res: Response, statusCode?: Status, json?: any) {
+export interface MessageReponseProps {
+	message: string
+	status: any
+	timeStamp: Date
+}
+
+export function SendResponse(res: Response, statusCode?: Status, msgResponse?: any) {
 	if (!res) {
 		return
 	}
@@ -62,15 +69,41 @@ export function SendResponse(res: Response, statusCode?: Status, json?: any) {
 	let response = res
 
 	if (statusCode) response = response.status(statusCode)
-	if (json) response = response.json(json)
+	if (msgResponse) response = response.json({
+		...msgResponse,
+		timeStamp: Date.now()
+	})
 
 	return response
 }
+export const AccountCreatedSuccess = {
+	message: 'Account created successfully',
+}
 
-export function MessageResponse(msg: string, extra?: any) {
-	return {
-		message: msg,
-		timeStamp: Date.now(),
-		...extra,
-	}
+export const ActivityCreatedSuccess = {
+	message: 'Activity created successfully',
+}
+
+export const ParticipantAlreadyRegistered = {
+	message: 'Already registered to this activity',
+}
+
+export const ParticipantSuccessfullyRegistered = {
+	message: 'Successfully registered to activity',
+}
+
+export const InvalidToken = {
+	message: 'Invalid token',
+}
+
+export const UserAlreadyExists = {
+	message: 'Username or email already in use',
+}
+
+export const WrongCredentials = {
+	message: 'Username or password is incorrect',
+}
+
+export const DeleteSuccessfully = {
+	message: 'Delete successfully',
 }

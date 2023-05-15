@@ -1,7 +1,7 @@
 import SettingsTemplate from '../models/SettingsTemplate'
 import { sign } from 'jsonwebtoken'
 import { Request, Response } from 'express'
-import { MessageResponse, SendResponse, Status } from '../utils/responses'
+import { SendResponse, Status } from '../utils/responses'
 import { secrets } from '../utils/secrets'
 
 export const get = async (req: Request, res: Response) => {

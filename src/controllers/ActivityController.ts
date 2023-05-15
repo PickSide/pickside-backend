@@ -1,6 +1,6 @@
 import Activity from '../models/Activity'
 import { Request, Response } from 'express'
-import { MessageResponse, SendResponse, Status } from '../utils/responses'
+import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
 
 export const get = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
@@ -11,7 +11,7 @@ export const create = async (req: Request, res: Response) => {
 	return SendResponse(
 		res,
 		Status.Created,
-		MessageResponse('Activity Created successfully', { response: { id: activity.id }, status: 'Created' }),
+		{ ...ActivityCreatedSuccess, response: { id: activity.id }, status: 'Created' },
 	)
 }
 export const update = async (req: Request, res: Response) => {
@@ -23,7 +23,7 @@ export const update = async (req: Request, res: Response) => {
 		.then((response) => response?.participants)
 
 	if (participants?.includes(userId)) {
-		return SendResponse(res, Status.Conflict, MessageResponse('Participant is already registered'))
+		return SendResponse(res, Status.Conflict, ParticipantAlreadyRegistered)
 	}
 
 	participants?.push(userId)
@@ -33,9 +33,7 @@ export const update = async (req: Request, res: Response) => {
 	return SendResponse(
 		res,
 		Status.Ok,
-		MessageResponse('Participant registered', { response: updated, status: 'Registered' }),
+		{ ...ParticipantSuccessfullyRegistered, response: updated, status: 'Registered' },
 	)
 }
-export const remove = async (req: Request, res: Response) => {
-	return SendResponse(res, Status.NoContent, MessageResponse('Deleted successfully'))
-}
+export const remove = async (req: Request, res: Response) => { }

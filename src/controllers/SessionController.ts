@@ -1,7 +1,7 @@
 import Session from '../models/Session'
 import { sign } from 'jsonwebtoken'
 import { Request, Response } from 'express'
-import { MessageResponse, SendResponse, Status } from '../utils/responses'
+import { SendResponse, Status } from '../utils/responses'
 import { secrets } from '../utils/secrets'
 
 interface SessionProps {
@@ -12,7 +12,7 @@ interface SessionProps {
 
 export const SESSION_TTL = Math.floor(Date.now() / 1000) + 60 * 60
 
-export const get = async (req: Request, res: Response) => {}
+export const get = async (req: Request, res: Response) => { }
 export const create = async (req: Request, res: Response) => {
 	const data = req.body.data
 	return createSession(data)

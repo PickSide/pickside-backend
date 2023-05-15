@@ -5,7 +5,6 @@ import { JwtPayload, JsonWebTokenError, sign, TokenExpiredError, verify } from '
 import { compare } from 'bcrypt'
 import {
 	DefaultServerResponseMap,
-	MessageResponse,
 	SendResponse,
 	Status,
 	addToValidTokens,
@@ -32,10 +31,10 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			if (!!err) {
 				if (err.name === TokenExpiredError.name) {
 					await revokeToken(refreshToken)
-					return SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Forbidden]))
+					return SendResponse(res, Status.Forbidden, DefaultServerResponseMap[Status.Forbidden])
 				}
 				if (err.name === JsonWebTokenError.name) {
-					return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+					return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
 				}
 			}
 		})
@@ -49,20 +48,20 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			return SendResponse(
 				res,
 				Status.Ok,
-				MessageResponse(DefaultServerResponseMap[Status.Ok], {
+				{
 					accessToken,
-				}),
+				},
 			)
 		}
 	}
-	return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+	return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
 }
 
 export const login = async (req: Request, res: Response) => {
 	const { username, password } = req.body.data
 	const user = await Account.findOne({ username }).exec()
 	if (!username || !password || !user) {
-		return SendResponse(res, Status.BadRequest, MessageResponse(DefaultServerResponseMap[Status.BadRequest]))
+		return SendResponse(res, Status.BadRequest, DefaultServerResponseMap[Status.BadRequest])
 	}
 
 	const match = await compare(password, user.password)
@@ -81,7 +80,7 @@ export const login = async (req: Request, res: Response) => {
 			refreshToken,
 		})
 	} else {
-		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+		return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
 	}
 }
 
@@ -89,7 +88,7 @@ export const logout = async (req: Request, res: Response) => {
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
 	if (refreshToken) {
 		await revokeToken(refreshToken)
-		return SendResponse(res, Status.Ok, MessageResponse(DefaultServerResponseMap[Status.Ok]))
+		return SendResponse(res, Status.Ok, DefaultServerResponseMap[Status.Ok])
 	}
 	return SendResponse(res, Status.BadRequest)
 }

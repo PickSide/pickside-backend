@@ -1,6 +1,6 @@
 import Level from '../models/Level'
 import { Request, Response } from 'express'
-import { MessageResponse, SendResponse, Status } from '../utils/responses'
+import { SendResponse, Status } from '../utils/responses'
 
 export const get = async (req: Request, res: Response) => {
 	// Not implemented

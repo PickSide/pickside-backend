@@ -1,9 +1,7 @@
 import { verify, TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken'
-import RevokedToken from '../models/RevokedToken'
-import ValidToken from '../models/ValidToken'
 import {
+	InvalidToken,
 	DefaultServerResponseMap,
-	MessageResponse,
 	SendResponse,
 	Status,
 	secrets,
@@ -18,17 +16,17 @@ export function validateAccessToken(req, res, next) {
 		verify(token, secrets['ACCESS_TOKEN_SECRET'], {}, async (err) => {
 			if (err?.name === TokenExpiredError.name) {
 				await revokeToken(token)
-				return SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Forbidden]))
+				return SendResponse(res, Status.Forbidden, DefaultServerResponseMap[Status.Forbidden])
 			}
 			if (err?.name === JsonWebTokenError.name) {
-				return SendResponse(res, Status.Forbidden, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+				return SendResponse(res, Status.Forbidden, DefaultServerResponseMap[Status.Unauthorized])
 			}
 			if (!isTokenValid(token)) {
-				return SendResponse(res, Status.Forbidden, MessageResponse('Token not valid.'))
+				return SendResponse(res, Status.Forbidden, InvalidToken)
 			}
 			next()
 		})
 	} else {
-		return SendResponse(res, Status.Unauthorized, MessageResponse(DefaultServerResponseMap[Status.Unauthorized]))
+		return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
 	}
 }
