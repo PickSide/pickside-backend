@@ -190,25 +190,30 @@ async function populateCollections() {
 		{
 			id: new Types.ObjectId(),
 			value: 'afootball',
-			description: 'American Football',
+			name: 'American Football',
 			featureAvailable: false,
 		},
 		{
 			id: new Types.ObjectId(),
 			value: 'basketball',
-			description: 'Basketball',
+			name: 'Basketball',
 			featureAvailable: false,
 		},
 		{
 			id: new Types.ObjectId(),
 			value: 'soccer',
-			description: 'Soccer',
+			name: 'Soccer',
 			featureAvailable: true,
+			modes: [
+				{ value: '7v7', name: '7 aside', defaultMaxPlayers: 14 },
+				{ value: '8v8', name: '8 aside', defaultMaxPlayers: 16 },
+				{ value: '11v11', name: '11 aside', defaultMaxPlayers: 22 },
+			]
 		},
 		{
 			id: new Types.ObjectId(),
 			value: 'tennis',
-			description: 'Tennis',
+			name: 'Tennis',
 			featureAvailable: false,
 		},
 	])

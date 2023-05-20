@@ -3,8 +3,15 @@ import { Schema } from 'mongoose'
 export const SportSchema = new Schema(
 	{
 		value: { type: String, require: true },
-		description: { type: String, require: true },
-		featureAvailable: { type: Boolean, require: true }
+		name: { type: String, require: true },
+		featureAvailable: { type: Boolean, require: true },
+		modes: [{
+			value: { type: String, require: true },
+			name: { type: String, require: true },
+			description: { type: String, require: false },
+			defaultMaxPlayers: { type: Number, require: true },
+		}]
+
 	},
 	{
 		timestamps: true,
