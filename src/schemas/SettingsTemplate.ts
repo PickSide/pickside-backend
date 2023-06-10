@@ -7,7 +7,6 @@ const SoccerSettingsTemplate = {
     pricePp: { type: Number, require: false, default: 0 },
     maxPlayers: { type: Number, require: false, default: 22 },
     equipments: [{ type: String, require: false, default: [''] }],
-    matchMode: { type: Number, require: false, default: 11 },
     level: { type: Number, require: false, default: 0 },
     clothingColor: { type: [String], require: false, default: ['red', 'blue'] },
     playTime: { type: Number, require: false, default: 60 },

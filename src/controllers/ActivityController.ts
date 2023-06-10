@@ -7,12 +7,14 @@ export const get = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Ok, { results: activities })
 }
 export const create = async (req: Request, res: Response) => {
-	const activity = await Activity.create({ ...req.body.data })
-	return SendResponse(
-		res,
-		Status.Created,
-		{ ...ActivityCreatedSuccess, response: { id: activity.id }, status: 'Created' },
-	)
+	console.log(req.body.data)
+	// const activity = await Activity.create({ ...req.body.data })
+
+	// return SendResponse(
+	// 	res,
+	// 	Status.Created,
+	// 	{ ...ActivityCreatedSuccess, response: { activity }, status: 'Created' },
+	// )
 }
 export const update = async (req: Request, res: Response) => {
 	const { activityId } = req.params

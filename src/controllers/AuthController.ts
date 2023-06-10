@@ -94,7 +94,7 @@ export const logout = async (req: Request, res: Response) => {
 }
 
 function generateAT(claims) {
-	return sign(claims, secrets['ACCESS_TOKEN_SECRET'], { expiresIn: '1m' })
+	return sign(claims, secrets['ACCESS_TOKEN_SECRET'], { expiresIn: '1h' })
 }
 
 function generateRT(claims) {
