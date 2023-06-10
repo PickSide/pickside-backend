@@ -75,7 +75,7 @@ export const login = async (req: Request, res: Response) => {
 		await addToValidTokens(refreshToken)
 
 		return SendResponse(res, Status.Ok, {
-			user: omit(user.toObject(), ['password', 'username']),
+			user: omit(user.toObject(), ['password']),
 			accessToken,
 			refreshToken,
 		})
