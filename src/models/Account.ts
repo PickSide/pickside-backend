@@ -3,29 +3,32 @@ import { AccountSchema } from '../schemas'
 
 export interface IAccount extends Document {
 	id: string
+	avatar: string
 	email: string
 	username: string
 	password: string
+	firstName: string
+	lastName: string
+	phone: string
+	sexe: 'male' | 'female'
 	configs: IAccountConfigs
-	profile: IAccountProfile
 }
 
 export interface IAccountConfigs extends Document {
-	defaultSport: string
-	defaultLanguage: string
-	darkModeDefault: boolean
-	locationTracking: boolean
-}
-
-export interface IAccountProfile extends Document {
-	firstName: string
-	lastName: string
-	level: number
 	localeRegion: string
+	preferredRegion: string
 	matchOrganized: number
 	matchPlayed: number
+	fitnessLevel: 'retired' | 'average' | 'athletic' | 'very athletic'
 	reliability: number
-	sexe: 'male' | 'female'
+	defaultSport: string
+	defaultLanguage: 'fr' | 'en'
+	deefaultTheme: 'light' | 'dark'
+	locationTracking: boolean
+	hideAge: boolean
+	hideEmail: boolean
+	hidePhone: boolean
+	hideUsername: boolean
 }
 
 export default model<IAccount>('Account', AccountSchema)

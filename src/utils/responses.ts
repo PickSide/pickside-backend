@@ -107,3 +107,7 @@ export const WrongCredentials = {
 export const DeleteSuccessfully = {
 	message: 'Delete successfully',
 }
+
+export const ProfileSuccessfullyUpdated = {
+	message: 'Profile settings updated',
+}
