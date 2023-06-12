@@ -7,6 +7,7 @@ import {
 	DefaultServerResponseMap,
 	SendResponse,
 	Status,
+	WrongCredentials,
 	addToValidTokens,
 	isTokenValid,
 	revokeToken,
@@ -80,7 +81,7 @@ export const login = async (req: Request, res: Response) => {
 			refreshToken,
 		})
 	} else {
-		return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
+		return SendResponse(res, Status.Unauthorized, WrongCredentials)
 	}
 }
 
