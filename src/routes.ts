@@ -20,6 +20,7 @@ const authRoutes = Router()
 authRoutes.get('/token', AuthController.getAccessToken)
 authRoutes.post('/login', AuthController.login)
 authRoutes.post('/logout', AuthController.logout)
+authRoutes.post('/account/create', AccountController.create)
 
 // PUT
 apiRoutes.put('/activities/:activityId', ActivityController.update)
@@ -28,7 +29,6 @@ apiRoutes.put('/account/:id/settings', validateAccessToken, AccountController.up
 // POST
 apiRoutes.post('/activities', validateAccessToken, ActivityController.create)
 apiRoutes.post('/session/create', validateAccessToken, SessionController.create)
-apiRoutes.post('/account/create', AccountController.create)
 
 // GET
 apiRoutes.get('/account', AccountController.get)
