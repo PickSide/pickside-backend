@@ -31,7 +31,7 @@ export const update = async (req: Request, res: Response) => {
 	const setting = req.body.data
 	const [key, value] = Object.entries(setting).map(([key, value], idx) => [key, value])[0]
 
-	await Account.findByIdAndUpdate(req.params.id, { [`configs.${key}`]: value }).exec()
+	await Account.findByIdAndUpdate(req.params.id, { ...setting }).exec()
 
 	return SendResponse(
 		res,
