@@ -23,6 +23,7 @@ authRoutes.post('/logout', AuthController.logout)
 
 // PUT
 apiRoutes.put('/activities/:activityId', ActivityController.update)
+apiRoutes.put('/account/:id/settings', validateAccessToken, AccountController.update)
 
 // POST
 apiRoutes.post('/activities', validateAccessToken, ActivityController.create)
