@@ -111,67 +111,19 @@ async function populateCollections() {
 		{
 			id: new Types.ObjectId(),
 			title: 'Soccer game 5v5',
-			description: 'A 5v5 aside soccer game',
-			organiser: (await accounts[0]).username,
+			mode: '7v7',
+			date: Date.now(),
 			location: playables[0].id,
+			time: undefined,
+			playTime: 59,
+			players: 22,
+			level: 'beginner',
+			price: 5,
+			rules: 'Relaxing game, no slide tackles, 1 goal we switch',
+			sport: 'soccer',
 			participants: [accounts[1].username, accounts[2].username, accounts[3].username, accounts[4].username, accounts[5].username],
-			settings: { ...templates[0]['SOCCER'] },
-			date: Date.now()
-		},
-		{
-			id: new Types.ObjectId(),
-			title: 'Bball game 5v5',
-			description: 'A 5v5 aside basketball game',
-			type: 'basketball',
-			organiser: (await accounts[1]).username,
-			location: playables[1].id,
-			participants: [accounts[1].username, accounts[2].username, accounts[3].username],
-			settings: { ...templates[0]['SOCCER'] },
-			date: Date.now()
-		},
-		{
-			id: new Types.ObjectId(),
-			title: 'Soccer game 7v7',
-			description: 'A 7v7 aside soccer game',
-			type: 'soccer',
-			organiser: (await accounts[1]).username,
-			location: playables[2].id,
-			participants: [accounts[1].username, accounts[2].username, accounts[3].username, accounts[4].username, accounts[5].username, accounts[6].username, accounts[7].username],
-			settings: { ...templates[0]['SOCCER'] },
-			date: Date.now()
-		},
-		{
-			id: new Types.ObjectId(),
-			title: 'Soccer game 7v7',
-			description: 'A 7v7 aside soccer game',
-			type: 'soccer',
-			organiser: (await accounts[1]).username,
-			location: playables[3].id,
-			participants: [accounts[1], accounts[2].username, accounts[3].username, accounts[4].username, accounts[5].username, accounts[6].username, accounts[7].username],
-			settings: { ...templates[0]['SOCCER'] },
-			date: Date.now()
-		},
-		{
-			id: new Types.ObjectId(),
-			title: 'Soccer game 7v7',
-			description: 'A 7v7 aside soccer game',
-			type: 'soccer',
-			organiser: (await accounts[1]).username,
-			location: playables[4].id,
-			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
-			settings: { ...templates[0]['SOCCER'] },
-			date: Date.now()
-		},
-		{
-			id: new Types.ObjectId(),
-			title: 'Soccer game 7v7',
-			description: 'A 7v7 aside soccer game',
-			type: 'soccer',
-			organiser: (await accounts[1]).username,
-			location: playables[5].id,
-			participants: [accounts[1], accounts[2], accounts[3], accounts[4], accounts[5], accounts[6], accounts[7]],
-			settings: { ...templates[0]['SOCCER'] },
-			date: Date.now()
+			organiser: (await accounts[0]).username,
+
 		},
 	])
 

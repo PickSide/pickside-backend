@@ -2,14 +2,20 @@ import { Schema, Types } from 'mongoose'
 
 export const ActivitySchema = new Schema(
 	{
-		title: { type: String, require: true },
-		description: { type: String, require: true },
-		sport: { type: String, require: true },
-		organiser: { type: String, require: true },
+		title: { type: String, require: false },
+		mode: { type: String, require: false },
+		date: { type: String, require: false },
+		location: { type: Object, require: false },
+		time: { type: Date, require: false },
+		playTime: { type: Number, require: false },
+		players: { type: Number, require: false },
+		level: { type: String, require: false },
+		price: { type: Number, require: false },
+		rules: { type: String, require: false },
+		sport: { type: String, require: false },
 		participants: [{ type: String, require: false }],
-		location: { type: Types.ObjectId, ref: 'Playable', require: true },
-		settings: { type: Object, require: true },
-		time: { type: Date, require: true }
+		organiser: { type: String, require: false },
+
 	},
 	{
 		timestamps: true,
