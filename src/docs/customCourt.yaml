@@ -1,0 +1,111 @@
+paths:
+  /custom-courts:
+    get:
+      tags:
+        - Custom Court
+      summary: Gets list of custom courts
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Successfully fetched courts
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/CustomCourt"
+        5XX:
+          description: Unexpected error.
+    post:
+      tags:
+        - Custom Court
+      summary: Add a new playable custom court
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: court
+          schema:
+            $ref: "#/definitions/CustomCourt"
+          required: true
+          example: { userId: 123 }
+      responses:
+        201:
+          description: Created
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Court"
+        5XX:
+          description: Unexpected error.
+
+  /custom-courts/{courtId}:
+    get:
+      tags:
+        - Custom Court
+      summary: Gets a custom court from numeric ID
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: courtId
+          schema:
+            type: integer
+          required: true
+          example: { courtId: 123 }
+      responses:
+        200:
+          description: Successfully fetched courts
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/CustomCourt"
+        5XX:
+          description: Unexpected error.
+    delete:
+      tags:
+        - Custom Court
+      summary: Delete a custom court
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: courtId
+          schema:
+            type: integer
+          required: true
+          example: { courtId: 123 }
+      responses:
+        201:
+          description: Deleted
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Court"
+        5XX:
+          description: Unexpected error.
+
+definitions:
+  CustomCourt:
+    type: object
+    properties:
+      id:
+        type: string
+      coordinates:
+        type: object
+        properties:
+          lat:
+            type: number
+          lng:
+            type: number
+      country:
+        type: string
+      state:
+        type: string
+      city:
+        type: string
+      district:
+        type: string
+      zip:
+        type: string
+      schedule:
+        type: object

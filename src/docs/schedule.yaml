@@ -22,9 +22,7 @@ definitions:
     properties:
       id:
         type: string
-      eventId:
-        type: string
-      flagCode:
+      from:
         type: date
-      flagSvg:
-        type: string
+      to:
+        type: date
