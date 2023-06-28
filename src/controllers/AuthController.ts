@@ -1,4 +1,4 @@
-import Account, { IAccount } from '../models/Account'
+import User, { IAccount } from '../models/User'
 import VerifiedEmail from '../models/VerifiedEmail'
 import { Request, Response } from 'express'
 import { JwtPayload, JsonWebTokenError, sign, TokenExpiredError, verify } from 'jsonwebtoken'
@@ -60,7 +60,7 @@ export const getAccessToken = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
 	const { username, password } = req.body.data
-	const user = await Account.findOne({ username }).exec()
+	const user = await User.findOne({ username }).exec()
 	if (!username || !password || !user) {
 		return SendResponse(res, Status.BadRequest, DefaultServerResponseMap[Status.BadRequest])
 	}

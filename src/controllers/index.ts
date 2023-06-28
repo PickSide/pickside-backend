@@ -1,4 +1,4 @@
-export * as AccountController from './AccountController'
+export * as UserController from './UserController'
 export * as ActivityController from './ActivityController'
 export * as AreaController from './AreaController'
 export * as AuthController from './AuthController'

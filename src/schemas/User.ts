@@ -34,7 +34,6 @@ export const AccountSchema = new Schema(
 				ret.id = ret._id
 				delete ret._id
 				delete ret.__v
-				console.log(ret)
 				return ret
 			},
 		},

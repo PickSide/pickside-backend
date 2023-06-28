@@ -1,0 +1,193 @@
+paths:
+  /users:
+    get:
+      tags:
+        - User
+      summary: Gets list of users
+
+      responses:
+        200:
+          description: Successfully fetched users
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+        403:
+          description: Forbidden action.
+        5XX:
+          description: Unexpected error.
+
+    post:
+      tags:
+        - User
+      summary: Create user
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: create user
+          description: It enables user registration
+          schema:
+            $ref: "#/components/schemas/createUser"
+      responses:
+        200:
+          description: Updated user
+        409:
+          description: Username or email already exists.
+        5XX:
+          description: Unexpected error.
+
+  /users/{userId}:
+    get:
+      tags:
+        - User
+      summary: Gets user with specified id
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to get
+      responses:
+        200:
+          description: Successfully fetched user
+        404:
+          description: User was not found.
+        5XX:
+          description: Unexpected error.
+
+    put:
+      tags:
+        - User
+      summary: Updates user with a specified id
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to get
+        - in: body
+          name: user
+          description: Fields to update
+          schema:
+            $ref: "#/components/schemas/createUser"
+      responses:
+        201:
+          description: Updated user
+        401:
+          description: Unauthorized access. Wrong username or password
+        404:
+          description: User was not found.
+        5XX:
+          description: Unexpected error.
+
+    delete:
+      tags:
+        - User
+      summary: Delete specified user (safe delete)
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: user id
+          description: It enables user deletion
+      responses:
+        201:
+          description: Deleted user
+        403:
+          description: Forbidden action.
+        404:
+          description: User was not found.
+        5XX:
+          description: Unexpected error.
+
+  /users/group/{groupId}:
+    get:
+      tags:
+        - User
+      summary: Gets users within a group
+      parameters:
+        - in: path
+          name: groupId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the group to get
+      responses:
+        200:
+          description: List of users
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/User"
+        404:
+          description: Group not found.
+        5XX:
+          description: Unexpected error.
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        sexe:
+          type: string
+        defaultSport:
+          type: string
+        defaultLanguage:
+          type: string
+        defaultTheme:
+          type: string
+        locationTracking:
+          type: string
+        hideAge:
+          type: string
+        hideEmail:
+          type: string
+        hidePhone:
+          type: string
+        hideUsername:
+          type: string
+        localeRegion:
+          type: string
+        preferredRegion:
+          type: string
+        matchPlayed:
+          type: string
+        matchOrganized:
+          type: string
+        reliability:
+          type: string
+        fitnessLevel:
+          type: string
+    createUser:
+      type: object
+      properties:
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        password:
+          type: string
+        agreedToTerm:
+          type: boolean

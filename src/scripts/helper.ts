@@ -1,9 +1,9 @@
-import Account from '../models/Account'
+import User from '../models/User'
 import Playable, { IPlayable } from '../models/Playable'
 import { Types } from 'mongoose'
 import { hashSync } from 'bcrypt'
 
-interface AccountProps {
+interface UserProps {
 	firstName: string
 	lastName: string
 	username: string
@@ -20,11 +20,11 @@ interface PlayablesProps {
 }
 
 
-export function createAccount(props: AccountProps[]) {
+export function createUser(props: UserProps[]) {
 	return Promise.all(
 		props.map(
 			async ({ firstName, lastName, username }) =>
-				await Account.create({
+				await User.create({
 					email: `${firstName}${lastName}@gmail.com`,
 					username,
 					password: hashSync('123', 10),
