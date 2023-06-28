@@ -4,14 +4,15 @@ paths:
       tags:
         - User
       summary: Gets list of users
-
+      produces:
+        - application/json
       responses:
         200:
           description: Successfully fetched users
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/User"
+              $ref: "#/definitions/User"
         403:
           description: Forbidden action.
         5XX:
@@ -28,7 +29,7 @@ paths:
           name: create user
           description: It enables user registration
           schema:
-            $ref: "#/components/schemas/createUser"
+            $ref: "#/definitions/createUser"
       responses:
         200:
           description: Updated user
@@ -74,7 +75,7 @@ paths:
           name: user
           description: Fields to update
           schema:
-            $ref: "#/components/schemas/createUser"
+            $ref: "#/definitions/createUser"
       responses:
         201:
           description: Updated user
@@ -123,57 +124,141 @@ paths:
           schema:
             type: array
             items:
-              $ref: "#/components/schemas/User"
+              $ref: "#/definitions/User"
         404:
           description: Group not found.
         5XX:
           description: Unexpected error.
 
-components:
-  schemas:
-    User:
-      type: object
-      properties:
-        username:
+  /users/activity/{activityId}:
+    get:
+      tags:
+        - User
+      summary: Gets users within an activity
+      parameters:
+        - in: path
+          name: activityId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the activity to get
+      responses:
+        200:
+          description: List of users
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/User"
+        404:
+          description: Group not found.
+        5XX:
+          description: Unexpected error.
+
+    put:
+      tags:
+        - User
+      summary: Add user within activity
+      parameters:
+        - in: path
+          name: activityId
+          schema:
+            - type: integer
+          example: 123
+          required: true
+          description: Numeric ID or IDs of the activities to get
+        - in: body
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: One or multiple users
+          example: { userId: 123 }
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      birthday:
+        type: date
+      username:
+        type: string
+      socialNetworks:
+        type: array
+      startDate:
+        type: date
+      avatar:
+        type: string
+        format: binary
+      subscriptionType:
+        type: string
+      isOrganizer:
+        type: string
+      bio:
+        type: string
+      city:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      phone:
+        type: string
+      sexe:
+        type: string
+      matchPlayed:
+        type: string
+      matchOrganized:
+        type: string
+      reliability:
+        type: string
+      fitnessLevel:
+        type: string
+      attendedEventsCount:
+        type: number
+      groups:
+        type: array
+      locationCommonlyPlayedIn:
+        type: string
+      state:
+        type: string
+      zip:
+        type: string
+      eventsRegistered:
+        type: array
+      preferredSport:
+        type: string
+      preferredLocale:
+        type: string
+        enum: ["en", "fr"]
+      preferredTheme:
+        type: string
+        enum: ["dark", "light"]
+      preferredRegion:
+        type: string
+      profilePrivacy:
+        type: object
+        properties:
+          allowLocationTracking:
+            type: boolean
+          showAge:
+            type: boolean
+          showEmail:
+            type: boolean
+          showPhone:
+            type: boolean
+          showGroups:
+            type: boolean
+      reasonsForJoining:
+        type: array
+        items:
           type: string
-        email:
-          type: string
-        firstName:
-          type: string
-        lastName:
-          type: string
-        phone:
-          type: string
-        sexe:
-          type: string
-        defaultSport:
-          type: string
-        defaultLanguage:
-          type: string
-        defaultTheme:
-          type: string
-        locationTracking:
-          type: string
-        hideAge:
-          type: string
-        hideEmail:
-          type: string
-        hidePhone:
-          type: string
-        hideUsername:
-          type: string
-        localeRegion:
-          type: string
-        preferredRegion:
-          type: string
-        matchPlayed:
-          type: string
-        matchOrganized:
-          type: string
-        reliability:
-          type: string
-        fitnessLevel:
-          type: string
+      timezone:
+        type: string
+
     createUser:
       type: object
       properties:

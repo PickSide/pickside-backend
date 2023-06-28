@@ -1,0 +1,30 @@
+paths:
+  /schedules:
+    get:
+      tags:
+        - Schedule
+      summary: Gets list of schedules
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Successfully fetched locales
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Schedule"
+        5XX:
+          description: Unexpected error.
+
+definitions:
+  Schedule:
+    type: object
+    properties:
+      id:
+        type: string
+      eventId:
+        type: string
+      flagCode:
+        type: date
+      flagSvg:
+        type: string
