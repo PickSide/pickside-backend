@@ -1,11 +1,9 @@
 paths:
   /activities:
     get:
-      tags:
-        - Activity
+      tags: [Activity]
       summary: Gets list of activities
-      produces:
-        - application/json
+      produces: [application/json]
       responses:
         200:
           description: Successfully fetched activities
@@ -18,11 +16,9 @@ paths:
         5XX:
           description: Unexpected error.
     post:
-      tags:
-        - Activity
+      tags: [Activity]
       summary: Create activity
-      produces:
-        - application/json
+      produces: [application/json]
       parameters:
         - in: body
           name: create user
@@ -39,11 +35,9 @@ paths:
 
   /activities/{activityId}:
     get:
-      tags:
-        - Activity
+      tags: [Activity]
       summary: Get activity by numeric ID
-      produces:
-        - application/json
+      produces: [application/json]
       parameters:
         - in: path
           name: activityId
@@ -59,11 +53,9 @@ paths:
         5XX:
           description: Unexpected error.
     put:
-      tags:
-        - Activity
+      tags: [Activity]
       summary: Update activity by numeric ID
-      produces:
-        - application/json
+      produces: [application/json]
       parameters:
         - in: path
           name: activityId
@@ -85,11 +77,9 @@ paths:
           description: Unexpected error.
 
     delete:
-      tags:
-        - Activity
+      tags: [Activity]
       summary: Delete activity by numeric ID
-      produces:
-        - application/json
+      produces: [application/json]
       parameters:
         - in: path
           name: activityId
@@ -106,11 +96,9 @@ paths:
 
   /activities/groups/{groupId}:
     get:
-      tags:
-        - Activity
+      tags: [Activity]
       summary: Get activity by numeric ID
-      produces:
-        - application/json
+      produces: [application/json]
       parameters:
         - in: path
           name: groupId

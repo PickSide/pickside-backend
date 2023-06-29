@@ -1,0 +1,26 @@
+paths:
+  /verifiy:
+    get:
+      tags: [Email]
+      summary: Verifies if email is validated
+      produces: [application/json]
+      parameters:
+        - in: body
+          name: email
+          schema:
+            $ref: "#/definitions/EmailVerification"
+          required: true
+      responses:
+        200:
+          description: Ok
+        404:
+          description: Not found
+        5XX:
+          description: Unexpected error.
+
+definitions:
+  EmailVerification:
+    type: object
+    properties:
+      email:
+        type: string

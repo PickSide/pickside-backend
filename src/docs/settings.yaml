@@ -1,0 +1,6 @@
+paths:
+  /settings/soccer:
+    get:
+      tags: [Settings]
+      summary: Gets setting for soccer
+      produces: [application/json]

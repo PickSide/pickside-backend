@@ -1,0 +1,33 @@
+paths:
+  /notifications:
+    get:
+      tags: [Notification]
+      summary: Gets list notification
+      produces: [application/json]
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Notification"
+        5XX:
+          description: Unexpected error.
+
+definitions:
+  Notification:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: [Post, Message, Global]
+      sender:
+        type: string
+      receiver:
+        type: string
+      created:
+        type: string
+        format: date
+      isRead:
+        type: boolean

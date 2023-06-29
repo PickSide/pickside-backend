@@ -1,0 +1,223 @@
+Activity:
+  type: object
+  properties:
+    title:
+      type: string
+    mode:
+      type: string
+    date:
+      type: date
+    location:
+      type: string
+    time:
+      type: string
+    duration:
+      type: number
+    participants:
+      type: array
+      items:
+        type: object
+    minimumRequired:
+      type: number
+    unitPrice:
+      type: number
+    rules:
+      type: string
+    sport:
+      type: string
+    organiser:
+      type: string
+
+Court:
+  type: object
+  properties:
+    id:
+      type: string
+    coordinates:
+      type: object
+      properties:
+        lat:
+          type: number
+        lng:
+          type: number
+    country:
+      type: string
+    state:
+      type: string
+    city:
+      type: string
+    district:
+      type: string
+    zip:
+      type: string
+    schedule:
+      type: object
+
+CustomCourt:
+  type: object
+  properties:
+    id:
+      type: string
+    coordinates:
+      type: object
+      properties:
+        lat:
+          type: number
+        lng:
+          type: number
+    country:
+      type: string
+    state:
+      type: string
+    city:
+      type: string
+    district:
+      type: string
+    zip:
+      type: string
+    schedule:
+      type: object
+
+Group:
+  type: object
+  properties:
+    id:
+      type: string
+    name:
+      type: string
+    description:
+      type: string
+    members:
+      type: object
+    sport:
+      type: object
+    coverPhoto:
+      type: object
+    organizer:
+      type: object
+    visibility:
+      type: ["hidden", "public", "private"]
+    requireApproval:
+      type: boolean
+
+Locale:
+  type: object
+  properties:
+    value:
+      type: string
+    description:
+      type: string
+    flagCode:
+      type: date
+    flagSvg:
+      type: string
+
+Schedule:
+  type: object
+  properties:
+    id:
+      type: string
+    from:
+      type: date
+    to:
+      type: date
+
+User:
+  type: object
+  properties:
+    id:
+      type: string
+    birthday:
+      type: date
+    username:
+      type: string
+    socialNetworks:
+      type: array
+    startDate:
+      type: date
+    avatar:
+      type: string
+      format: binary
+    subscriptionType:
+      type: string
+    isOrganizer:
+      type: string
+    bio:
+      type: string
+    city:
+      type: string
+    email:
+      type: string
+    firstName:
+      type: string
+    lastName:
+      type: string
+    phone:
+      type: string
+    sexe:
+      type: string
+    matchPlayed:
+      type: string
+    matchOrganized:
+      type: string
+    reliability:
+      type: string
+    fitnessLevel:
+      type: string
+    attendedEventsCount:
+      type: number
+    groups:
+      type: array
+    locationCommonlyPlayedIn:
+      type: string
+    state:
+      type: string
+    zip:
+      type: string
+    eventsRegistered:
+      type: array
+    preferredSport:
+      type: string
+    preferredLocale:
+      type: string
+      enum: ["en", "fr"]
+    preferredTheme:
+      type: string
+      enum: ["dark", "light"]
+    preferredRegion:
+      type: string
+    profilePrivacy:
+      type: object
+      properties:
+        allowLocationTracking:
+          type: boolean
+        showAge:
+          type: boolean
+        showEmail:
+          type: boolean
+        showPhone:
+          type: boolean
+        showGroups:
+          type: boolean
+    reasonsForJoining:
+      type: array
+      items:
+        type: string
+    timezone:
+      type: string
+
+Responses:
+  200:
+    description: Ok.
+  201:
+    description: Created.
+  401:
+    description: Unauthorized.
+  403:
+    description: Forbidden access.
+  404:
+    description: Not found.
+  409:
+    description: Already exists.
+  5XX:
+    description: Unexpected error.
