@@ -9,21 +9,26 @@ import swaggerJsDoc from 'swagger-jsdoc'
 
 const app = express()
 
-const options = {
-	definition: {
-		openapi: "3.0.0",
-		info: {
-			title: "Pickside API",
-			version: "1.0.0",
-			description: "The Pickside API"
-		},
-		servers: [
-			{
-				url: "http://localhost:8000"
-			},
-		]
+const swaggerDefinition = {
+	openapi: '3.0.0',
+	info: {
+		title: "Pickside API",
+		version: "1.0.0",
+		description: "The Pickside API"
 	},
-	apis: ['./src/docs/*.yaml']
+	host: `localhost:8000`,
+	basePath: '/',
+	servers: [
+		{
+			url: 'localhost:8000',
+			description: 'Development server',
+		},
+	],
+};
+
+const options = {
+	swaggerDefinition,
+	apis: ['src/docs/**/*.yaml'],
 }
 
 const specs = swaggerJsDoc(options)
@@ -38,17 +43,8 @@ app
 	.use(Routes)
 	.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 	.listen(process.env.API_SERVER_PORT, () =>
-		console.log('Connected to Api server on port', process.env.API_SERVER_PORT),
+		console.log('Connected to server on port', process.env.API_SERVER_PORT),
 	)
-
-// auth
-// 	.use(cors(corsOptions()))
-// 	.use(express.json())
-// 	//.use(Routes.authRoutes)
-// 	.use("/auth-docs", swaggerUi.serve, swaggerUi.setup(specs))
-// 	.listen(process.env.AUTH_SERVER_PORT, () =>
-// 		console.log('Connected to Auth server on port', process.env.AUTH_SERVER_PORT),
-// 	)
 
 function corsOptions() {
 	return {
