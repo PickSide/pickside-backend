@@ -44,4 +44,4 @@ export interface IAccount extends Document {
 // 	hideUsername: boolean
 // }
 
-export default model<IAccount>('Account', AccountSchema)
+export default model<IAccount>('User', AccountSchema)

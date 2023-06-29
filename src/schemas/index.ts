@@ -1,4 +1,4 @@
-export * from './Account'
+export * from './User'
 export * from './Activity'
 export * from './Area'
 export * from './Email'

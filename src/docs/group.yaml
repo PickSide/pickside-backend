@@ -1,0 +1,109 @@
+paths:
+  /groups:
+    get:
+      tags: [Group]
+      summary: Gets list of groups
+      produces: [application/json]
+      responses:
+        200:
+          description: Successfully fetched group
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Group"
+        5XX:
+          description: Unexpected error.
+    post:
+      tags: [Group]
+      summary: Gets list of groups
+      produces: [application/json]
+      responses:
+        201:
+          description: Created
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Group"
+        5XX:
+          description: Unexpected error.
+
+  /groups/{groupdId}:
+    get:
+      tags: [Group]
+      summary: Gets list of groups
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: groupdId
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Created
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Group"
+        5XX:
+          description: Unexpected error.
+
+    put:
+      tags: [Group]
+      summary: Update group
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: groupdId
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Updated
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Group"
+        5XX:
+          description: Unexpected error.
+
+    delete:
+      tags: [Group]
+      summary: Detele group
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: groupdId
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Updated
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Group"
+        5XX:
+          description: Unexpected error.
+
+definitions:
+  Group:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      members:
+        type: object
+      sport:
+        type: object
+      coverPhoto:
+        type: object
+      organizer:
+        type: object
+      visibility:
+        type: ["hidden", "public", "private"]
+      requireApproval:
+        type: boolean

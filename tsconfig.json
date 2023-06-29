@@ -32,7 +32,7 @@
 				"src/scripts/*"
 			]
 		},
-		"outDir": "dist",
+		"outDir": "./dist",
 		"sourceMap": true,
 		"strict": true,
 		"target": "es6"

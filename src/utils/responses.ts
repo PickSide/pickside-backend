@@ -1,4 +1,3 @@
-import { timeStamp } from 'console'
 import { Response } from 'express'
 
 export enum Status {

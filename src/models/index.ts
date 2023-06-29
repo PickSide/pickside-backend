@@ -1,4 +1,4 @@
-import Account from './Account'
+import User from './User'
 import Activity from './Activity'
 import Area from './Area'
 import Level from './Level'
@@ -10,4 +10,4 @@ import Sport from './Sport'
 import ValidToken from './ValidToken'
 import SoccerSetting from './SettingsTemplate'
 
-export { Account, Activity, Area, Level, Locale, Playable, RevokedToken, Session, Sport, SoccerSetting, ValidToken }
+export { User, Activity, Area, Level, Locale, Playable, RevokedToken, Session, Sport, SoccerSetting, ValidToken }

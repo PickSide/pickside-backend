@@ -1,4 +1,4 @@
-import Account from '../models/Account'
+import User from '../models/User'
 import Area from '../models/Area'
 import Activity from '../models/Activity'
 import Locale from '../models/Locale'
@@ -10,7 +10,7 @@ import ValidToken from '../models/ValidToken'
 import databaseUtils from '../utils/databaseUtils'
 import { connect, Connection, Types } from 'mongoose'
 import { config } from 'dotenv'
-import { createAccount, createPlayables, getAreas, _toCoordsObj } from './helper'
+import { createUser, createPlayables, getAreas, _toCoordsObj } from './helper'
 
 async function run() {
 	config()
@@ -50,7 +50,7 @@ async function dropCollections(connection: Connection) {
 async function initCollections() {
 	console.log('initializing collections...')
 
-	await Account.createCollection()
+	await User.createCollection()
 	await Area.createCollection()
 	await Activity.createCollection()
 	await Locale.createCollection()
@@ -66,7 +66,7 @@ async function initCollections() {
 async function populateCollections() {
 	console.log('populating collections...')
 
-	const accounts = await createAccount([
+	const users = await createUser([
 		{ firstName: 'Ali', lastName: 'Idrici', username: 'ali' },
 		{ firstName: 'Omer', lastName: 'Bos', username: 'bos' },
 		{ firstName: 'Tony', lastName: 'Hakim', username: 'tony' },
@@ -121,8 +121,8 @@ async function populateCollections() {
 			price: 5,
 			rules: 'Relaxing game, no slide tackles, 1 goal we switch',
 			sport: 'soccer',
-			participants: [accounts[1].username, accounts[2].username, accounts[3].username, accounts[4].username, accounts[5].username],
-			organiser: (await accounts[0]).username,
+			participants: [users[1].username, users[2].username, users[3].username, users[4].username, users[5].username],
+			organiser: (await users[0]).username,
 
 		},
 	])

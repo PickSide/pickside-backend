@@ -1,0 +1,150 @@
+paths:
+  /activities:
+    get:
+      tags: [Activity]
+      summary: Gets list of activities
+      produces: [application/json]
+      responses:
+        200:
+          description: Successfully fetched activities
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Activity"
+        403:
+          description: Forbidden action.
+        5XX:
+          description: Unexpected error.
+    post:
+      tags: [Activity]
+      summary: Create activity
+      produces: [application/json]
+      parameters:
+        - in: body
+          name: create user
+          description: It enables user registration
+          schema:
+            $ref: "#/definitions/Activity"
+      responses:
+        200:
+          description: Updated user
+        409:
+          description: Username or email already exists.
+        5XX:
+          description: Unexpected error.
+
+  /activities/{activityId}:
+    get:
+      tags: [Activity]
+      summary: Get activity by numeric ID
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: activityId
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully fetched users
+          schema:
+            type: integer
+        403:
+          description: Forbidden action.
+        5XX:
+          description: Unexpected error.
+    put:
+      tags: [Activity]
+      summary: Update activity by numeric ID
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: activityId
+          schema:
+            type: integer
+        - in: body
+          name: activityObject
+          description: It enables user registration
+          schema:
+            type: integer
+      responses:
+        201:
+          description: Ok
+        403:
+          description: Forbidden action.
+        404:
+          description: Not found.
+        5XX:
+          description: Unexpected error.
+
+    delete:
+      tags: [Activity]
+      summary: Delete activity by numeric ID
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: activityId
+          description: Enables activity deletion
+          schema:
+            type: integer
+      responses:
+        201:
+          description: OK
+        404:
+          description: Not found.
+        5XX:
+          description: Unexpected error.
+
+  /activities/groups/{groupId}:
+    get:
+      tags: [Activity]
+      summary: Get activity by numeric ID
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: groupId
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully fetched users
+          schema:
+            type: integer
+        403:
+          description: Forbidden action.
+        5XX:
+          description: Unexpected error.
+
+definitions:
+  Activity:
+    type: object
+    properties:
+      title:
+        type: string
+      mode:
+        type: string
+      date:
+        type: date
+      location:
+        type: string
+      time:
+        type: string
+      duration:
+        type: number
+      participants:
+        type: array
+        items:
+          type: object
+      minimumRequired:
+        type: number
+      unitPrice:
+        type: number
+      rules:
+        type: string
+      sport:
+        type: string
+      organiser:
+        type: string
+
+components:
+  User:
+    $ref: "./user.yaml#/definitions/User"

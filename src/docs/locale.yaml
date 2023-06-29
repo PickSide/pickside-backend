@@ -1,0 +1,30 @@
+paths:
+  /locales:
+    get:
+      tags:
+        - Locale
+      summary: Gets list of locale supported
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Successfully fetched locales
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Locale"
+        5XX:
+          description: Unexpected error.
+
+definitions:
+  Locale:
+    type: object
+    properties:
+      value:
+        type: string
+      description:
+        type: string
+      flagCode:
+        type: date
+      flagSvg:
+        type: string

@@ -4,28 +4,46 @@ import express from 'express'
 import Routes from './routes'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
+import swaggerUi from 'swagger-ui-express'
+import swaggerJsDoc from 'swagger-jsdoc'
 
-const api = express()
-const auth = express()
+const app = express()
+
+const swaggerDefinition = {
+	openapi: '3.0.0',
+	info: {
+		title: "Pickside API",
+		version: "1.0.0",
+		description: "The Pickside API"
+	},
+	host: `localhost:8000`,
+	basePath: '/',
+	servers: [
+		{
+			url: 'localhost:8000',
+			description: 'Development server',
+		},
+	],
+};
+
+const options = {
+	swaggerDefinition,
+	apis: ['src/docs/**/*.yaml'],
+}
+
+const specs = swaggerJsDoc(options)
 
 config()
 
 connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))
 
-api
+app
 	.use(cors(corsOptions()))
 	.use(express.json())
-	.use(Routes.apiRoutes)
+	.use(Routes)
+	.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 	.listen(process.env.API_SERVER_PORT, () =>
-		console.log('Connected to Api server on port', process.env.API_SERVER_PORT),
-	)
-
-auth
-	.use(cors(corsOptions()))
-	.use(express.json())
-	.use(Routes.authRoutes)
-	.listen(process.env.AUTH_SERVER_PORT, () =>
-		console.log('Connected to Auth server on port', process.env.AUTH_SERVER_PORT),
+		console.log('Connected to server on port', process.env.API_SERVER_PORT),
 	)
 
 function corsOptions() {
