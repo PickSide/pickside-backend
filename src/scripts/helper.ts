@@ -1,7 +1,6 @@
-import User from '../models/User'
-import Playable, { IPlayable } from '../models/Playable'
+import Playable from '../schemas/Court'
 import { Types } from 'mongoose'
-import { hashSync } from 'bcrypt'
+import User from '../schemas/User'
 
 interface UserProps {
 	firstName: string
@@ -25,35 +24,48 @@ export function createUser(props: UserProps[]) {
 		props.map(
 			async ({ firstName, lastName, username }) =>
 				await User.create({
-					email: `${firstName}${lastName}@gmail.com`,
-					username,
-					password: hashSync('123', 10),
-					refreshToken: [],
+					attendedEventsCount: 0,
+					avatar: undefined,
+					bio: 'string',
+					city: 'string',
+					email: 'string',
+					eventsRegistered: [],
 					firstName,
+					fitnessLevel: 'average',
+					groups: [],
+					isOrganizer: false,
+					joinDate: new Date().toISOString(),
 					lastName,
+					localeRegion: '',
+					locationCommonlyPlayedIn: 'montreal',
+					matchOrganizedCount: 0,
+					matchPlayedCount: 0,
 					phone: '514-966-8481',
-					sexe: 'male',
+					preferredLocale: 'en',
 					preferredRegion: 'montreal',
-					fitnessLevel: 'athletic',
-					level: _rand(5),
-					localeRegion: 'montreal',
-					matchOrganized: _rand(400),
-					matchPlayed: _rand(50),
+					preferredSport: '',
+					preferredTheme: 'light',
+					profilePrivacy: {
+						allowLocationTracking: false,
+						showAge: false,
+						showEmail: false,
+						showPhone: false,
+						showGroups: false,
+					},
+					reasonsForJoining: [],
 					reliability: _rand(100),
-					defaultSport: 'soccer',
-					defaultLanguage: 'fr',
-					deefaultTheme: 'light',
-					locationTracking: true,
-					hideAge: true,
-					hideEmail: false,
-					hidePhone: false,
-					hideUsername: false,
+					sexe: 'male',
+					socialNetworks: [],
+					subscriptionType: 'none',
+					timezone: 'string',
+					username,
+					zip: 'h8x302',
 				}),
 		),
 	)
 }
 
-export function createPlayables(props: PlayablesProps[]) {
+export function createCourt(props: PlayablesProps[]) {
 	return Promise.all(
 		props.map(
 			async ({ available, districtCode, coords, type, fieldName, schedule, isMultisportZone }) =>

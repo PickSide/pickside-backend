@@ -1,16 +1,15 @@
-import User from '../models/User'
-import Area from '../models/Area'
-import Activity from '../models/Activity'
-import Locale from '../models/Locale'
-import Playable from '../models/Playable'
-import RevokedToken from '../models/RevokedToken'
-import Sport from '../models/Sport'
-import SettingsTemplate from '../models/SettingsTemplate'
-import ValidToken from '../models/ValidToken'
-import databaseUtils from '../utils/databaseUtils'
-import { connect, Connection, Types } from 'mongoose'
+import { Connection, Types, connect } from 'mongoose'
+import { _toCoordsObj, createCourt, createUser, getAreas } from './helper'
+
+import Activity from '../schemas/Activity'
+import Locale from '../schemas/Locale'
+import Playable from '../schemas/Court'
+import PredefinedArea from '../schemas/PredefinedArea'
+import Sport from '../schemas/Sport'
+import Token from '../schemas/Token'
+import User from '../schemas/User'
 import { config } from 'dotenv'
-import { createUser, createPlayables, getAreas, _toCoordsObj } from './helper'
+import databaseUtils from '../utils/databaseUtils'
 
 async function run() {
 	config()
@@ -50,15 +49,13 @@ async function dropCollections(connection: Connection) {
 async function initCollections() {
 	console.log('initializing collections...')
 
-	await User.createCollection()
-	await Area.createCollection()
 	await Activity.createCollection()
 	await Locale.createCollection()
 	await Playable.createCollection()
-	await RevokedToken.createCollection()
-	await SettingsTemplate.createCollection()
+	await PredefinedArea.createCollection()
 	await Sport.createCollection()
-	await ValidToken.createCollection()
+	await Token.createCollection()
+	await User.createCollection()
 
 	console.log('collections initialized')
 }
@@ -82,7 +79,7 @@ async function populateCollections() {
 		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo' },
 	])
 
-	const playables = await createPlayables([
+	const courts = await createCourt([
 		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.572681, -73.594074), fieldName: 'Dôme Hébert', schedule: {}, available: true, isMultisportZone: false },
 		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.572686, -73.594151), fieldName: 'Stade Hébert', schedule: {}, available: true, isMultisportZone: false },
 		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.5844653, -73.6085511), fieldName: 'Terrain de soccer du parc Coubertin', schedule: {}, available: true, isMultisportZone: false },
@@ -93,10 +90,8 @@ async function populateCollections() {
 		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.572575, -73.591777), fieldName: 'Terrains de soccer du parc Hébert', schedule: {}, available: true, isMultisportZone: false },
 	])
 
-	const templates = await SettingsTemplate.insertMany({})
-
 	await getAreas().forEach(({ country, state, city, district, districtCode, coords }) => {
-		Area.create({
+		PredefinedArea.create({
 			id: new Types.ObjectId(),
 			country,
 			state,
@@ -107,38 +102,7 @@ async function populateCollections() {
 		})
 	})
 
-	await Activity.insertMany([
-		{
-			id: new Types.ObjectId(),
-			title: 'Soccer game 5v5',
-			mode: '7v7',
-			date: Date.now(),
-			location: playables[0].id,
-			time: undefined,
-			playTime: 59,
-			players: 22,
-			level: 'beginner',
-			price: 5,
-			rules: 'Relaxing game, no slide tackles, 1 goal we switch',
-			sport: 'soccer',
-			participants: [users[1].username, users[2].username, users[3].username, users[4].username, users[5].username],
-			organiser: (await users[0]).username,
-
-		},
-	])
-
-	await Locale.insertMany([
-		{
-			id: new Types.ObjectId(),
-			value: 'en',
-			description: 'English (US)',
-			flagCode: 'us',
-		},
-		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
-	])
-
-
-	await Sport.insertMany([
+	const sports = await Sport.insertMany([
 		{
 			id: new Types.ObjectId(),
 			value: 'afootball',
@@ -157,6 +121,7 @@ async function populateCollections() {
 			name: 'Soccer',
 			featureAvailable: true,
 			modes: [
+				{ value: '5v5', name: '5 aside', defaultMaxPlayers: 10 },
 				{ value: '7v7', name: '7 aside', defaultMaxPlayers: 14 },
 				{ value: '8v8', name: '8 aside', defaultMaxPlayers: 16 },
 				{ value: '11v11', name: '11 aside', defaultMaxPlayers: 22 },
@@ -169,6 +134,38 @@ async function populateCollections() {
 			featureAvailable: false,
 		},
 	])
+
+	await Activity.insertMany([
+		{
+			id: new Types.ObjectId(),
+			address: courts[0],
+			date: Date.now(),
+			description: 'Simple game',
+			duration: 59,
+			mode: '7v7',
+			organiser: users[0],
+			participants: [users[1], users[2], users[3], users[4], users[5]],
+			recommandedLevel: 'beginner',
+			rules: 'Relaxing game, no slide tackles, 1 goal we switch',
+			sport: sports[2],
+			time: undefined,
+			title: 'Soccer game 5v5',
+			unitPrice: 5,
+		},
+	])
+
+	await Locale.insertMany([
+		{
+			id: new Types.ObjectId(),
+			value: 'en',
+			description: 'English (US)',
+			flagCode: 'us',
+		},
+		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
+	])
+
+
+
 
 	console.log('collection populated')
 }

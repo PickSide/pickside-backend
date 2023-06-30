@@ -1,4 +1,4 @@
-import User from '../models/User'
+import User from '../schemas/User'
 import { Request, Response } from 'express'
 import { AccountCreatedSuccess, UserAlreadyExists, SendResponse, Status, ProfileSuccessfullyUpdated } from '../utils/responses'
 import { omit } from 'lodash'

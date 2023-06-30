@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { SendResponse, Status } from '../utils/responses'
-import Area from '../models/Area'
+import Area from '../schemas/PredefinedArea'
 
 export const getAll = async (req: Request, res: Response) => {
 	const areas = await Area.find()

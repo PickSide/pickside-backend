@@ -114,6 +114,30 @@ paths:
         5XX:
           description: Unexpected error.
 
+  /activities/{activityId}/register/{userId}:
+    post:
+      tags: [Activity]
+      summary: Register user to activity
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: activityId
+          schema:
+            type: integer
+        - in: path
+          name: userId
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Successfully fetched users
+          schema:
+            type: integer
+        403:
+          description: Forbidden action.
+        5XX:
+          description: Unexpected error.
+
 definitions:
   Activity:
     type: object
@@ -134,7 +158,7 @@ definitions:
         type: array
         items:
           type: object
-      minimumRequired:
+      recommandedLevel:
         type: number
       unitPrice:
         type: number

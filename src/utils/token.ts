@@ -1,27 +1,14 @@
-import RevokedToken from '../models/RevokedToken'
-import ValidToken from '../models/ValidToken'
+import Token from '../schemas/Token'
 
-export async function addToValidTokens(token: string): Promise<void> {
-	await ValidToken.create({ value: token })
-
+export async function addToList(token: string): Promise<void> {
+	await Token.create({ value: token })
 	return
 }
 
 export async function isTokenValid(token: string): Promise<boolean> {
-	const isTokenRevoked = !!(await RevokedToken.findOne({ value: token }).exec())
-	const isTokenValid = !!(await ValidToken.findOne({ value: token }).exec())
-
-	return !isTokenRevoked && isTokenValid
+	return !!(await Token.findOne({ value: token }).exec())
 }
 
-export async function revokeToken(token: string): Promise<void> {
-	await ValidToken.findOneAndDelete({ value: token }).exec()
-
-	const revokedTokenExists = await RevokedToken.findOne({ value: token }).exec()
-
-	if (!revokedTokenExists) {
-		await RevokedToken.create({ value: token })
-	}
-
-	return
+export async function revokeToken(token: string): Promise<boolean> {
+	return !!(await Token.findOneAndDelete({ value: token }).exec())
 }

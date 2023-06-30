@@ -1,5 +1,5 @@
-import User, { IAccount } from '../models/User'
-import VerifiedEmail from '../models/VerifiedEmail'
+import User, { IUser } from '../schemas/User'
+import VerifiedEmail from '../schemas/Email'
 import { Request, Response } from 'express'
 import { JwtPayload, JsonWebTokenError, sign, TokenExpiredError, verify } from 'jsonwebtoken'
 import { compare } from 'bcrypt'
@@ -8,7 +8,7 @@ import {
 	SendResponse,
 	Status,
 	WrongCredentials,
-	addToValidTokens,
+	addToList,
 	isTokenValid,
 	revokeToken,
 	secrets,
@@ -72,8 +72,8 @@ export const login = async (req: Request, res: Response) => {
 		const accessToken = generateAT(claims)
 		const refreshToken = generateRT(claims)
 
-		await addToValidTokens(accessToken)
-		await addToValidTokens(refreshToken)
+		await addToList(accessToken)
+		await addToList(refreshToken)
 
 		return SendResponse(res, Status.Ok, {
 			user: omit(user.toObject(), ['password']),
@@ -102,7 +102,7 @@ function generateRT(claims) {
 	return sign(claims, secrets['REFRESH_TOKEN_SECRET'], { expiresIn: '1d' })
 }
 
-function getTokenClaims(data: IAccount, emailVerified: boolean = false): TokenClaims {
+function getTokenClaims(data: IUser, emailVerified: boolean = false): TokenClaims {
 	return {
 		...pick(data, ['email', 'profile.firstName', 'profile.lastName', 'username']),
 		emailVerified,

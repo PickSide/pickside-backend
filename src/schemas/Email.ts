@@ -1,9 +1,10 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
 export const EmailSchema = new Schema(
 	{
 		userIdAssociated: { type: String, require: true },
 		value: { type: String, require: true },
+		verified: { type: Boolean, default: false, require: true },
 	},
 	{
 		timestamps: true,
@@ -17,3 +18,6 @@ export const EmailSchema = new Schema(
 		},
 	},
 )
+
+
+export default model('Email', EmailSchema)

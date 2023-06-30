@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose'
+import { model, Schema } from 'mongoose'
 
 export const TokenSchema = new Schema(
 	{
@@ -16,3 +16,5 @@ export const TokenSchema = new Schema(
 		},
 	},
 )
+
+export default model('Token', TokenSchema)

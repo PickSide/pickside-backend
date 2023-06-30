@@ -1,6 +1,6 @@
-import { Schema } from 'mongoose'
+import { model, Schema } from 'mongoose'
 
-export const AreaSchema = new Schema(
+export const PredefinedAreaSchema = new Schema(
 	{
 		country: { type: String, require: true },
 		state: { type: String, require: false },
@@ -21,3 +21,14 @@ export const AreaSchema = new Schema(
 		},
 	},
 )
+
+export interface IPredefinedArea extends Document {
+	country: string
+	state: string
+	city: string
+	district: string[]
+	districtCode: string
+	coords: any
+}
+
+export default model<IPredefinedArea>('PredefinedArea', PredefinedAreaSchema)

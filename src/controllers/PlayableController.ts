@@ -1,4 +1,4 @@
-import Playable from '../models/Playable'
+import Playable from '../schemas/Court'
 import { Request, Response } from 'express'
 import { SendResponse, Status } from '../utils/responses'
 
