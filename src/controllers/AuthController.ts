@@ -1,8 +1,3 @@
-import User, { IUser } from '../schemas/User'
-import VerifiedEmail from '../schemas/Email'
-import { Request, Response } from 'express'
-import { JwtPayload, JsonWebTokenError, sign, TokenExpiredError, verify } from 'jsonwebtoken'
-import { compare } from 'bcrypt'
 import {
 	DefaultServerResponseMap,
 	SendResponse,
@@ -13,7 +8,13 @@ import {
 	revokeToken,
 	secrets,
 } from '../utils'
+import { JsonWebTokenError, JwtPayload, TokenExpiredError, sign, verify } from 'jsonwebtoken'
+import { Request, Response } from 'express'
+import User, { IUser } from '../schemas/User'
 import { omit, pick } from 'lodash'
+
+import VerifiedEmail from '../schemas/Email'
+import { compare } from 'bcrypt'
 
 interface TokenClaims extends JwtPayload {
 	emailVerified?: boolean
@@ -59,15 +60,15 @@ export const getAccessToken = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
-	const { username, password } = req.body.data
-	const user = await User.findOne({ username }).exec()
-	if (!username || !password || !user) {
+	const { username: usernameOrEmail, password } = req.body.data
+	const user = await User.findOne({ $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }] }).populate(['preferredLocale', 'preferredRegion', 'preferredSport', 'eventsRegistered', 'groups']).exec()
+	if (!usernameOrEmail || !password || !user) {
 		return SendResponse(res, Status.BadRequest, DefaultServerResponseMap[Status.BadRequest])
 	}
 
 	const match = await compare(password, user.password)
 	if (match) {
-		const emailVerified = !!(await VerifiedEmail.findOne({ usernameAssociated: username }).exec())
+		const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user.id }).exec())
 		const claims = getTokenClaims(user, emailVerified)
 		const accessToken = generateAT(claims)
 		const refreshToken = generateRT(claims)
@@ -76,7 +77,7 @@ export const login = async (req: Request, res: Response) => {
 		await addToList(refreshToken)
 
 		return SendResponse(res, Status.Ok, {
-			user: omit(user.toObject(), ['password']),
+			user: omit(user, ['password']),
 			accessToken,
 			refreshToken,
 		})
@@ -102,7 +103,7 @@ function generateRT(claims) {
 	return sign(claims, secrets['REFRESH_TOKEN_SECRET'], { expiresIn: '1d' })
 }
 
-function getTokenClaims(data: IUser, emailVerified: boolean = false): TokenClaims {
+function getTokenClaims(data, emailVerified: boolean = false): TokenClaims {
 	return {
 		...pick(data, ['email', 'profile.firstName', 'profile.lastName', 'username']),
 		emailVerified,

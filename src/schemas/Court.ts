@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
 
+import { schemaProps } from '../utils'
+
 export const CourtSchema = new Schema(
     {
         available: { type: Boolean, require: false },
@@ -11,15 +13,7 @@ export const CourtSchema = new Schema(
         type: { type: String, require: true },
     },
     {
-        timestamps: true,
-        versionKey: false,
-        id: true,
-        toJSON: {
-            transform(doc, ret) {
-                ret.id = ret._id
-                delete ret._id
-            },
-        },
+        ...schemaProps
     },
 )
 

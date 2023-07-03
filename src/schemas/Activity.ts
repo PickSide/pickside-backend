@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
 
+import { schemaProps } from '../utils'
+
 export interface IActivity extends Document {
 	address: string
 	date: string,
@@ -33,15 +35,7 @@ export const ActivitySchema = new Schema(
 		unitPrice: { type: Number, require: false },
 	},
 	{
-		timestamps: true,
-		versionKey: false,
-		id: true,
-		toJSON: {
-			transform(doc, ret) {
-				ret.id = ret._id
-				delete ret._id
-			},
-		},
+		...schemaProps
 	},
 )
 

@@ -14,6 +14,26 @@ paths:
         5XX:
           description: Unexpected error.
 
+  /notifications/{userId}:
+    get:
+      tags: [Notification]
+      summary: Gets list notification for user
+      produces: [application/json]
+      parameters:
+        - in: path
+          name: activityId
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Notification"
+        5XX:
+          description: Unexpected error.
+
 definitions:
   Notification:
     type: object

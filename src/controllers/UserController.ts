@@ -1,7 +1,8 @@
-import User from '../schemas/User'
+import { AccountCreatedSuccess, DefaultServerResponseMap, ProfileSuccessfullyUpdated, SendResponse, Status, UserAlreadyExists } from '../utils/responses'
 import { Request, Response } from 'express'
-import { AccountCreatedSuccess, UserAlreadyExists, SendResponse, Status, ProfileSuccessfullyUpdated } from '../utils/responses'
-import { omit } from 'lodash'
+import { merge, omit } from 'lodash'
+
+import User from '../schemas/User'
 import { hashSync } from 'bcrypt'
 
 export const get = async (req: Request, res: Response) => { }
@@ -31,15 +32,25 @@ export const create = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
 	const setting = req.body.data
-	const [key, value] = Object.entries(setting).map(([key, value], idx) => [key, value])[0]
 
-	await User.findByIdAndUpdate(req.params.id, { ...setting }).exec()
-
-	return SendResponse(
-		res,
-		Status.Ok,
-		{ ...ProfileSuccessfullyUpdated },
-	)
+	return await User.findByIdAndUpdate(req.params.id, { ...setting })
+		.exec()
+		.then(data => {
+			console.log(data)
+			return SendResponse(
+				res,
+				Status.Ok,
+				{ ...ProfileSuccessfullyUpdated },
+			)
+		})
+		.catch(error => {
+			console.log(error)
+			return SendResponse(
+				res,
+				Status.BadRequest,
+				DefaultServerResponseMap[Status.BadRequest],
+			)
+		})
 }
 
 export const remove = async (req: Request, res: Response) => { }

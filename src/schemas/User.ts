@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
 
+import { schemaProps } from '../utils'
+
 export const UserSchema = new Schema(
 	{
 		attendedEventsCount: { type: String, require: false },
@@ -7,10 +9,10 @@ export const UserSchema = new Schema(
 		bio: { type: String, require: false },
 		city: { type: String, require: false },
 		email: { type: String, require: false },
-		eventsRegistered: { type: String, require: false },
+		eventsRegistered: { type: [Schema.Types.ObjectId], ref: 'Activity', require: false },
 		firstName: { type: String, require: false },
 		fitnessLevel: { type: String, default: 'average', require: false },
-		groups: { type: Schema.Types.ObjectId, ref: 'Group', require: false },
+		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
 		isOrganizer: { type: Boolean, require: false },
 		joinDate: { type: String, require: false },
 		lastName: { type: String, require: false },
@@ -21,9 +23,9 @@ export const UserSchema = new Schema(
 		matchPlayedCount: { type: Number, require: false },
 		password: { type: String, require: false },
 		phone: { type: String, require: false },
-		preferredLocale: { type: String, default: 'fr', require: false },
-		preferredRegion: { type: String, default: 'light', require: false },
-		preferredSport: { type: String, default: 'soccer', require: false },
+		preferredLocale: { type: Schema.Types.ObjectId, ref: 'Locale', require: false },
+		preferredRegion: { type: Schema.Types.ObjectId, ref: 'PredefinedArea', require: false },
+		preferredSport: { type: Schema.Types.ObjectId, ref: 'Sport', require: false },
 		preferredTheme: { type: String, default: 'light', require: false },
 		profilePrivacy: {
 			allowLocationTracking: { type: Boolean, default: false, require: false },
@@ -42,22 +44,11 @@ export const UserSchema = new Schema(
 		zip: { type: String, require: false },
 	},
 	{
-		timestamps: true,
-		versionKey: false,
-		id: false,
-		toJSON: {
-			transform(doc, ret) {
-				ret.id = ret._id
-				delete ret._id
-				delete ret.__v
-				return ret
-			},
-		},
+		...schemaProps,
 	},
 )
 
 export interface IUser extends Document {
-	id: string
 	attendedEventsCount: number
 	avatar: string
 	bio: string
@@ -77,9 +68,9 @@ export interface IUser extends Document {
 	matchPlayedCount: number
 	password: string
 	phone: string
-	preferredLocale: 'fr' | 'en'
-	preferredRegion: string
-	preferredSport: string
+	preferredLocale: any
+	preferredRegion: any
+	preferredSport: any
 	preferredTheme: 'light' | 'dark'
 	profilePrivacy: {
 		allowLocationTracking: boolean

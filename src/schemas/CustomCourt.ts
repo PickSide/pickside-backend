@@ -1,19 +1,13 @@
 import { Schema, model } from 'mongoose'
 
+import { schemaProps } from '../utils'
+
 export const CustomCourtSchema = new Schema(
     {
 
     },
     {
-        timestamps: true,
-        versionKey: false,
-        id: true,
-        toJSON: {
-            transform(doc, ret) {
-                ret.id = ret._id
-                delete ret._id
-            },
-        },
+        ...schemaProps
     },
 )
 

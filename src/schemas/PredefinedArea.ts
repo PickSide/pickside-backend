@@ -1,4 +1,5 @@
 import { model, Schema } from 'mongoose'
+import { schemaProps } from '../utils'
 
 export const PredefinedAreaSchema = new Schema(
 	{
@@ -10,15 +11,7 @@ export const PredefinedAreaSchema = new Schema(
 		coords: { type: Object, require: true },
 	},
 	{
-		timestamps: true,
-		versionKey: false,
-		id: true,
-		toJSON: {
-			transform(doc, ret) {
-				ret.id = ret._id
-				delete ret._id
-			},
-		},
+		...schemaProps
 	},
 )
 

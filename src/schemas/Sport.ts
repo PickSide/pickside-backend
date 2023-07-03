@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
 
+import { schemaProps } from '../utils'
+
 export const SportSchema = new Schema(
 	{
 		featureAvailable: { type: Boolean, require: true },
@@ -14,15 +16,7 @@ export const SportSchema = new Schema(
 
 	},
 	{
-		timestamps: true,
-		versionKey: false,
-		id: true,
-		toJSON: {
-			transform(doc, ret) {
-				ret.id = ret._id
-				delete ret._id
-			},
-		},
+		...schemaProps
 	},
 )
 

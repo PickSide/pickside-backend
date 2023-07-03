@@ -1,32 +1,31 @@
 import { Schema, model } from 'mongoose'
 
+import { schemaProps } from '../utils'
+
+export type NotificationType = 'system' | 'global' | 'user'
+
 export const NotificationSchema = new Schema(
     {
-        created: { type: Object, require: false },
-        isRead: { type: Object, require: false },
+        created: { type: String, require: false },
+        isRead: { type: Boolean, require: false },
+        message: { type: String, require: true },
         receiver: { type: Schema.Types.ObjectId, ref: 'User', require: false },
         sender: { type: Schema.Types.ObjectId, ref: 'User', require: false },
-        type: { type: ['global', 'message', 'post'], require: true },
+        type: { type: String, require: true },
     },
     {
-        timestamps: true,
-        versionKey: false,
-        id: true,
-        toJSON: {
-            transform(doc, ret) {
-                ret.id = ret._id
-                delete ret._id
-            },
-        },
+        ...schemaProps
     },
 )
 
+
 export interface INotification extends Document {
-    created: string[]
+    created: string
     isRead: string
+    message: string
     receiver: string
     sender: string
-    type: 'global' | 'message' | 'post'
+    type: NotificationType
 }
 
 export default model<INotification>('Notification', NotificationSchema)

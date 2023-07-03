@@ -1,6 +1,7 @@
-import Activity from '../schemas/Activity'
-import { Request, Response } from 'express'
 import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
+import { Request, Response } from 'express'
+
+import Activity from '../schemas/Activity'
 
 export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
@@ -21,7 +22,7 @@ export const updateActivityById = async (req: Request, res: Response) => {
 	const { activityId } = req.params
 	const { userId } = req.body.data
 
-	const participants = await Activity.findById({ _id: activityId })
+	const participants = await Activity.findById({ id: activityId })
 		.exec()
 		.then((response) => response?.participants)
 
@@ -31,7 +32,7 @@ export const updateActivityById = async (req: Request, res: Response) => {
 
 	participants?.push(userId)
 
-	const updated = await Activity.findOneAndUpdate({ _id: activityId }, { participants }, { new: true }).exec()
+	const updated = await Activity.findOneAndUpdate({ id: activityId }, { participants }, { new: true }).exec()
 
 	return SendResponse(
 		res,

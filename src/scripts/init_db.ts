@@ -1,8 +1,9 @@
 import { Connection, Types, connect } from 'mongoose'
-import { _toCoordsObj, createCourt, createUser, getAreas } from './helper'
+import { _toCoordsObj, createCourt, createUser } from './helper'
 
 import Activity from '../schemas/Activity'
 import Locale from '../schemas/Locale'
+import Notification from '../schemas/Notification'
 import Playable from '../schemas/Court'
 import PredefinedArea from '../schemas/PredefinedArea'
 import Sport from '../schemas/Sport'
@@ -63,20 +64,29 @@ async function initCollections() {
 async function populateCollections() {
 	console.log('populating collections...')
 
-	const users = await createUser([
-		{ firstName: 'Ali', lastName: 'Idrici', username: 'ali' },
-		{ firstName: 'Omer', lastName: 'Bos', username: 'bos' },
-		{ firstName: 'Tony', lastName: 'Hakim', username: 'tony' },
-		{ firstName: 'Niloofar', lastName: 'hakim', username: 'niloo' },
-		{ firstName: 'Ian', lastName: 'Piluganov', username: 'ian' },
-		{ firstName: 'Rafic', lastName: 'Haddad', username: 'rafic' },
-		{ firstName: 'Marc', lastName: 'Bartik', username: 'marc' },
-		{ firstName: 'Fadi', lastName: 'Bartik', username: 'fadi' },
-		{ firstName: 'Philippe', lastName: 'Kuret', username: 'phil' },
-		{ firstName: 'Rami', lastName: 'Kuret', username: 'rami' },
-		{ firstName: 'Kevin', lastName: 'Moniz', username: 'kevin' },
-		{ firstName: 'Karim', lastName: 'Abou-Khalil', username: 'karim' },
-		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo' },
+	const predefinedAreas = await PredefinedArea.insertMany([
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Anjou'], districtCode: 'anj', coords: _toCoordsObj(45.6122993, -73.5899528) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Ahunstic-Cartierville'], districtCode: 'ahc', coords: _toCoordsObj(45.5547972, -73.6777571) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Montreal-Nord'], districtCode: 'mtl-n', coords: _toCoordsObj(45.602927, -73.6496184) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Montreal-Est'], districtCode: 'mtl-e', coords: _toCoordsObj(45.6292342, -73.546502) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Lasalle'], districtCode: 'las', coords: _toCoordsObj(45.4361082, -73.6591395) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Lachine'], districtCode: 'lac', coords: _toCoordsObj(45.4505633, -73.7181664) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Saint-Leonard'], districtCode: 'leo', coords: _toCoordsObj(45.5888043, -73.6173978) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Saint-Michel', 'Parc-Extension', 'Villeray'], districtCode: 'stmch', coords: _toCoordsObj(45.5446838, -73.6350267) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Rosement'], districtCode: 'rsmt', coords: _toCoordsObj(45.553827, -73.6058538) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Plateau', 'Mont-Royal'], districtCode: 'pmtr', coords: _toCoordsObj(45.5233159, -73.6063665) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Outremont'], districtCode: 'outm', coords: _toCoordsObj(45.5160655, -73.6187685) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Westmount'], districtCode: 'wsmt', coords: _toCoordsObj(45.4848052, -73.6097335) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Mt-Royal'], districtCode: 'mtr', coords: _toCoordsObj(45.5071397, -73.6738939) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Saint-Laurent'], districtCode: 'sl', coords: _toCoordsObj(45.4966238, -73.753911) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Montreal', district: ['Cote-des-Neiges', 'Hampstead', 'Notre-Dame-de-Grace'], districtCode: 'ndg', coords: _toCoordsObj(45.4673574, -73.6479913) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Fabreville'], districtCode: 'fbv', coords: _toCoordsObj(45.5746574, -73.9735) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Duvernay'], districtCode: 'duv', coords: _toCoordsObj(45.5953843, -73.6799281) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Vimont'], districtCode: 'vim', coords: _toCoordsObj(45.6063861, -73.7456115) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Chomedey'], districtCode: 'chd', coords: _toCoordsObj(45.5383503, -73.7375266) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Auteuil'], districtCode: 'aut', coords: _toCoordsObj(45.6304957, -73.7627909) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Pont-Viau'], districtCode: 'pv', coords: _toCoordsObj(45.5709566, -73.6957849) },
+		{ id: new Types.ObjectId(), country: 'Canada', state: 'Quebec', city: 'Laval', district: ['Laval-des-rapides'], districtCode: 'ldr', coords: _toCoordsObj(45.5560382, -73.7275401) },
 	])
 
 	const courts = await createCourt([
@@ -89,18 +99,6 @@ async function populateCollections() {
 		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.5971803, -73.5985679), fieldName: 'Terrains de soccer du parc Ferland', schedule: {}, available: true, isMultisportZone: false },
 		{ districtCode: 'leo', type: 'outdoor', coords: _toCoordsObj(45.572575, -73.591777), fieldName: 'Terrains de soccer du parc Hébert', schedule: {}, available: true, isMultisportZone: false },
 	])
-
-	await getAreas().forEach(({ country, state, city, district, districtCode, coords }) => {
-		PredefinedArea.create({
-			id: new Types.ObjectId(),
-			country,
-			state,
-			city,
-			district,
-			districtCode,
-			coords
-		})
-	})
 
 	const sports = await Sport.insertMany([
 		{
@@ -135,6 +133,34 @@ async function populateCollections() {
 		},
 	])
 
+
+
+	const locales = await Locale.insertMany([
+		{
+			id: new Types.ObjectId(),
+			value: 'en',
+			description: 'English (US)',
+			flagCode: 'us',
+		},
+		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
+	])
+
+	const users = await createUser([
+		{ firstName: 'Ali', lastName: 'Idrici', username: 'ali', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Omer', lastName: 'Bos', username: 'bos', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Tony', lastName: 'Hakim', username: 'tony', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Niloofar', lastName: 'hakim', username: 'niloo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Ian', lastName: 'Piluganov', username: 'ian', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Rafic', lastName: 'Haddad', username: 'rafic', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Marc', lastName: 'Bartik', username: 'marc', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Fadi', lastName: 'Bartik', username: 'fadi', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Philippe', lastName: 'Kuret', username: 'phil', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Rami', lastName: 'Kuret', username: 'rami', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Kevin', lastName: 'Moniz', username: 'kevin', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Karim', lastName: 'Abou-Khalil', username: 'karim', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+	])
+
 	await Activity.insertMany([
 		{
 			id: new Types.ObjectId(),
@@ -154,17 +180,33 @@ async function populateCollections() {
 		},
 	])
 
-	await Locale.insertMany([
+	await Notification.insertMany([
 		{
 			id: new Types.ObjectId(),
-			value: 'en',
-			description: 'English (US)',
-			flagCode: 'us',
+			created: Date.now(),
+			isRead: false,
+			message: 'This is a system notification',
+			receiver: users[2],
+			type: 'system',
 		},
-		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
+		{
+			id: new Types.ObjectId(),
+			created: Date.now(),
+			isRead: false,
+			message: 'This is a global notification',
+			receiver: users[2],
+			type: 'global',
+		},
+		{
+			id: new Types.ObjectId(),
+			created: Date.now(),
+			isRead: false,
+			message: 'This is a user notification',
+			receiver: users[2],
+			sender: users[0],
+			type: 'user',
+		}
 	])
-
-
 
 
 	console.log('collection populated')

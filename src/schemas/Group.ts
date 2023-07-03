@@ -1,5 +1,7 @@
 import { Schema, model } from 'mongoose'
 
+import { schemaProps } from '../utils'
+
 export const GroupSchema = new Schema(
     {
         coverPhoto: { type: Object, require: false },
@@ -12,15 +14,7 @@ export const GroupSchema = new Schema(
         visibility: { type: ['public', 'private'], default: 'public', require: false },
     },
     {
-        timestamps: true,
-        versionKey: false,
-        id: true,
-        toJSON: {
-            transform(doc, ret) {
-                ret.id = ret._id
-                delete ret._id
-            },
-        },
+        ...schemaProps
     },
 )
 
