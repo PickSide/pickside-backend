@@ -15,7 +15,21 @@ function getDatabaseOptions() {
 	}
 }
 
+export const schemaProps = {
+	timestamps: true,
+	versionKey: false,
+	toJSON: {
+		transform(doc, ret) {
+			ret.id = ret._id
+			delete ret._id
+			delete ret.__v
+			return ret
+		},
+	},
+}
+
 export default {
 	getDatabaseURI,
 	getDatabaseOptions,
+	schemaProps
 }
