@@ -13,8 +13,10 @@ export const UserSchema = new Schema(
 		firstName: { type: String, require: false },
 		fitnessLevel: { type: String, default: 'average', require: false },
 		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
+		inactive: { type: Boolean, default: false, require: false },
+		inactiveDate: { type: Date, default: null, require: false },
 		isOrganizer: { type: Boolean, require: false },
-		joinDate: { type: String, require: false },
+		joinDate: { type: Date, require: false },
 		lastName: { type: String, require: false },
 		localeRegion: { type: String, require: false },
 		locationCommonlyPlayedIn: { type: String, require: true },
@@ -58,8 +60,10 @@ export interface IUser extends Document {
 	firstName: string
 	fitnessLevel: 'retired' | 'average' | 'athletic' | 'very athletic'
 	groups: any[]
+	inactive: boolean
+	inactiveDate: Date
 	isOrganizer: boolean
-	joinDate: string
+	joinDate: Date
 	lastName: string
 	localeRegion: string
 	locationCommonlyPlayedIn: string

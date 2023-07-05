@@ -23,13 +23,34 @@ export enum Status {
 }
 
 export enum AppContext {
-	Account = 'Account',
 	Activity = 'Activity',
-	Level = 'Level',
+	Court = 'Court',
+	CustomCourt = 'Custom Court',
+	Email = 'Email',
+	Group = 'Group',
 	Locale = 'Locale',
-	Session = 'Session',
+	Notification = 'Notification',
+	Schedule = 'Schedule',
 	Sport = 'Sport',
+	Token = 'Token',
 	User = 'User',
+}
+
+export enum JobType {
+	Login = 'login',
+	Logout = 'logout',
+	Register = 'register',
+	Token = 'gettoken',
+	GetCourt = 'getcourt',
+	GetCustomCourts = 'getcustomcourts',
+	GetCustomCourt = 'getcustomcourt',
+	AddCutomCourt = 'addcustomcourt',
+	DeleteCustomCourt = 'deletecustomcourt',
+	VerifyEmail = 'vertifyemail',
+}
+
+export enum FailReason {
+	UserInactive = 'userinactive'
 }
 
 export const DefaultServerResponseMap = {
@@ -55,9 +76,32 @@ export const DefaultServerResponseMap = {
 }
 
 export interface MessageReponseProps {
-	message: string
-	status: any
-	timeStamp: Date
+	callback?: string
+	context?: AppContext
+	extra?: any
+	failReason?: FailReason
+	jobStatus?: 'FAILED' | 'COMPLETED'
+	jobType?: JobType
+	message?: string
+	res: Response
+	status: Status
+	timeStamp?: Date
+}
+
+export function SendResponse2({ callback, context, extra = {}, failReason, res, message, status, timeStamp = new Date(), jobType, jobStatus }: MessageReponseProps) {
+	if (!res) return
+
+	return res.status(status).json({
+		callback,
+		context,
+		failReason,
+		jobStatus,
+		jobType,
+		message,
+		status,
+		timeStamp,
+		...extra
+	})
 }
 
 export function SendResponse(res: Response, statusCode?: Status, msgResponse?: any) {

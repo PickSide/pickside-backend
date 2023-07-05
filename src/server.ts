@@ -1,11 +1,11 @@
-import cors from 'cors'
-import databaseUtils from './utils/databaseUtils'
-import express from 'express'
 import Routes from './routes'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
-import swaggerUi from 'swagger-ui-express'
+import cors from 'cors'
+import databaseUtils from './utils/databaseUtils'
+import express from 'express'
 import swaggerJsDoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 
 const app = express()
 
