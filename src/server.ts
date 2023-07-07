@@ -40,7 +40,7 @@ connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!
 app
 	.use(cors(corsOptions()))
 	.use(express.json())
-	.use('/api/v1', Routes)
+	.use(Routes)
 	.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 	.listen(process.env.API_SERVER_PORT, () =>
 		console.log('Connected to server on port', process.env.API_SERVER_PORT),
