@@ -20,7 +20,7 @@ const swaggerDefinition = {
 	basePath: '/',
 	servers: [
 		{
-			url: 'localhost:8000',
+			url: 'localhost:8000/api/v1',
 			description: 'Development server',
 		},
 	],
