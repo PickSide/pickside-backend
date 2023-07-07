@@ -16,7 +16,7 @@ const swaggerDefinition = {
 		version: "1.0.0",
 		description: "The Pickside API"
 	},
-	host: `localhost:8000`,
+	host: `localhost:8000/api/v1`,
 	basePath: '/',
 	servers: [
 		{
@@ -40,7 +40,7 @@ connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!
 app
 	.use(cors(corsOptions()))
 	.use(express.json())
-	.use(Routes)
+	.use('/api/v1', Routes)
 	.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
 	.listen(process.env.API_SERVER_PORT, () =>
 		console.log('Connected to server on port', process.env.API_SERVER_PORT),
