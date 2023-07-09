@@ -180,55 +180,39 @@ definitions:
     properties:
       id:
         type: string
-      birthday:
-        type: date
-      username:
-        type: string
-      socialNetworks:
-        type: array
-      startDate:
-        type: date
+      attendedEventsCount:
+        type: number
       avatar:
         type: string
         format: binary
-      subscriptionType:
-        type: string
-      isOrganizer:
-        type: string
       bio:
         type: string
+      birthday:
+        type: date
       city:
         type: string
       email:
         type: string
+      eventsRegistered:
+        type: array
       firstName:
-        type: string
-      lastName:
-        type: string
-      phone:
-        type: string
-      sexe:
-        type: string
-      matchPlayed:
-        type: string
-      matchOrganized:
-        type: string
-      reliability:
         type: string
       fitnessLevel:
         type: string
-      attendedEventsCount:
-        type: number
       groups:
         type: array
+      isOrganizer:
+        type: boolean
+      lastName:
+        type: string
       locationCommonlyPlayedIn:
         type: string
-      state:
+      matchPlayedCount:
         type: string
-      zip:
+      matchOrganizedCount:
         type: string
-      eventsRegistered:
-        type: array
+      phone:
+        type: string
       preferredSport:
         type: string
       preferredLocale:
@@ -252,6 +236,22 @@ definitions:
             type: boolean
           showGroups:
             type: boolean
+      username:
+        type: string
+      socialNetworks:
+        type: array
+      startDate:
+        type: date
+      subscriptionType:
+        type: string
+      sexe:
+        type: string
+      reliability:
+        type: string
+      state:
+        type: string
+      zip:
+        type: string
       reasonsForJoining:
         type: array
         items:

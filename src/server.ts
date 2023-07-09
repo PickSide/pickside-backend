@@ -1,11 +1,11 @@
-import cors from 'cors'
-import databaseUtils from './utils/databaseUtils'
-import express from 'express'
 import Routes from './routes'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
-import swaggerUi from 'swagger-ui-express'
+import cors from 'cors'
+import databaseUtils from './utils/databaseUtils'
+import express from 'express'
 import swaggerJsDoc from 'swagger-jsdoc'
+import swaggerUi from 'swagger-ui-express'
 
 const app = express()
 
@@ -16,11 +16,11 @@ const swaggerDefinition = {
 		version: "1.0.0",
 		description: "The Pickside API"
 	},
-	host: `localhost:8000`,
+	host: `localhost:8000/api/v1`,
 	basePath: '/',
 	servers: [
 		{
-			url: 'localhost:8000',
+			url: 'localhost:8000/api/v1',
 			description: 'Development server',
 		},
 	],
@@ -40,8 +40,8 @@ connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!
 app
 	.use(cors(corsOptions()))
 	.use(express.json())
-	.use(Routes)
-	.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs))
+	.use('/api/v1', Routes)
+	.use("/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
 	.listen(process.env.API_SERVER_PORT, () =>
 		console.log('Connected to server on port', process.env.API_SERVER_PORT),
 	)
@@ -49,7 +49,6 @@ app
 function corsOptions() {
 	return {
 		methods: ['GET', 'POST', 'DELETE', 'UPDATE', 'PUT', 'PATCH'],
-		origin: 'http://localhost:3000',
 		optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 	}
 }

@@ -1,18 +1,14 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
+
+import { schemaProps } from '../utils'
 
 export const TokenSchema = new Schema(
 	{
 		value: { type: String, require: true },
 	},
 	{
-		timestamps: true,
-		versionKey: false,
-		id: true,
-		toJSON: {
-			transform(doc, ret) {
-				ret.id = ret._id
-				delete ret._id
-			},
-		},
+		...schemaProps,
 	},
 )
+
+export default model('Token', TokenSchema)

@@ -1,12 +1,13 @@
-import Activity from '../models/Activity'
-import { Request, Response } from 'express'
 import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
+import { Request, Response } from 'express'
 
-export const get = async (req: Request, res: Response) => {
+import Activity from '../schemas/Activity'
+
+export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
 	return SendResponse(res, Status.Ok, { results: activities })
 }
-export const create = async (req: Request, res: Response) => {
+export const createActivity = async (req: Request, res: Response) => {
 
 	const activity = await Activity.create({ ...req.body.data })
 
@@ -16,11 +17,12 @@ export const create = async (req: Request, res: Response) => {
 		{ ...ActivityCreatedSuccess, response: { activity }, status: 'Created' },
 	)
 }
-export const update = async (req: Request, res: Response) => {
+export const getActivityById = async (req: Request, res: Response) => { }
+export const updateActivityById = async (req: Request, res: Response) => {
 	const { activityId } = req.params
 	const { userId } = req.body.data
 
-	const participants = await Activity.findById({ _id: activityId })
+	const participants = await Activity.findById({ id: activityId })
 		.exec()
 		.then((response) => response?.participants)
 
@@ -30,7 +32,7 @@ export const update = async (req: Request, res: Response) => {
 
 	participants?.push(userId)
 
-	const updated = await Activity.findOneAndUpdate({ _id: activityId }, { participants }, { new: true }).exec()
+	const updated = await Activity.findOneAndUpdate({ id: activityId }, { participants }, { new: true }).exec()
 
 	return SendResponse(
 		res,
@@ -38,4 +40,6 @@ export const update = async (req: Request, res: Response) => {
 		{ ...ParticipantSuccessfullyRegistered, response: updated, status: 'Registered' },
 	)
 }
-export const remove = async (req: Request, res: Response) => { }
+export const removeActivityById = async (req: Request, res: Response) => { }
+export const getActivityByGroupId = async (req: Request, res: Response) => { }
+

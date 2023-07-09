@@ -1,13 +1,13 @@
-import { verify, TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken'
 import {
-	InvalidToken,
 	DefaultServerResponseMap,
+	InvalidToken,
 	SendResponse,
 	Status,
-	secrets,
 	isTokenValid,
 	revokeToken,
+	secrets,
 } from '../utils'
+import { JsonWebTokenError, TokenExpiredError, verify } from 'jsonwebtoken'
 
 export function validateAccessToken(req, res, next) {
 	const authHeader = req.headers['authorization']

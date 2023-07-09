@@ -1,4 +1,6 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
+
+import { schemaProps } from '../utils'
 
 export const LocaleSchema = new Schema(
 	{
@@ -7,14 +9,14 @@ export const LocaleSchema = new Schema(
 		flagCode: { type: String, require: true },
 	},
 	{
-		timestamps: true,
-		versionKey: false,
-		id: true,
-		toJSON: {
-			transform(doc, ret) {
-				ret.id = ret._id
-				delete ret._id
-			},
-		},
+		...schemaProps
 	},
 )
+
+export interface ILocale extends Document {
+	value: string
+	description: string
+	flagCode: string
+}
+
+export default model<ILocale>('Locale', LocaleSchema)

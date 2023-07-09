@@ -1,8 +1,7 @@
 paths:
   /schedules:
     get:
-      tags:
-        - Schedule
+      tags: [Schedule]
       summary: Gets list of schedules
       produces:
         - application/json
@@ -23,6 +22,8 @@ definitions:
       id:
         type: string
       from:
-        type: date
+        type: string
+        format: date
       to:
-        type: date
+        type: string
+        format: date

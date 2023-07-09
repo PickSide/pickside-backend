@@ -1,41 +1,96 @@
-import { Schema } from 'mongoose'
+import { Schema, model } from 'mongoose'
 
-export const AccountSchema = new Schema(
+import { schemaProps } from '../utils'
+
+export const UserSchema = new Schema(
 	{
+		attendedEventsCount: { type: String, require: false },
 		avatar: { type: Buffer, require: false },
-		email: { type: String, require: true },
-		username: { type: String, require: true },
-		password: { type: String, require: true },
-		firstName: { type: String, require: true },
-		lastName: { type: String, require: true },
-		phone: { type: String, require: false },
-		sexe: { type: String, default: 'male', require: true },
-		defaultSport: { type: String, default: 'soccer', require: false },
-		defaultLanguage: { type: String, default: 'fr', require: false },
-		defaultTheme: { type: String, default: 'light', require: false },
+		bio: { type: String, require: false },
+		city: { type: String, require: false },
+		email: { type: String, require: false },
+		eventsRegistered: { type: [Schema.Types.ObjectId], ref: 'Activity', require: false },
+		firstName: { type: String, require: false },
+		fitnessLevel: { type: String, default: 'average', require: false },
+		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
+		inactive: { type: Boolean, default: false, require: false },
+		inactiveDate: { type: Date, default: null, require: false },
+		isOrganizer: { type: Boolean, require: false },
+		joinDate: { type: Date, require: false },
+		lastName: { type: String, require: false },
+		localeRegion: { type: String, require: false },
+		locationCommonlyPlayedIn: { type: String, require: true },
 		locationTracking: { type: Boolean, default: false, require: false },
-		hideAge: { type: Boolean, default: false, require: false },
-		hideEmail: { type: Boolean, default: false, require: false },
-		hidePhone: { type: Boolean, default: false, require: false },
-		hideUsername: { type: Boolean, default: false, require: false },
-		localeRegion: { type: String, require: true },
-		preferredRegion: { type: String, require: false },
-		matchPlayed: { type: Number, require: true },
-		matchOrganized: { type: Number, require: true },
-		reliability: { type: Number, require: true },
-		fitnessLevel: { type: String, default: 'average', require: false }
+		matchOrganizedCount: { type: Number, require: false },
+		matchPlayedCount: { type: Number, require: false },
+		password: { type: String, require: false },
+		phone: { type: String, require: false },
+		preferredLocale: { type: Schema.Types.ObjectId, ref: 'Locale', require: false },
+		preferredRegion: { type: Schema.Types.ObjectId, ref: 'PredefinedArea', require: false },
+		preferredSport: { type: Schema.Types.ObjectId, ref: 'Sport', require: false },
+		preferredTheme: { type: String, default: 'light', require: false },
+		profilePrivacy: {
+			allowLocationTracking: { type: Boolean, default: false, require: false },
+			showAge: { type: Boolean, default: true, require: false },
+			showEmail: { type: Boolean, default: true, require: false },
+			showPhone: { type: Boolean, default: false, require: false },
+			showGroups: { type: Boolean, default: true, require: false },
+		},
+		reasonsForJoining: { type: [String], require: false },
+		reliability: { type: Number, require: false },
+		sexe: { type: String, default: 'male', require: false },
+		socialNetworks: { type: [String], require: false },
+		subscriptionType: { type: String, require: false },
+		timezone: { type: String, require: false },
+		username: { type: String, require: false },
+		zip: { type: String, require: false },
 	},
 	{
-		timestamps: true,
-		versionKey: false,
-		id: false,
-		toJSON: {
-			transform(doc, ret) {
-				ret.id = ret._id
-				delete ret._id
-				delete ret.__v
-				return ret
-			},
-		},
+		...schemaProps,
 	},
 )
+
+export interface IUser extends Document {
+	attendedEventsCount: number
+	avatar: string
+	bio: string
+	city: string
+	email: string
+	eventsRegistered: any[]
+	firstName: string
+	fitnessLevel: 'retired' | 'average' | 'athletic' | 'very athletic'
+	groups: any[]
+	inactive: boolean
+	inactiveDate: Date
+	isOrganizer: boolean
+	joinDate: Date
+	lastName: string
+	localeRegion: string
+	locationCommonlyPlayedIn: string
+	locationTracking: boolean
+	matchOrganizedCount: number
+	matchPlayedCount: number
+	password: string
+	phone: string
+	preferredLocale: any
+	preferredRegion: any
+	preferredSport: any
+	preferredTheme: 'light' | 'dark'
+	profilePrivacy: {
+		allowLocationTracking: boolean
+		showAge: boolean
+		showEmail: boolean
+		showPhone: boolean
+		showGroups: boolean
+	}
+	reasonsForJoining: string[]
+	reliability: number
+	sexe: 'male' | 'female'
+	socialNetworks: any[]
+	subscriptionType: string
+	timezone: string
+	username: string
+	zip: string
+}
+
+export default model<IUser>('User', UserSchema)

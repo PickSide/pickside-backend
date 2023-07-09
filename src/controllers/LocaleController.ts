@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { SendResponse, Status } from '../utils/responses'
-import Locale from '../models/Locale'
+import Locale from '../schemas/Locale'
 
 export const get = async (req: Request, res: Response) => {
 	const locales = await Locale.find()
