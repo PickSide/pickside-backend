@@ -4,6 +4,7 @@ import User from '../schemas/User'
 import { hashSync } from 'bcrypt'
 
 interface UserProps {
+	email?: string
 	firstName: string
 	lastName: string
 	username: string
@@ -26,13 +27,13 @@ interface PlayablesProps {
 export function createUser(props: UserProps[]) {
 	return Promise.all(
 		props.map(
-			async ({ firstName, lastName, username, preferredLocale, preferredRegion, preferredSport }) =>
+			async ({ email, firstName, lastName, username, preferredLocale, preferredRegion, preferredSport }) =>
 				await User.create({
 					attendedEventsCount: 0,
 					avatar: undefined,
 					bio: 'A bio',
 					city: 'string',
-					email: `${firstName}${lastName}@gmail.com`,
+					email: email ? email : `${firstName}${lastName}@gmail.com`,
 					eventsRegistered: [],
 					firstName,
 					fitnessLevel: 'average',

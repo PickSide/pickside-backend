@@ -148,7 +148,7 @@ async function populateCollections() {
 	const users = await createUser([
 		{ firstName: 'Ali', lastName: 'Idrici', username: 'ali', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
 		{ firstName: 'Omer', lastName: 'Bos', username: 'bos', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		{ firstName: 'Tony', lastName: 'Hakim', username: 'tony', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Tony', lastName: 'Hakim', username: 'tony', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2], email: 'tonyown10@gmail.com' },
 		{ firstName: 'Niloofar', lastName: 'hakim', username: 'niloo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
 		{ firstName: 'Ian', lastName: 'Piluganov', username: 'ian', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
 		{ firstName: 'Rafic', lastName: 'Haddad', username: 'rafic', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },

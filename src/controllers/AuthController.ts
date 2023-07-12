@@ -3,10 +3,9 @@ import {
 	DefaultServerResponseMap,
 	FailReason,
 	JobType,
+	SendErrorResponse,
 	SendResponse,
-	SendResponse2,
 	Status,
-	WrongCredentials,
 	addToList,
 	isTokenValid,
 	revokeToken,
@@ -14,11 +13,12 @@ import {
 } from '../utils'
 import { JsonWebTokenError, JwtPayload, TokenExpiredError, sign, verify } from 'jsonwebtoken'
 import { Request, Response } from 'express'
-import User, { IUser } from '../schemas/User'
 import { omit, pick } from 'lodash'
 
+import User from '../schemas/User'
 import VerifiedEmail from '../schemas/Email'
 import { compare } from 'bcrypt'
+import nodemailer from 'nodemailer'
 
 interface TokenClaims extends JwtPayload {
 	emailVerified?: boolean
@@ -37,10 +37,26 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			if (!!err) {
 				if (err.name === TokenExpiredError.name) {
 					await revokeToken(refreshToken)
-					return SendResponse(res, Status.Forbidden, DefaultServerResponseMap[Status.Forbidden])
+					return SendErrorResponse({
+						context: AppContext.User,
+						failReason: FailReason.TokenExpired,
+						jobStatus: 'FAILED',
+						jobType: JobType.GetAccessToken,
+						message: 'Token expired. Please relogin',
+						res,
+						status: Status.Forbidden
+					})
 				}
 				if (err.name === JsonWebTokenError.name) {
-					return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
+					return SendErrorResponse({
+						context: AppContext.User,
+						failReason: FailReason.TokenError,
+						jobStatus: 'FAILED',
+						jobType: JobType.GetAccessToken,
+						message: 'Unauthorized action.',
+						res,
+						status: Status.Unauthorized
+					})
 				}
 			}
 		})
@@ -63,66 +79,86 @@ export const getAccessToken = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
 }
 
-export const reactivate = async (req: Request, res: Response) => {
-	return await User.findByIdAndUpdate(req.params.userId, { inactive: false, inactiveDate: null })
-		.exec()
-		.then(() => SendResponse(res, Status.Ok, { message: 'Account successfully reactivated' }))
-		.catch(() => SendResponse(res, Status.BadRequest, { message: DefaultServerResponseMap[Status.BadRequest] }))
-
-}
-
-export const deactivate = async (req: Request, res: Response) => {
-	return await User.findByIdAndUpdate(req.params.userId, { inactive: true, inactiveDate: Date.now() })
-		.exec()
-		.then(() => SendResponse(res, Status.Ok, { message: 'Account successfully deactivated' }))
-		.catch(() => SendResponse(res, Status.BadRequest, { message: DefaultServerResponseMap[Status.BadRequest] }))
-
-}
-
 export const login = async (req: Request, res: Response) => {
 	const { username: usernameOrEmail, password } = req.body.data
-	const user = await User.findOne({ $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }] }).populate(['preferredLocale', 'preferredRegion', 'preferredSport', 'eventsRegistered', 'groups']).exec()
-	console.log(user)
-	if (!usernameOrEmail || !password || !user) {
-		return SendResponse(res, Status.BadRequest, DefaultServerResponseMap[Status.BadRequest])
-	}
-
-	const match = await compare(password, user.password)
-
-	if (match) {
-		//const Difference_in_days = user.inactiveDate.getTime() - new Date().getTime() / (1000 * 3600 * 24)
-		if (user.inactive) {
-			return SendResponse2({
-				context: AppContext.User,
-				extra: { userId: user.id },
-				failReason: FailReason.UserInactive,
-				jobStatus: 'FAILED',
-				jobType: JobType.Login,
-				message: 'This user is inactive.',
-				res,
-				status: Status.Unauthorized
-			})
-			// return SendResponse(res, Status.Unauthorized, {
-			// 	message: 'This user is inactive',
-			// 	userId: user.id
-			// })
-		}
-		const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user.id }).exec())
-		const claims = getTokenClaims(user, emailVerified)
-		const accessToken = generateAT(claims)
-		const refreshToken = generateRT(claims)
-
-		await addToList(accessToken)
-		await addToList(refreshToken)
-
-		return SendResponse(res, Status.Ok, {
-			user: omit(user, ['password']),
-			accessToken,
-			refreshToken,
+	const user = await User
+		.findOne({
+			$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]
 		})
-	} else {
-		return SendResponse(res, Status.Unauthorized, WrongCredentials)
+		.populate(['preferredLocale', 'preferredRegion', 'preferredSport', 'eventsRegistered', 'groups'])
+		.exec()
+
+	const match = await compare(password, user?.password)
+
+	if (!usernameOrEmail || !password || !user || !match) {
+		return SendErrorResponse({
+			context: AppContext.User,
+			failReason: FailReason.UserWrongCredentials,
+			jobStatus: 'FAILED',
+			jobType: JobType.Login,
+			message: 'Username/Email or Password is incorrect.',
+			res,
+			status: Status.Unauthorized
+		})
 	}
+
+	if (user.inactive) {
+		const transporter = nodemailer.createTransport({
+			host: "smtp.gmail.com",
+			port: 465,
+			secure: true,
+			service: process.env.PICKSIDE_EMAIL_PROVIDER,
+			auth: {
+				user: process.env.PICKSIDE_EMAIL,
+				pass: process.env.PICKSIDE_EMAIL_PWD
+			}
+		})
+
+		const mailOptions = {
+			from: process.env.PICKSIDE_EMAIL,
+			to: user.email,
+			subject: '[ACTION-REQUIRED] - Reactivating your Pickside account',
+			html: `
+				<p>
+					Hey there, we received notice tht you would like to reactivate your Pickside account
+					If you still wish to do so, please click on this redirection link: 
+					https://pickside.net/api/v1/users/reactivate/${user.id}
+				</p>
+			`
+		};
+
+		transporter.sendMail(mailOptions, (error, info) => {
+			if (error) {
+				console.log(error)
+			} else {
+				console.log('Email sent: ' + info.response)
+			}
+		})
+
+		return SendErrorResponse({
+			context: AppContext.User,
+			extra: { userId: user.id },
+			failReason: FailReason.UserInactive,
+			jobStatus: 'FAILED',
+			jobType: JobType.Login,
+			message: 'This user is inactive.',
+			res,
+			status: Status.Unauthorized
+		})
+	}
+	const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user.id }).exec())
+	const claims = getTokenClaims(user, emailVerified)
+	const accessToken = generateAT(claims)
+	const refreshToken = generateRT(claims)
+
+	await addToList(accessToken)
+	await addToList(refreshToken)
+
+	return SendResponse(res, Status.Ok, {
+		user: omit(user, ['password']),
+		accessToken,
+		refreshToken,
+	})
 }
 
 export const logout = async (req: Request, res: Response) => {
@@ -131,7 +167,15 @@ export const logout = async (req: Request, res: Response) => {
 		await revokeToken(refreshToken)
 		return SendResponse(res, Status.Ok, DefaultServerResponseMap[Status.Ok])
 	}
-	return SendResponse(res, Status.BadRequest)
+	return SendErrorResponse({
+		context: AppContext.User,
+		failReason: FailReason.UserLogout,
+		jobStatus: 'FAILED',
+		jobType: JobType.Logout,
+		message: 'Error while logging out.',
+		res,
+		status: Status.BadRequest
+	})
 }
 
 function generateAT(claims) {

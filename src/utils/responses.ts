@@ -40,17 +40,28 @@ export enum JobType {
 	Login = 'login',
 	Logout = 'logout',
 	Register = 'register',
-	Token = 'gettoken',
+	GetAccessToken = 'getaccesstoken',
 	GetCourt = 'getcourt',
+	UpdateUser = 'updateuser',
 	GetCustomCourts = 'getcustomcourts',
 	GetCustomCourt = 'getcustomcourt',
 	AddCutomCourt = 'addcustomcourt',
 	DeleteCustomCourt = 'deletecustomcourt',
 	VerifyEmail = 'vertifyemail',
+	DeactivateAccount = 'deactivateaccount',
+	ReactivateAccount = 'deactivateaccount',
 }
 
 export enum FailReason {
-	UserInactive = 'userinactive'
+	TokenExpired = 'tokenexpired',
+	TokenError = 'tokenerror',
+	UserDeactivateAccount = 'userdeactivateaccount',
+	UserReactivateAccount = 'userreactivateaccount',
+	UserInactive = 'userinactive',
+	UserExists = 'userexists',
+	UserFailedToUpdate = 'userfailtoupdate',
+	UserWrongCredentials = 'userbadcredentials',
+	UserLogout = 'userlogout'
 }
 
 export const DefaultServerResponseMap = {
@@ -88,7 +99,7 @@ export interface MessageReponseProps {
 	timeStamp?: Date
 }
 
-export function SendResponse2({ callback, context, extra = {}, failReason, res, message, status, timeStamp = new Date(), jobType, jobStatus }: MessageReponseProps) {
+export function SendErrorResponse({ callback, context, extra = {}, failReason, res, message, status, timeStamp = new Date(), jobType, jobStatus }: MessageReponseProps) {
 	if (!res) return
 
 	return res.status(status).json({

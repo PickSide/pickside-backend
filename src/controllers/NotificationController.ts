@@ -27,4 +27,3 @@ export const markNotificationRead = async (req: Request, res: Response) => {
 
     return SendResponse(res, Status.Created, { message: 'Read' })
 }
-//64a04a95afe710a146e5a45c user
