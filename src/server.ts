@@ -34,7 +34,7 @@ const options = {
 const specs = swaggerJsDoc(options)
 
 config()
-
+console.log(process.env)
 connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))
 
 app

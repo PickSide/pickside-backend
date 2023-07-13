@@ -1,5 +1,6 @@
-import Email from '../schemas/Email'
+import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendSuccessResponse, Status } from '../utils/responses'
 import { Request, Response } from 'express'
-import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
+
+import Email from '../schemas/Email'
 
 export const verify = async (req: Request, res: Response) => { }
