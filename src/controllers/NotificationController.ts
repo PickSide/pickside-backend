@@ -1,4 +1,4 @@
-import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendSuccessResponse, Status } from '../utils/responses'
+import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
 import { Request, Response } from 'express'
 
 import Notification from '../schemas/Notification'
@@ -18,12 +18,12 @@ export const getAllNotifications = async (req: Request, res: Response) => {
         { path: 'sender', select: { firstName: 1, lastName: 1, avatar: 1 } }
     ])
 
-    return SendSuccessResponse(res, Status.Ok, { results: notifications })
+    return SendResponse(res, Status.Ok, { results: notifications })
 }
 export const markNotificationRead = async (req: Request, res: Response) => {
     const notificationId = req.params.notificationId
 
     await Notification.findByIdAndUpdate(notificationId, { isRead: true })
 
-    return SendSuccessResponse(res, Status.Created, { message: 'Read' })
+    return SendResponse(res, Status.Created, { message: 'Read' })
 }

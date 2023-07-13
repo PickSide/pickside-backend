@@ -5,16 +5,18 @@ import { schemaProps } from '../utils'
 export const UserSchema = new Schema(
 	{
 		attendedEventsCount: { type: String, require: false },
-		avatar: { type: Buffer, require: false },
+		avatar: { type: String, require: false },
 		bio: { type: String, require: false },
 		city: { type: String, require: false },
 		email: { type: String, require: false },
+		emailVerified: { type: Boolean, default: false, require: true },
 		eventsRegistered: { type: [Schema.Types.ObjectId], ref: 'Activity', require: false },
 		firstName: { type: String, require: false },
 		fitnessLevel: { type: String, default: 'average', require: false },
 		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
 		inactive: { type: Boolean, default: false, require: false },
 		inactiveDate: { type: Date, default: null, require: false },
+		isExternalAccount: { type: Boolean, default: false, require: true },
 		isOrganizer: { type: Boolean, require: false },
 		joinDate: { type: Date, require: false },
 		lastName: { type: String, require: false },
@@ -56,12 +58,14 @@ export interface IUser extends Document {
 	bio: string
 	city: string
 	email: string
+	emailVerified: boolean
 	eventsRegistered: any[]
 	firstName: string
 	fitnessLevel: 'retired' | 'average' | 'athletic' | 'very athletic'
 	groups: any[]
 	inactive: boolean
 	inactiveDate: Date
+	isExternalAccount: boolean
 	isOrganizer: boolean
 	joinDate: Date
 	lastName: string

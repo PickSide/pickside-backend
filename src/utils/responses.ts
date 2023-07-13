@@ -97,6 +97,7 @@ export interface MessageReponseProps {
 	res: Response
 	status: Status
 	timeStamp?: Date
+	payload?: any
 }
 
 export function SendErrorResponse({ callback, context, extra = {}, failReason, res, message, status, timeStamp = new Date(), jobType, jobStatus }: MessageReponseProps) {
@@ -117,7 +118,29 @@ export function SendErrorResponse({ callback, context, extra = {}, failReason, r
 	})
 }
 
-export function SendSuccessResponse(res: Response, statusCode?: Status, msgResponse?: any) {
+export function SendSuccessPayloadResponse({ context, payload, timeStamp = new Date(), res, status }: MessageReponseProps) {
+	if (!res) return
+
+	return res.status(status).json({
+		context,
+		timeStamp,
+		...payload
+	})
+}
+
+
+export function SendSuccessListPayloadResponse({ callback, context, results, timeStamp = new Date(), res, status }) {
+	if (!res) return
+
+	return res.status(status).json({
+		callback,
+		context,
+		results,
+		timeStamp
+	})
+}
+
+export function SendResponse(res: Response, statusCode?: Status, msgResponse?: any) {
 	if (!res) {
 		return
 	}
