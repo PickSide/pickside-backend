@@ -44,7 +44,7 @@ export const getAccessToken = async (req: Request, res: Response) => {
 						jobType: JobType.GetAccessToken,
 						message: 'Token expired. Please relogin',
 						res,
-						status: Status.Forbidden
+						status: Status.Forbidden,
 					})
 				}
 				if (err.name === JsonWebTokenError.name) {
@@ -55,7 +55,7 @@ export const getAccessToken = async (req: Request, res: Response) => {
 						jobType: JobType.GetAccessToken,
 						message: 'Unauthorized action.',
 						res,
-						status: Status.Unauthorized
+						status: Status.Unauthorized,
 					})
 				}
 			}
@@ -67,13 +67,9 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
 			const claims = getTokenClaims(user, emailVerified)
 			const accessToken = generateAT(claims)
-			return SendResponse(
-				res,
-				Status.Ok,
-				{
-					accessToken,
-				},
-			)
+			return SendResponse(res, Status.Ok, {
+				accessToken,
+			})
 		}
 	}
 	return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
@@ -81,10 +77,9 @@ export const getAccessToken = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
 	const { username: usernameOrEmail, password } = req.body.data
-	const user = await User
-		.findOne({
-			$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]
-		})
+	const user = await User.findOne({
+		$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+	})
 		.populate(['preferredLocale', 'preferredRegion', 'preferredSport', 'eventsRegistered', 'groups'])
 		.exec()
 
@@ -98,22 +93,22 @@ export const login = async (req: Request, res: Response) => {
 			jobType: JobType.Login,
 			message: 'Username/Email or Password is incorrect.',
 			res,
-			status: Status.Unauthorized
+			status: Status.Unauthorized,
 		})
 	}
 
 	if (user.inactive) {
 		const transporter = nodemailer.createTransport({
-			host: "smtp.gmail.com",
+			service: 'gmail',
+			host: 'smtp.gmail.com',
 			port: 465,
 			secure: true,
-			service: process.env.PICKSIDE_EMAIL_PROVIDER,
 			auth: {
-				user: process.env.PICKSIDE_EMAIL,
-				pass: process.env.PICKSIDE_EMAIL_PWD
-			}
+				user: 'picksideapp@gmail.com',
+				pass: process.platform === 'darwin' ? 'fkhureqaynxlqidm' : 'cdjbjfhooqyivsxi',
+			},
 		})
-
+		console.log(process.env)
 		const mailOptions = {
 			from: process.env.PICKSIDE_EMAIL,
 			to: user.email,
@@ -123,9 +118,10 @@ export const login = async (req: Request, res: Response) => {
 					Hey there, we received notice tht you would like to reactivate your Pickside account
 					If you still wish to do so, please click on this redirection link: 
 					https://pickside.net/api/v1/users/reactivate/${user.id}
+					http://localhost:8000/api/v1/users/reactivate/${user.id}
 				</p>
-			`
-		};
+			`,
+		}
 
 		transporter.sendMail(mailOptions, (error, info) => {
 			if (error) {
@@ -143,7 +139,7 @@ export const login = async (req: Request, res: Response) => {
 			jobType: JobType.Login,
 			message: 'This user is inactive.',
 			res,
-			status: Status.Unauthorized
+			status: Status.Unauthorized,
 		})
 	}
 	const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user.id }).exec())
@@ -174,7 +170,7 @@ export const logout = async (req: Request, res: Response) => {
 		jobType: JobType.Logout,
 		message: 'Error while logging out.',
 		res,
-		status: Status.BadRequest
+		status: Status.BadRequest,
 	})
 }
 
