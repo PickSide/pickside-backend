@@ -1,10 +1,11 @@
 import { Request, Response } from 'express'
-import { SendResponse, Status } from '../utils/responses'
+import { SendSuccessResponse, Status } from '../utils/responses'
+
 import Locale from '../schemas/Locale'
 
 export const get = async (req: Request, res: Response) => {
 	const locales = await Locale.find()
-	SendResponse(res, Status.Ok, { results: locales })
+	SendSuccessResponse(res, Status.Ok, { results: locales })
 }
 export const store = async (req: Request, res: Response) => {
 	// Not implemented

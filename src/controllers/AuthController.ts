@@ -4,7 +4,7 @@ import {
 	FailReason,
 	JobType,
 	SendErrorResponse,
-	SendResponse,
+	SendSuccessResponse,
 	Status,
 	addToList,
 	isTokenValid,
@@ -67,12 +67,12 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
 			const claims = getTokenClaims(user, emailVerified)
 			const accessToken = generateAT(claims)
-			return SendResponse(res, Status.Ok, {
+			return SendSuccessResponse(res, Status.Ok, {
 				accessToken,
 			})
 		}
 	}
-	return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
+	return SendSuccessResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
 }
 
 export const login = async (req: Request, res: Response) => {
@@ -108,7 +108,7 @@ export const login = async (req: Request, res: Response) => {
 				pass: process.platform === 'darwin' ? 'fkhureqaynxlqidm' : 'cdjbjfhooqyivsxi',
 			},
 		})
-		console.log(process.env)
+
 		const mailOptions = {
 			from: process.env.PICKSIDE_EMAIL,
 			to: user.email,
@@ -150,7 +150,7 @@ export const login = async (req: Request, res: Response) => {
 	await addToList(accessToken)
 	await addToList(refreshToken)
 
-	return SendResponse(res, Status.Ok, {
+	return SendSuccessResponse(res, Status.Ok, {
 		user: omit(user, ['password']),
 		accessToken,
 		refreshToken,
@@ -161,7 +161,7 @@ export const logout = async (req: Request, res: Response) => {
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
 	if (refreshToken) {
 		await revokeToken(refreshToken)
-		return SendResponse(res, Status.Ok, DefaultServerResponseMap[Status.Ok])
+		return SendSuccessResponse(res, Status.Ok, DefaultServerResponseMap[Status.Ok])
 	}
 	return SendErrorResponse({
 		context: AppContext.User,

@@ -105,17 +105,19 @@ export function SendErrorResponse({ callback, context, extra = {}, failReason, r
 	return res.status(status).json({
 		callback,
 		context,
-		failReason,
 		jobStatus,
 		jobType,
-		message,
-		status,
 		timeStamp,
-		...extra
+		error: {
+			failReason,
+			message,
+			status,
+			...extra
+		},
 	})
 }
 
-export function SendResponse(res: Response, statusCode?: Status, msgResponse?: any) {
+export function SendSuccessResponse(res: Response, statusCode?: Status, msgResponse?: any) {
 	if (!res) {
 		return
 	}
@@ -127,6 +129,7 @@ export function SendResponse(res: Response, statusCode?: Status, msgResponse?: a
 		...msgResponse,
 		timeStamp: Date.now()
 	})
+
 
 	return response
 }

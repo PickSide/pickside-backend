@@ -6,7 +6,7 @@ import {
 	JobType,
 	ProfileSuccessfullyUpdated,
 	SendErrorResponse,
-	SendResponse,
+	SendSuccessResponse,
 	Status,
 	UserAlreadyExists
 } from '../utils/responses'
@@ -42,7 +42,7 @@ export const create = async (req: Request, res: Response) => {
 		phone: user.phone,
 		sexe: user.sexe,
 	})
-	return SendResponse(
+	return SendSuccessResponse(
 		res,
 		Status.Ok,
 		{ ...AccountCreatedSuccess, payload: { ...omit(account, ['password']) } },
@@ -55,7 +55,7 @@ export const update = async (req: Request, res: Response) => {
 	return await User.findByIdAndUpdate(req.params.id, { ...setting })
 		.exec()
 		.then(data => {
-			return SendResponse(
+			return SendSuccessResponse(
 				res,
 				Status.Ok,
 				{ ...ProfileSuccessfullyUpdated },
@@ -80,7 +80,7 @@ export const update = async (req: Request, res: Response) => {
 export const reactivate = async (req: Request, res: Response) => {
 	return await User.findByIdAndUpdate(req.params.userId, { inactive: false, inactiveDate: null })
 		.exec()
-		.then(() => SendResponse(res, Status.Ok, { message: 'Account successfully reactivated' }))
+		.then(() => SendSuccessResponse(res, Status.Ok, { message: 'Account successfully reactivated' }))
 		.catch(() => SendErrorResponse({
 			context: AppContext.User,
 			failReason: FailReason.UserReactivateAccount,
@@ -96,7 +96,7 @@ export const reactivate = async (req: Request, res: Response) => {
 export const deactivate = async (req: Request, res: Response) => {
 	return await User.findByIdAndUpdate(req.params.userId, { inactive: true, inactiveDate: Date.now() })
 		.exec()
-		.then(() => SendResponse(res, Status.Ok, { message: 'Account successfully deactivated' }))
+		.then(() => SendSuccessResponse(res, Status.Ok, { message: 'Account successfully deactivated' }))
 		.catch(() => SendErrorResponse({
 			context: AppContext.User,
 			failReason: FailReason.UserDeactivateAccount,

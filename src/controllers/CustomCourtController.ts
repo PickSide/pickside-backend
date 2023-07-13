@@ -1,10 +1,11 @@
-import CustomCourt from '../schemas/CustomCourt'
+import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendSuccessResponse, Status } from '../utils/responses'
 import { Request, Response } from 'express'
-import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
+
+import CustomCourt from '../schemas/CustomCourt'
 
 export const getAllCustomCourts = async (req: Request, res: Response) => {
     const customCourts = await CustomCourt.find()
-    return SendResponse(res, Status.Ok, { results: customCourts })
+    return SendSuccessResponse(res, Status.Ok, { results: customCourts })
 }
 export const createCustomCourt = async (req: Request, res: Response) => { }
 export const getCustomCourtById = async (req: Request, res: Response) => { }
