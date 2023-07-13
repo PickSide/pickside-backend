@@ -1,17 +1,17 @@
-import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendSuccessResponse, Status } from '../utils/responses'
+import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
 import { Request, Response } from 'express'
 
 import Activity from '../schemas/Activity'
 
 export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
-	return SendSuccessResponse(res, Status.Ok, { results: activities })
+	return SendResponse(res, Status.Ok, { results: activities })
 }
 export const createActivity = async (req: Request, res: Response) => {
 
 	const activity = await Activity.create({ ...req.body.data })
 
-	return SendSuccessResponse(
+	return SendResponse(
 		res,
 		Status.Created,
 		{ ...ActivityCreatedSuccess, response: { activity }, status: 'Created' },
@@ -27,14 +27,14 @@ export const updateActivityById = async (req: Request, res: Response) => {
 		.then((response) => response?.participants)
 
 	if (participants?.includes(userId)) {
-		return SendSuccessResponse(res, Status.Conflict, ParticipantAlreadyRegistered)
+		return SendResponse(res, Status.Conflict, ParticipantAlreadyRegistered)
 	}
 
 	participants?.push(userId)
 
 	const updated = await Activity.findOneAndUpdate({ id: activityId }, { participants }, { new: true }).exec()
 
-	return SendSuccessResponse(
+	return SendResponse(
 		res,
 		Status.Ok,
 		{ ...ParticipantSuccessfullyRegistered, response: updated, status: 'Registered' },

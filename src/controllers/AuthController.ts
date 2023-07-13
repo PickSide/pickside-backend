@@ -4,14 +4,15 @@ import {
 	FailReason,
 	JobType,
 	SendErrorResponse,
-	SendSuccessResponse,
+	SendResponse,
+	SendSuccessPayloadResponse,
 	Status,
 	addToList,
 	isTokenValid,
 	revokeToken,
 	secrets,
 } from '../utils'
-import { JsonWebTokenError, JwtPayload, TokenExpiredError, sign, verify } from 'jsonwebtoken'
+import { JsonWebTokenError, JwtPayload, TokenExpiredError, decode, sign, verify } from 'jsonwebtoken'
 import { Request, Response } from 'express'
 import { omit, pick } from 'lodash'
 
@@ -67,12 +68,63 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
 			const claims = getTokenClaims(user, emailVerified)
 			const accessToken = generateAT(claims)
-			return SendSuccessResponse(res, Status.Ok, {
+			return SendResponse(res, Status.Ok, {
 				accessToken,
 			})
 		}
 	}
-	return SendSuccessResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
+	return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
+}
+
+export const loginWithGoogle = async (req: Request, res: Response) => {
+	const { email, family_name, given_name, locale, picture, verified_email } = req.body.data
+
+
+	let user = await User.findOne({ email })
+
+	if (!user) {
+		user = await User.create({
+			avatar: picture,
+			email,
+			emailVerified: verified_email,
+			firstName: given_name,
+			lastName: family_name,
+			isExternalAccount: true,
+		})
+	}
+
+	if (user.inactive) {
+		sendActivationEmail(user)
+
+		return SendErrorResponse({
+			context: AppContext.User,
+			extra: { userId: user.id },
+			failReason: FailReason.UserInactive,
+			jobStatus: 'FAILED',
+			jobType: JobType.Login,
+			message: 'This user is inactive.',
+			res,
+			status: Status.Unauthorized,
+		})
+	}
+
+	const claims = getTokenClaims(user, verified_email)
+	const accessToken = generateAT(claims)
+	const refreshToken = generateRT(claims)
+
+	await addToList(accessToken)
+	await addToList(refreshToken)
+
+	return SendSuccessPayloadResponse({
+		res,
+		status: Status.Ok,
+		payload: {
+			user: omit(user, ['password']),
+			accessToken,
+			refreshToken,
+		}
+	})
+
 }
 
 export const login = async (req: Request, res: Response) => {
@@ -98,38 +150,7 @@ export const login = async (req: Request, res: Response) => {
 	}
 
 	if (user.inactive) {
-		const transporter = nodemailer.createTransport({
-			service: 'gmail',
-			host: 'smtp.gmail.com',
-			port: 465,
-			secure: true,
-			auth: {
-				user: 'picksideapp@gmail.com',
-				pass: process.platform === 'darwin' ? 'fkhureqaynxlqidm' : 'cdjbjfhooqyivsxi',
-			},
-		})
-
-		const mailOptions = {
-			from: process.env.PICKSIDE_EMAIL,
-			to: user.email,
-			subject: '[ACTION-REQUIRED] - Reactivating your Pickside account',
-			html: `
-				<p>
-					Hey there, we received notice tht you would like to reactivate your Pickside account
-					If you still wish to do so, please click on this redirection link: 
-					https://pickside.net/api/v1/users/reactivate/${user.id}
-					http://localhost:8000/api/v1/users/reactivate/${user.id}
-				</p>
-			`,
-		}
-
-		transporter.sendMail(mailOptions, (error, info) => {
-			if (error) {
-				console.log(error)
-			} else {
-				console.log('Email sent: ' + info.response)
-			}
-		})
+		sendActivationEmail(user)
 
 		return SendErrorResponse({
 			context: AppContext.User,
@@ -150,7 +171,7 @@ export const login = async (req: Request, res: Response) => {
 	await addToList(accessToken)
 	await addToList(refreshToken)
 
-	return SendSuccessResponse(res, Status.Ok, {
+	return SendResponse(res, Status.Ok, {
 		user: omit(user, ['password']),
 		accessToken,
 		refreshToken,
@@ -161,7 +182,7 @@ export const logout = async (req: Request, res: Response) => {
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
 	if (refreshToken) {
 		await revokeToken(refreshToken)
-		return SendSuccessResponse(res, Status.Ok, DefaultServerResponseMap[Status.Ok])
+		return SendResponse(res, Status.Ok, DefaultServerResponseMap[Status.Ok])
 	}
 	return SendErrorResponse({
 		context: AppContext.User,
@@ -190,4 +211,39 @@ function getTokenClaims(data, emailVerified: boolean = false): TokenClaims {
 		sub: data.id,
 		//aud: 'http://pickside.com',
 	}
+}
+
+function sendActivationEmail(user) {
+	const transporter = nodemailer.createTransport({
+		service: 'gmail',
+		host: 'smtp.gmail.com',
+		port: 465,
+		secure: true,
+		auth: {
+			user: 'picksideapp@gmail.com',
+			pass: process.platform === 'darwin' ? 'fkhureqaynxlqidm' : 'cdjbjfhooqyivsxi',
+		},
+	})
+
+	const mailOptions = {
+		from: process.env.PICKSIDE_EMAIL,
+		to: user.email,
+		subject: '[ACTION-REQUIRED] - Reactivating your Pickside account',
+		html: `
+			<p>
+				Hey there, we received notice tht you would like to reactivate your Pickside account
+				If you still wish to do so, please click on this redirection link: 
+				https://pickside.net/api/v1/users/reactivate/${user.id}
+				http://localhost:8000/api/v1/users/reactivate/${user.id}
+			</p>
+		`,
+	}
+
+	transporter.sendMail(mailOptions, (error, info) => {
+		if (error) {
+			console.log(error)
+		} else {
+			console.log('Email sent: ' + info.response)
+		}
+	})
 }
