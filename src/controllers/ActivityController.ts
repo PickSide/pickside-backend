@@ -5,6 +5,12 @@ import Activity from '../schemas/Activity'
 
 export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
+		.populate([
+			{ path: 'organiser', select: { firstName: 1, lastName: 1, avatar: 1 } },
+			{ path: 'participants', select: { firstName: 1, lastName: 1, avatar: 1 } },
+			'sport'
+		])
+		.exec()
 	return SendResponse(res, Status.Ok, { results: activities })
 }
 export const createActivity = async (req: Request, res: Response) => {
