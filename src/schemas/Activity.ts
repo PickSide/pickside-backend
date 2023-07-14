@@ -10,6 +10,7 @@ export interface IActivity extends Document {
 	},
 	description: string,
 	duration: number,
+	maxPlayers: number
 	mode: string,
 	organiser: any,
 	participants: any[],
@@ -30,6 +31,7 @@ export const ActivitySchema = new Schema(
 		},
 		description: { type: String, require: false },
 		duration: { type: Number, require: false },
+		maxPlayers: { type: Number, require: false },
 		mode: { type: String, require: false },
 		organiser: { type: Schema.Types.ObjectId, ref: 'User', require: false },
 		participants: [{ type: Schema.Types.ObjectId, ref: 'User', require: false }],
