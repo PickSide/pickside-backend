@@ -161,11 +161,16 @@ async function populateCollections() {
 		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
 	])
 
+	const date = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+
 	await Activity.insertMany([
 		{
 			id: new Types.ObjectId(),
 			address: courts[0],
-			date: Date.now(),
+			date: {
+				stringFormat: date.toDateString(),
+				unixFormat: date.getDate()
+			},
 			description: 'Simple game',
 			duration: 59,
 			mode: '7v7',

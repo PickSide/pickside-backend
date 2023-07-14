@@ -4,7 +4,10 @@ import { schemaProps } from '../utils'
 
 export interface IActivity extends Document {
 	address: string
-	date: string,
+	date: {
+		stringFormat: string,
+		unixFormat: number
+	},
 	description: string,
 	duration: number,
 	mode: string,
@@ -21,7 +24,10 @@ export interface IActivity extends Document {
 export const ActivitySchema = new Schema(
 	{
 		address: { type: Schema.Types.ObjectId, ref: 'Court', require: false },
-		date: { type: String, require: false },
+		date: {
+			stringFormat: { type: String, require: false },
+			unixFormat: { type: Number, require: false },
+		},
 		description: { type: String, require: false },
 		duration: { type: Number, require: false },
 		mode: { type: String, require: false },
