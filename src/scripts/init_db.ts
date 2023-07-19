@@ -11,6 +11,8 @@ import Token from '../schemas/Token'
 import User from '../schemas/User'
 import { config } from 'dotenv'
 import databaseUtils from '../utils/databaseUtils'
+import dayjs from 'dayjs'
+import moment from 'moment'
 
 async function run() {
 	config()
@@ -161,16 +163,14 @@ async function populateCollections() {
 		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
 	])
 
-	const date = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
-
+	const date = dayjs().add(5, 'day')
+	const time = date.add(30, 'minutes')
+	console.log(date)
 	await Activity.insertMany([
 		{
 			id: new Types.ObjectId(),
 			address: courts[0],
-			date: {
-				stringFormat: date.toDateString(),
-				unixFormat: date.getDate()
-			},
+			date: dayjs().add(5, 'day').toDate(),
 			description: 'Simple game',
 			duration: 59,
 			maxPlayers: 10,
@@ -182,15 +182,12 @@ async function populateCollections() {
 			sport: sports[2],
 			time: undefined,
 			title: 'Soccer game 5v5',
-			unitPrice: 5,
+			price: 5,
 		},
 		{
 			id: new Types.ObjectId(),
 			address: courts[0],
-			date: {
-				stringFormat: date.toDateString(),
-				unixFormat: date.getDate()
-			},
+			date: dayjs().add(7, 'day').toDate(),
 			description: 'Simple game',
 			duration: 59,
 			maxPlayers: 14,
@@ -202,15 +199,12 @@ async function populateCollections() {
 			sport: sports[2],
 			time: undefined,
 			title: 'Soccer game 7v7',
-			unitPrice: 5,
+			price: 5,
 		},
 		{
 			id: new Types.ObjectId(),
 			address: courts[0],
-			date: {
-				stringFormat: date.toDateString(),
-				unixFormat: date.getDate()
-			},
+			date: dayjs().add(10, 'day').toDate(),
 			description: 'Simple game',
 			duration: 59,
 			maxPlayers: 22,
@@ -222,7 +216,7 @@ async function populateCollections() {
 			sport: sports[2],
 			time: undefined,
 			title: 'Soccer game 11v11',
-			unitPrice: 5,
+			price: 5,
 		},
 	])
 
