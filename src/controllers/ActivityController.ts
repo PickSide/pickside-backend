@@ -1,4 +1,4 @@
-import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, Status } from '../utils/responses'
+import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, SendSuccessPayloadResponse, Status } from '../utils/responses'
 import { Request, Response } from 'express'
 
 import Activity from '../schemas/Activity'
@@ -14,14 +14,25 @@ export const getAllActivities = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Ok, { results: activities })
 }
 export const createActivity = async (req: Request, res: Response) => {
+	const { address, date, images, maxPlayers, mode, price, rules, sport, time, title } = req.body.data
 
-	const activity = await Activity.create({ ...req.body.data })
+	const activity = await Activity.create({
+		address,
+		date,
+		maxPlayers,
+		mode,
+		price,
+		rules,
+		sport: sport.id,
+		time,
+		title
+	})
 
-	return SendResponse(
+	return SendSuccessPayloadResponse({
 		res,
-		Status.Created,
-		{ ...ActivityCreatedSuccess, response: { activity }, status: 'Created' },
-	)
+		status: Status.Created,
+		payload: { ...ActivityCreatedSuccess, response: { activity }, status: 'Created' },
+	})
 }
 export const getActivityById = async (req: Request, res: Response) => { }
 export const updateActivityById = async (req: Request, res: Response) => {

@@ -3,14 +3,11 @@ import { Schema, model } from 'mongoose'
 import { schemaProps } from '../utils'
 
 export interface IActivity extends Document {
-	address: string
-	date: {
-		stringFormat: string,
-		unixFormat: number
-	},
+	address: any
+	date: any,
 	description: string,
 	duration: number,
-	maxPlayers: number
+	maxPlayers: number,
 	mode: string,
 	organiser: any,
 	participants: any[],
@@ -19,20 +16,18 @@ export interface IActivity extends Document {
 	sport: string,
 	time: string,
 	title: string,
-	unitPrice: number,
+	price: number,
 }
 
 export const ActivitySchema = new Schema(
 	{
-		address: { type: Schema.Types.ObjectId, ref: 'Court', require: false },
-		date: {
-			stringFormat: { type: String, require: false },
-			unixFormat: { type: Number, require: false },
-		},
+		address: { type: Object, require: false },
+		date: { type: Schema.Types.Date, require: false },
 		description: { type: String, require: false },
 		duration: { type: Number, require: false },
-		maxPlayers: { type: Number, require: false },
-		mode: { type: String, require: false },
+		images: { type: [Object], require: false },
+		maxPlayers: { type: Number, require: true },
+		mode: { type: Object, require: true },
 		organiser: { type: Schema.Types.ObjectId, ref: 'User', require: false },
 		participants: [{ type: Schema.Types.ObjectId, ref: 'User', require: false }],
 		recommandedLevel: { type: String, require: false },
@@ -40,7 +35,7 @@ export const ActivitySchema = new Schema(
 		sport: { type: Schema.Types.ObjectId, ref: 'Sport', require: false },
 		time: { type: Date, require: false },
 		title: { type: String, require: false },
-		unitPrice: { type: Number, require: false },
+		price: { type: Number, require: false },
 	},
 	{
 		...schemaProps
