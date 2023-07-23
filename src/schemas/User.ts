@@ -11,6 +11,7 @@ export const UserSchema = new Schema(
 		email: { type: String, require: false },
 		emailVerified: { type: Boolean, default: false, require: true },
 		eventsRegistered: { type: [Schema.Types.ObjectId], ref: 'Activity', require: false },
+		favorites: { type: [Schema.Types.ObjectId], ref: 'Activity', require: false },
 		firstName: { type: String, require: false },
 		fitnessLevel: { type: String, default: 'average', require: false },
 		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
@@ -60,6 +61,7 @@ export interface IUser extends Document {
 	email: string
 	emailVerified: boolean
 	eventsRegistered: any[]
+	favorites: any[]
 	firstName: string
 	fitnessLevel: 'retired' | 'average' | 'athletic' | 'very athletic'
 	groups: any[]
