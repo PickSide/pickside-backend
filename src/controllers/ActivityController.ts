@@ -1,7 +1,8 @@
-import { ActivityCreatedSuccess, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendResponse, SendSuccessPayloadResponse, Status } from '../utils/responses'
+import { ActivityCreatedSuccess, AppContext, FailReason, JobType, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendErrorResponse, SendResponse, SendSuccessPayloadResponse, Status } from '../utils/responses'
 import { Request, Response } from 'express'
 
 import Activity from '../schemas/Activity'
+import User from '../schemas/User'
 
 export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
@@ -59,4 +60,41 @@ export const updateActivityById = async (req: Request, res: Response) => {
 }
 export const removeActivityById = async (req: Request, res: Response) => { }
 export const getActivityByGroupId = async (req: Request, res: Response) => { }
+
+
+export const updateFavorites = async (req: Request, res: Response) => {
+	const { userId } = req.body.data
+
+	if (!userId) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.BadPayload,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityFavorite,
+			message: 'Wrong payload.',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+
+	const user = await User.findById(userId).exec()
+
+	if (user) {
+		const idx = user.favorites.findIndex((favId) => favId == req.params.activityId)
+
+		if (idx === -1) {
+			user.favorites.push(req.params.activityId)
+		} else {
+			user.favorites.splice(idx, 1)
+		}
+
+		await user.save()
+
+		return SendSuccessPayloadResponse({
+			res,
+			status: Status.Ok,
+			payload: { jobStatus: 'COMPLETED', status: 'Created', message: 'Successfully added to favorites.', result: { favorites: user.favorites } }
+		})
+	}
+}
 

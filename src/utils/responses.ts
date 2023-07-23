@@ -50,11 +50,13 @@ export enum JobType {
 	VerifyEmail = 'vertifyemail',
 	DeactivateAccount = 'deactivateaccount',
 	ReactivateAccount = 'deactivateaccount',
+	ActivityFavorite = 'addactivitytofavorites',
 }
 
 export enum FailReason {
 	TokenExpired = 'tokenexpired',
 	TokenError = 'tokenerror',
+	BadPayload = 'wrongpayload',
 	UserDeactivateAccount = 'userdeactivateaccount',
 	UserReactivateAccount = 'userreactivateaccount',
 	UserInactive = 'userinactive',

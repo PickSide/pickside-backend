@@ -1,20 +1,18 @@
 import {
 	AccountCreatedSuccess,
 	AppContext,
-	DefaultServerResponseMap,
 	FailReason,
 	JobType,
 	ProfileSuccessfullyUpdated,
 	SendErrorResponse,
 	SendResponse,
 	Status,
-	UserAlreadyExists
 } from '../utils/responses'
 import { Request, Response } from 'express'
-import { merge, omit } from 'lodash'
 
 import User from '../schemas/User'
 import { hashSync } from 'bcrypt'
+import { omit } from 'lodash'
 
 export const get = async (req: Request, res: Response) => { }
 
@@ -75,7 +73,6 @@ export const update = async (req: Request, res: Response) => {
 			)
 		})
 }
-
 
 export const reactivate = async (req: Request, res: Response) => {
 	return await User.findByIdAndUpdate(req.params.userId, { inactive: false, inactiveDate: null })
