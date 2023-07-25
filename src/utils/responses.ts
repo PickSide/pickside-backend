@@ -51,19 +51,25 @@ export enum JobType {
 	DeactivateAccount = 'deactivateaccount',
 	ReactivateAccount = 'deactivateaccount',
 	ActivityFavorite = 'addactivitytofavorites',
+	ActivityRegister = 'registerusertoactivity',
 }
 
 export enum FailReason {
 	TokenExpired = 'tokenexpired',
 	TokenError = 'tokenerror',
 	BadPayload = 'wrongpayload',
+	BadParams = 'wrongparams',
 	UserDeactivateAccount = 'userdeactivateaccount',
 	UserReactivateAccount = 'userreactivateaccount',
 	UserInactive = 'userinactive',
 	UserExists = 'userexists',
 	UserFailedToUpdate = 'userfailtoupdate',
 	UserWrongCredentials = 'userbadcredentials',
-	UserLogout = 'userlogout'
+	UserLogout = 'userlogout',
+	UserNotFound = 'usernotfound',
+	UserAlreadyRegisteredToActivity = 'useralreadyregisteredtoactivity',
+	UserNotRegisteredToActivity = 'usernotregisteredtoactivity',
+	ActivityNotFound = 'activitynotfound'
 }
 
 export const DefaultServerResponseMap = {
