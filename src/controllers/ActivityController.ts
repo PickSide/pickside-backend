@@ -15,13 +15,14 @@ export const getAllActivities = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Ok, { results: activities })
 }
 export const createActivity = async (req: Request, res: Response) => {
-	const { address, date, images, maxPlayers, mode, price, rules, sport, time, title } = req.body.data
+	const { address, date, images, maxPlayers, organiser, mode, price, rules, sport, time, title } = req.body.data
 
 	const activity = await Activity.create({
 		address,
 		date,
 		maxPlayers,
 		mode,
+		organiser,
 		price,
 		rules,
 		sport: sport.id,
@@ -128,10 +129,6 @@ export const registerParticipant = async (req: Request, res: Response) => {
 	const user = await User.findById(userId).exec()
 	const activity = await Activity.findById(req.params.activityId).populate({ path: 'participants', select: { id: 1 } }).exec()
 	const isUserRegistered = activity?.participants.some(participant => participant.equals(userId))
-
-	console.log('user', user)
-	console.log('activity', activity)
-	console.log('isUserRegistered', isUserRegistered)
 
 	if (!activity) {
 		return SendErrorResponse({
