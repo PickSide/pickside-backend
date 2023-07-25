@@ -129,10 +129,16 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
 	const { username: usernameOrEmail, password } = req.body.data
-	const user = await User.findOne({
-		$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
-	})
-		.populate(['preferredLocale', 'preferredRegion', 'preferredSport', 'eventsRegistered', 'groups'])
+	const user = await User
+		.findOne({
+			$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+		})
+		.populate([
+			'preferredLocale',
+			'preferredRegion',
+			'preferredSport',
+			'groups'
+		])
 		.exec()
 
 	const match = await compare(password, user?.password)

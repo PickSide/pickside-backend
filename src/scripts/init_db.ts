@@ -148,25 +148,25 @@ async function populateCollections() {
 
 	const users = await createUser([
 		{ firstName: 'Tony', lastName: 'Hakim', username: 'tony', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2], email: 'tonyown12@gmail.com' },
-		// { firstName: 'Ali', lastName: 'Idrici', username: 'ali', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Omer', lastName: 'Bos', username: 'bos', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Niloofar', lastName: 'hakim', username: 'niloo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Ian', lastName: 'Piluganov', username: 'ian', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Rafic', lastName: 'Haddad', username: 'rafic', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Marc', lastName: 'Bartik', username: 'marc', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Fadi', lastName: 'Bartik', username: 'fadi', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Philippe', lastName: 'Kuret', username: 'phil', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Rami', lastName: 'Kuret', username: 'rami', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Kevin', lastName: 'Moniz', username: 'kevin', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Karim', lastName: 'Abou-Khalil', username: 'karim', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
-		// { firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Ali', lastName: 'Idrici', username: 'ali', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Omer', lastName: 'Bos', username: 'bos', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Niloofar', lastName: 'hakim', username: 'niloo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Ian', lastName: 'Piluganov', username: 'ian', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Rafic', lastName: 'Haddad', username: 'rafic', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Marc', lastName: 'Bartik', username: 'marc', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Fadi', lastName: 'Bartik', username: 'fadi', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Philippe', lastName: 'Kuret', username: 'phil', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Rami', lastName: 'Kuret', username: 'rami', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Kevin', lastName: 'Moniz', username: 'kevin', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Karim', lastName: 'Abou-Khalil', username: 'karim', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
+		{ firstName: 'Mohammed', lastName: 'Rabbani', username: 'momo', preferredRegion: predefinedAreas[0], preferredLocale: locales[0], preferredSport: sports[2] },
 	])
 
 	const date = dayjs().add(5, 'day')
 
 	await Activity.insertMany([
 		{
-			id: new Types.ObjectId(),
+			//id: new Types.ObjectId(),
 			address: courts[0],
 			date: dayjs().add(5, 'day').toDate(),
 			description: 'Simple game',
@@ -183,7 +183,7 @@ async function populateCollections() {
 			price: 5,
 		},
 		{
-			id: new Types.ObjectId(),
+			//id: new Types.ObjectId(),
 			address: courts[0],
 			date: dayjs().add(7, 'day').toDate(),
 			description: 'Simple game',
@@ -191,7 +191,7 @@ async function populateCollections() {
 			maxPlayers: 14,
 			mode: '7v7',
 			organiser: users[0],
-			participants: [users[1], users[2], users[3], users[4], users[5]],
+			participants: [],
 			recommandedLevel: 'beginner',
 			rules: 'Relaxing game, no slide tackles, 1 goal we switch',
 			sport: sports[2],
@@ -200,7 +200,7 @@ async function populateCollections() {
 			price: 5,
 		},
 		{
-			id: new Types.ObjectId(),
+			//id: new Types.ObjectId(),
 			address: courts[0],
 			date: dayjs().add(10, 'day').toDate(),
 			description: 'Simple game',
@@ -208,7 +208,7 @@ async function populateCollections() {
 			maxPlayers: 22,
 			mode: '7v7',
 			organiser: users[0],
-			participants: [users[1], users[2], users[3], users[4], users[5]],
+			participants: [],
 			recommandedLevel: 'beginner',
 			rules: 'Relaxing game, no slide tackles, 1 goal we switch',
 			sport: sports[2],

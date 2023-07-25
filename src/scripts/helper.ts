@@ -34,7 +34,6 @@ export function createUser(props: UserProps[]) {
 					bio: 'A bio',
 					city: 'string',
 					email: email ? email : `${firstName}${lastName}@gmail.com`,
-					eventsRegistered: [],
 					firstName,
 					fitnessLevel: 'average',
 					groups: [],

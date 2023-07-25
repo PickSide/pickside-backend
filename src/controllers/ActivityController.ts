@@ -7,7 +7,7 @@ import User from '../schemas/User'
 export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
 		.populate([
-			{ path: 'organiser', select: { firstName: 1, lastName: 1, avatar: 1 } },
+			{ path: 'organiser', select: { id: 1, firstName: 1, lastName: 1, avatar: 1 } },
 			{ path: 'participants', select: { firstName: 1, lastName: 1, avatar: 1 } },
 			'sport'
 		])
@@ -93,8 +93,178 @@ export const updateFavorites = async (req: Request, res: Response) => {
 		return SendSuccessPayloadResponse({
 			res,
 			status: Status.Ok,
-			payload: { jobStatus: 'COMPLETED', status: 'Created', message: 'Successfully added to favorites.', result: { favorites: user.favorites } }
+			payload: { jobStatus: 'COMPLETED', status: 'Updated', message: 'Successfully added to favorites.', result: { favorites: user.favorites } }
 		})
 	}
+}
+
+export const registerParticipant = async (req: Request, res: Response) => {
+	const { userId } = req.body.data
+
+	if (!userId) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.BadPayload,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'Wrong payload.',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+
+	if (!req.params.activityId) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.BadParams,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'Wrong params.',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+
+	const user = await User.findById(userId).exec()
+	const activity = await Activity.findById(req.params.activityId).populate({ path: 'participants', select: { id: 1 } }).exec()
+	const isUserRegistered = activity?.participants.some(participant => participant.equals(userId))
+
+	console.log('user', user)
+	console.log('activity', activity)
+	console.log('isUserRegistered', isUserRegistered)
+
+	if (!activity) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.ActivityNotFound,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'Activity not found.',
+			res,
+			status: Status.NotFound,
+		})
+	}
+
+	if (!user) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.UserNotFound,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'User not found',
+			res,
+			status: Status.NotFound,
+		})
+	}
+
+	if (isUserRegistered) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.UserAlreadyRegisteredToActivity,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'User already registered',
+			res,
+			status: Status.NotFound,
+		})
+	}
+
+	activity.participants.push(user)
+
+	await activity.save()
+
+	return SendSuccessPayloadResponse({
+		res,
+		status: Status.Ok,
+		payload: {
+			jobStatus: 'COMPLETED',
+			status: 'Registered',
+			message: 'Successfully registered to activity.'
+		}
+	})
+}
+
+export const unregisterParticipant = async (req: Request, res: Response) => {
+	const { userId } = req.body.data
+
+	if (!userId) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.BadPayload,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'Wrong payload.',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+
+	if (!req.params.activityId) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.BadParams,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'Wrong params.',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+
+	const activity = await Activity.findById(req.params.activityId).exec()
+	const user = await User.findById(userId).exec()
+	const isUserRegistered = activity?.participants.some(participant => participant.equals(userId))
+
+	if (!activity) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.ActivityNotFound,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'Activity not found.',
+			res,
+			status: Status.NotFound,
+		})
+	}
+
+	if (!user) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.UserNotFound,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'User not found',
+			res,
+			status: Status.NotFound,
+		})
+	}
+
+	if (!isUserRegistered) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.UserNotRegisteredToActivity,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: 'User is not registered to event',
+			res,
+			status: Status.NotFound,
+		})
+	}
+
+	const activityParticipantIdx = activity.participants.findIndex(participant => participant === user.id)
+
+	activity.participants.splice(activityParticipantIdx, 1)
+
+	await activity.save()
+
+	return SendSuccessPayloadResponse({
+		res,
+		status: Status.Ok,
+		payload: {
+			jobStatus: 'COMPLETED',
+			status: 'Registered',
+			message: 'Successfully unregistered from activity.'
+		}
+	})
 }
 
