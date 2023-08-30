@@ -16,6 +16,7 @@ import { JsonWebTokenError, JwtPayload, TokenExpiredError, decode, sign, verify 
 import { Request, Response } from 'express'
 import { omit, pick } from 'lodash'
 
+import Locale from '../schemas/Locale'
 import User from '../schemas/User'
 import VerifiedEmail from '../schemas/Email'
 import { compare } from 'bcrypt'
@@ -77,17 +78,19 @@ export const getAccessToken = async (req: Request, res: Response) => {
 }
 
 export const loginWithGoogle = async (req: Request, res: Response) => {
-	const { email, family_name, given_name, locale, picture, verified_email } = req.body.data
+	const { email, name, locale, picture, verified_email } = req.body.data
 
 	let user = await User.findOne({ email })
+
+	const preferredLocale = await Locale.findOne({ value: locale })
 
 	if (!user) {
 		user = await User.create({
 			avatar: picture,
 			email,
 			emailVerified: verified_email,
-			firstName: given_name,
-			lastName: family_name,
+			preferredLocale,
+			fullName: name,
 			isExternalAccount: true,
 		})
 	}
