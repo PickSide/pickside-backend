@@ -20,8 +20,8 @@ export const create = async (req: Request, res: Response) => {
 	const user = req.body.data
 	const pwd = req.body.data.password
 
-	const userExists = await User.exists({ $or: [{ email: user.email }, { username: user.username }] })
-	console.log(userExists)
+	const userExists = await User.exists({ $or: [{ email: user.email }] })
+
 	if (userExists) {
 		return SendErrorResponse({
 			context: AppContext.User,
@@ -41,6 +41,7 @@ export const create = async (req: Request, res: Response) => {
 		phone: user.phone,
 		sexe: user.sexe,
 	})
+
 	return SendResponse(res, Status.Ok, { ...AccountCreatedSuccess, payload: { ...omit(account, ['password']) } })
 }
 
