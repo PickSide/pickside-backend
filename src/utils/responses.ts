@@ -26,6 +26,7 @@ export enum AppContext {
 	Activity = 'Activity',
 	Court = 'Court',
 	CustomCourt = 'Custom Court',
+	DB = 'DB',
 	Email = 'Email',
 	Group = 'Group',
 	Locale = 'Locale',
@@ -37,6 +38,7 @@ export enum AppContext {
 }
 
 export enum JobType {
+	ResetDb = 'resetdb',
 	Login = 'login',
 	Logout = 'logout',
 	Register = 'register',
@@ -55,6 +57,7 @@ export enum JobType {
 }
 
 export enum FailReason {
+	DbResetFailed = 'dbresetfailed',
 	TokenExpired = 'tokenexpired',
 	TokenError = 'tokenerror',
 	BadPayload = 'wrongpayload',
@@ -69,7 +72,7 @@ export enum FailReason {
 	UserNotFound = 'usernotfound',
 	UserAlreadyRegisteredToActivity = 'useralreadyregisteredtoactivity',
 	UserNotRegisteredToActivity = 'usernotregisteredtoactivity',
-	ActivityNotFound = 'activitynotfound'
+	ActivityNotFound = 'activitynotfound',
 }
 
 export const DefaultServerResponseMap = {
@@ -108,7 +111,18 @@ export interface MessageReponseProps {
 	payload?: any
 }
 
-export function SendErrorResponse({ callback, context, extra = {}, failReason, res, message, status, timeStamp = new Date(), jobType, jobStatus }: MessageReponseProps) {
+export function SendErrorResponse({
+	callback,
+	context,
+	extra = {},
+	failReason,
+	res,
+	message,
+	status,
+	timeStamp = new Date(),
+	jobType,
+	jobStatus,
+}: MessageReponseProps) {
 	if (!res) return
 
 	return res.status(status).json({
@@ -121,21 +135,26 @@ export function SendErrorResponse({ callback, context, extra = {}, failReason, r
 			failReason,
 			message,
 			status,
-			...extra
+			...extra,
 		},
 	})
 }
 
-export function SendSuccessPayloadResponse({ context, payload, timeStamp = new Date(), res, status }: MessageReponseProps) {
+export function SendSuccessPayloadResponse({
+	context,
+	payload,
+	timeStamp = new Date(),
+	res,
+	status,
+}: MessageReponseProps) {
 	if (!res) return
 
 	return res.status(status).json({
 		context,
 		timeStamp,
-		...payload
+		...payload,
 	})
 }
-
 
 export function SendSuccessListPayloadResponse({ callback, context, results, timeStamp = new Date(), res, status }) {
 	if (!res) return
@@ -144,7 +163,7 @@ export function SendSuccessListPayloadResponse({ callback, context, results, tim
 		callback,
 		context,
 		results,
-		timeStamp
+		timeStamp,
 	})
 }
 
@@ -156,11 +175,11 @@ export function SendResponse(res: Response, statusCode?: Status, msgResponse?: a
 	let response = res
 
 	if (statusCode) response = response.status(statusCode)
-	if (msgResponse) response = response.json({
-		...msgResponse,
-		timeStamp: Date.now()
-	})
-
+	if (msgResponse)
+		response = response.json({
+			...msgResponse,
+			timeStamp: Date.now(),
+		})
 
 	return response
 }

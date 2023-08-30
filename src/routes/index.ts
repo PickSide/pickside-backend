@@ -8,6 +8,7 @@ import groups from './groups'
 import locales from './locale'
 import notifications from './notifications'
 import predefinedAreas from './predefined-area'
+import resetDb from './resetdb'
 import schedules from './schedules'
 import sports from './sport'
 import users from './user'
@@ -15,6 +16,7 @@ import users from './user'
 const rootRouter = Router()
 
 rootRouter.use('/', auth)
+rootRouter.use('/', resetDb)
 rootRouter.use('/activities', activities)
 rootRouter.use('/courts', courts)
 rootRouter.use('/custom-courts', customCourts)
@@ -26,6 +28,5 @@ rootRouter.use('/predefined-areas', predefinedAreas)
 rootRouter.use('/schedules', schedules)
 rootRouter.use('/sports', sports)
 rootRouter.use('/users', users)
-
 
 export default rootRouter
