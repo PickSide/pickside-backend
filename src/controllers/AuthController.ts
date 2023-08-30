@@ -79,7 +79,6 @@ export const getAccessToken = async (req: Request, res: Response) => {
 export const loginWithGoogle = async (req: Request, res: Response) => {
 	const { email, family_name, given_name, locale, picture, verified_email } = req.body.data
 
-
 	let user = await User.findOne({ email })
 
 	if (!user) {
@@ -122,28 +121,33 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 			user: omit(user, ['password']),
 			accessToken,
 			refreshToken,
-		}
+		},
 	})
-
 }
 
 export const login = async (req: Request, res: Response) => {
 	const { username: usernameOrEmail, password } = req.body.data
-	const user = await User
-		.findOne({
-			$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
-		})
-		.populate([
-			'preferredLocale',
-			'preferredRegion',
-			'preferredSport',
-			'groups'
-		])
+	const user = await User.findOne({
+		$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+	})
+		.populate(['preferredLocale', 'preferredRegion', 'preferredSport', 'groups'])
 		.exec()
+
+	if (!usernameOrEmail || !password || !user) {
+		return SendErrorResponse({
+			context: AppContext.User,
+			failReason: FailReason.UserWrongCredentials,
+			jobStatus: 'FAILED',
+			jobType: JobType.Login,
+			message: 'Username/Email or Password is incorrect.',
+			res,
+			status: Status.Unauthorized,
+		})
+	}
 
 	const match = await compare(password, user?.password)
 
-	if (!usernameOrEmail || !password || !user || !match) {
+	if (!match) {
 		return SendErrorResponse({
 			context: AppContext.User,
 			failReason: FailReason.UserWrongCredentials,
