@@ -5,8 +5,7 @@ import { hashSync } from 'bcrypt'
 
 interface UserProps {
 	email?: string
-	firstName: string
-	lastName: string
+	fullName: string
 	username: string
 	preferredLocale: any
 	preferredRegion: any
@@ -23,23 +22,21 @@ interface PlayablesProps {
 	isMultisportZone: boolean
 }
 
-
 export function createUser(props: UserProps[]) {
 	return Promise.all(
 		props.map(
-			async ({ email, firstName, lastName, username, preferredLocale, preferredRegion, preferredSport }) =>
+			async ({ email, fullName, username, preferredLocale, preferredRegion, preferredSport }) =>
 				await User.create({
 					attendedEventsCount: 0,
 					avatar: undefined,
 					bio: 'A bio',
 					city: 'string',
-					email: email ? email : `${firstName}${lastName}@gmail.com`,
-					firstName,
+					email: email ? email : `t${fullName.trim()}@gmail.com`,
+					fullName,
 					fitnessLevel: 'average',
 					groups: [],
 					isOrganizer: false,
 					joinDate: new Date().toISOString(),
-					lastName,
 					localeRegion: 'montreal',
 					locationCommonlyPlayedIn: 'montreal',
 					matchOrganizedCount: 0,
@@ -82,7 +79,7 @@ export function createCourt(props: PlayablesProps[]) {
 					fieldName,
 					schedule,
 					type,
-					isMultisportZone
+					isMultisportZone,
 				}),
 		),
 	)
@@ -90,7 +87,6 @@ export function createCourt(props: PlayablesProps[]) {
 
 export function getPlayables() {
 	return [
-
 		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
 		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
 		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
