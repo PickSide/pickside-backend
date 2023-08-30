@@ -11,7 +11,7 @@ export const UserSchema = new Schema(
 		email: { type: String, require: false },
 		emailVerified: { type: Boolean, default: false, require: true },
 		favorites: { type: [Schema.Types.ObjectId], ref: 'Activity', require: false },
-		firstName: { type: String, require: false },
+		fullName: { type: String, require: false },
 		fitnessLevel: { type: String, default: 'average', require: false },
 		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
 		inactive: { type: Boolean, default: false, require: false },
@@ -19,7 +19,6 @@ export const UserSchema = new Schema(
 		isExternalAccount: { type: Boolean, default: false, require: true },
 		isOrganizer: { type: Boolean, require: false },
 		joinDate: { type: Date, require: false },
-		lastName: { type: String, require: false },
 		localeRegion: { type: String, require: false },
 		locationCommonlyPlayedIn: { type: String, require: true },
 		locationTracking: { type: Boolean, default: false, require: false },
@@ -60,7 +59,7 @@ export interface IUser extends Document {
 	email: string
 	emailVerified: boolean
 	favorites: any[]
-	firstName: string
+	fullName: string
 	fitnessLevel: 'retired' | 'average' | 'athletic' | 'very athletic'
 	groups: any[]
 	inactive: boolean
@@ -68,7 +67,6 @@ export interface IUser extends Document {
 	isExternalAccount: boolean
 	isOrganizer: boolean
 	joinDate: Date
-	lastName: string
 	localeRegion: string
 	locationCommonlyPlayedIn: string
 	locationTracking: boolean
