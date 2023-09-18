@@ -60,6 +60,7 @@ export enum FailReason {
 	DbResetFailed = 'dbresetfailed',
 	TokenExpired = 'tokenexpired',
 	TokenError = 'tokenerror',
+	TokenInvalid = 'tokeninvalid',
 	BadPayload = 'wrongpayload',
 	BadParams = 'wrongparams',
 	UserDeactivateAccount = 'userdeactivateaccount',

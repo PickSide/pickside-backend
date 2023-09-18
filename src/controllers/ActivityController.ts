@@ -1,4 +1,15 @@
-import { ActivityCreatedSuccess, AppContext, FailReason, JobType, ParticipantAlreadyRegistered, ParticipantSuccessfullyRegistered, SendErrorResponse, SendResponse, SendSuccessPayloadResponse, Status } from '../utils/responses'
+import {
+	ActivityCreatedSuccess,
+	AppContext,
+	FailReason,
+	JobType,
+	ParticipantAlreadyRegistered,
+	ParticipantSuccessfullyRegistered,
+	SendErrorResponse,
+	SendResponse,
+	SendSuccessPayloadResponse,
+	Status,
+} from '../utils/responses'
 import { Request, Response } from 'express'
 
 import Activity from '../schemas/Activity'
@@ -7,9 +18,9 @@ import User from '../schemas/User'
 export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
 		.populate([
-			{ path: 'organiser', select: { id: 1, firstName: 1, lastName: 1, avatar: 1 } },
-			{ path: 'participants', select: { firstName: 1, lastName: 1, avatar: 1 } },
-			'sport'
+			{ path: 'organiser', select: { id: 1, fullName: 1, username: 1, avatar: 1 } },
+			{ path: 'participants', select: { fullName: 1, username: 1, avatar: 1 } },
+			'sport',
 		])
 		.exec()
 	return SendResponse(res, Status.Ok, { results: activities })
@@ -27,7 +38,7 @@ export const createActivity = async (req: Request, res: Response) => {
 		rules,
 		sport: sport.id,
 		time,
-		title
+		title,
 	})
 
 	return SendSuccessPayloadResponse({
@@ -36,7 +47,7 @@ export const createActivity = async (req: Request, res: Response) => {
 		payload: { ...ActivityCreatedSuccess, response: { activity }, status: 'Created' },
 	})
 }
-export const getActivityById = async (req: Request, res: Response) => { }
+export const getActivityById = async (req: Request, res: Response) => {}
 export const updateActivityById = async (req: Request, res: Response) => {
 	const { activityId } = req.params
 	const { userId } = req.body.data
@@ -53,15 +64,10 @@ export const updateActivityById = async (req: Request, res: Response) => {
 
 	const updated = await Activity.findOneAndUpdate({ id: activityId }, { participants }, { new: true }).exec()
 
-	return SendResponse(
-		res,
-		Status.Ok,
-		{ ...ParticipantSuccessfullyRegistered, response: updated, status: 'Registered' },
-	)
+	return SendResponse(res, Status.Ok, { ...ParticipantSuccessfullyRegistered, response: updated, status: 'Registered' })
 }
-export const removeActivityById = async (req: Request, res: Response) => { }
-export const getActivityByGroupId = async (req: Request, res: Response) => { }
-
+export const removeActivityById = async (req: Request, res: Response) => {}
+export const getActivityByGroupId = async (req: Request, res: Response) => {}
 
 export const updateFavorites = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
@@ -94,7 +100,12 @@ export const updateFavorites = async (req: Request, res: Response) => {
 		return SendSuccessPayloadResponse({
 			res,
 			status: Status.Ok,
-			payload: { jobStatus: 'COMPLETED', status: 'Updated', message: 'Successfully added to favorites.', result: { favorites: user.favorites } }
+			payload: {
+				jobStatus: 'COMPLETED',
+				status: 'Updated',
+				message: 'Successfully added to favorites.',
+				result: { favorites: user.favorites },
+			},
 		})
 	}
 }
@@ -127,8 +138,10 @@ export const registerParticipant = async (req: Request, res: Response) => {
 	}
 
 	const user = await User.findById(userId).exec()
-	const activity = await Activity.findById(req.params.activityId).populate({ path: 'participants', select: { id: 1 } }).exec()
-	const isUserRegistered = activity?.participants.some(participant => participant.equals(userId))
+	const activity = await Activity.findById(req.params.activityId)
+		.populate({ path: 'participants', select: { id: 1 } })
+		.exec()
+	const isUserRegistered = activity?.participants.some((participant) => participant.equals(userId))
 
 	if (!activity) {
 		return SendErrorResponse({
@@ -176,8 +189,8 @@ export const registerParticipant = async (req: Request, res: Response) => {
 		payload: {
 			jobStatus: 'COMPLETED',
 			status: 'Registered',
-			message: 'Successfully registered to activity.'
-		}
+			message: 'Successfully registered to activity.',
+		},
 	})
 }
 
@@ -210,7 +223,7 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 
 	const activity = await Activity.findById(req.params.activityId).exec()
 	const user = await User.findById(userId).exec()
-	const isUserRegistered = activity?.participants.some(participant => participant.equals(userId))
+	const isUserRegistered = activity?.participants.some((participant) => participant.equals(userId))
 
 	if (!activity) {
 		return SendErrorResponse({
@@ -248,7 +261,7 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		})
 	}
 
-	const activityParticipantIdx = activity.participants.findIndex(participant => participant === user.id)
+	const activityParticipantIdx = activity.participants.findIndex((participant) => participant === user.id)
 
 	activity.participants.splice(activityParticipantIdx, 1)
 
@@ -260,8 +273,7 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		payload: {
 			jobStatus: 'COMPLETED',
 			status: 'Registered',
-			message: 'Successfully unregistered from activity.'
-		}
+			message: 'Successfully unregistered from activity.',
+		},
 	})
 }
-
