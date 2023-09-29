@@ -189,6 +189,7 @@ export const registerParticipant = async (req: Request, res: Response) => {
 		payload: {
 			jobStatus: 'COMPLETED',
 			status: 'Registered',
+			result: { participants: activity.participants },
 			message: 'Successfully registered to activity.',
 		},
 	})
