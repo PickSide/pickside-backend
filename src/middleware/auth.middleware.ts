@@ -1,6 +1,8 @@
 import {
+	AppContext,
 	DefaultServerResponseMap,
-	InvalidToken,
+	FailReason,
+	SendErrorResponse,
 	SendResponse,
 	Status,
 	isTokenValid,
@@ -16,13 +18,38 @@ export function validateAccessToken(req, res, next) {
 		verify(token, secrets['ACCESS_TOKEN_SECRET'], {}, async (err) => {
 			if (err?.name === TokenExpiredError.name) {
 				await revokeToken(token)
-				return SendResponse(res, Status.Forbidden, DefaultServerResponseMap[Status.Forbidden])
+
+				return SendErrorResponse({
+					context: AppContext.Token,
+					failReason: FailReason.TokenExpired,
+					jobStatus: 'FAILED',
+					//add dynamic jobtype
+					message: 'Forbidden action',
+					status: Status.Unauthorized,
+					res,
+				})
 			}
 			if (err?.name === JsonWebTokenError.name) {
-				return SendResponse(res, Status.Forbidden, DefaultServerResponseMap[Status.Unauthorized])
+				return SendErrorResponse({
+					context: AppContext.Token,
+					failReason: FailReason.TokenError,
+					jobStatus: 'FAILED',
+					//add dynamic jobtype
+					message: 'Forbidden action',
+					status: Status.Unauthorized,
+					res,
+				})
 			}
 			if (!isTokenValid(token)) {
-				return SendResponse(res, Status.Forbidden, InvalidToken)
+				return SendErrorResponse({
+					context: AppContext.Token,
+					failReason: FailReason.TokenInvalid,
+					jobStatus: 'FAILED',
+					//add dynamic jobtype
+					message: 'Forbidden action',
+					status: Status.Unauthorized,
+					res,
+				})
 			}
 			next()
 		})

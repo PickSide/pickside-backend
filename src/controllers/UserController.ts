@@ -86,7 +86,7 @@ export const reactivate = async (req: Request, res: Response) => {
 export const deactivate = async (req: Request, res: Response) => {
 	return await User.findByIdAndUpdate(req.params.userId, { inactive: true, inactiveDate: Date.now() })
 		.exec()
-		.then(() => SendResponse(res, Status.Ok, { message: 'Account successfully deactivated' }))
+		.then(() => SendResponse(res, Status.Ok, { message: 'Account successfully deactivated. You can now logout.' }))
 		.catch(() =>
 			SendErrorResponse({
 				context: AppContext.User,
