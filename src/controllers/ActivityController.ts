@@ -32,6 +32,7 @@ export const createActivity = async (req: Request, res: Response) => {
 		address,
 		date,
 		maxPlayers,
+		participants: [organiser],
 		mode,
 		organiser,
 		price,
@@ -274,6 +275,7 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		payload: {
 			jobStatus: 'COMPLETED',
 			status: 'Registered',
+			result: { participants: activity.participants },
 			message: 'Successfully unregistered from activity.',
 		},
 	})
