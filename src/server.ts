@@ -9,7 +9,6 @@ import swaggerJsDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
 
 // const io = new Server(8001)
-
 const app = express()
 
 const swaggerDefinition = {

@@ -1,18 +1,17 @@
 import {
 	AppContext,
-	DefaultServerResponseMap,
 	FailReason,
 	JobType,
 	SendErrorResponse,
-	SendResponse,
 	SendSuccessPayloadResponse,
+	SendSuccessResponseMessage,
 	Status,
 	addToList,
 	isTokenValid,
 	revokeToken,
 	secrets,
 } from '../utils'
-import { JsonWebTokenError, JwtPayload, TokenExpiredError, decode, sign, verify } from 'jsonwebtoken'
+import { JsonWebTokenError, JwtPayload, TokenExpiredError, sign, verify } from 'jsonwebtoken'
 import { Request, Response } from 'express'
 import { omit, pick } from 'lodash'
 
@@ -69,12 +68,25 @@ export const getAccessToken = async (req: Request, res: Response) => {
 			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
 			const claims = getTokenClaims(user, emailVerified)
 			const accessToken = generateAT(claims)
-			return SendResponse(res, Status.Ok, {
-				accessToken,
+
+			return SendSuccessPayloadResponse({
+				context: AppContext.Token,
+				payload: accessToken,
+				res,
+				status: Status.Ok,
 			})
 		}
 	}
-	return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
+
+	return SendErrorResponse({
+		context: AppContext.Token,
+		failReason: FailReason.TokenError,
+		jobStatus: 'FAILED',
+		jobType: JobType.GetAccessToken,
+		message: 'Unauthorized action.',
+		res,
+		status: Status.Unauthorized,
+	})
 }
 
 export const loginWithGoogle = async (req: Request, res: Response) => {
@@ -118,13 +130,16 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 	await addToList(refreshToken)
 
 	return SendSuccessPayloadResponse({
-		res,
-		status: Status.Ok,
+		context: AppContext.User,
+		jobType: JobType.Login,
 		payload: {
 			user: omit(user, ['password']),
 			accessToken,
 			refreshToken,
 		},
+		redirectUri: '/',
+		res,
+		status: Status.Ok,
 	})
 }
 
@@ -184,10 +199,13 @@ export const login = async (req: Request, res: Response) => {
 	await addToList(accessToken)
 	await addToList(refreshToken)
 
-	return SendResponse(res, Status.Ok, {
-		user: omit(user, ['password']),
-		accessToken,
-		refreshToken,
+	return SendSuccessPayloadResponse({
+		context: AppContext.User,
+		jobType: JobType.Login,
+		payload: { user: omit(user, ['password']), accessToken, refreshToken },
+		redirectUri: '/',
+		res,
+		status: Status.Ok,
 	})
 }
 
@@ -195,7 +213,15 @@ export const logout = async (req: Request, res: Response) => {
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
 	if (refreshToken) {
 		await revokeToken(refreshToken)
-		return SendResponse(res, Status.Ok, DefaultServerResponseMap[Status.Ok])
+
+		return SendSuccessResponseMessage({
+			context: AppContext.User,
+			jobType: JobType.Logout,
+			message: 'Successfully logged out',
+			redirectUri: '/login',
+			res,
+			status: Status.Ok,
+		})
 	}
 	return SendErrorResponse({
 		context: AppContext.User,
@@ -220,7 +246,7 @@ function getTokenClaims(data, emailVerified: boolean = false): TokenClaims {
 	return {
 		...pick(data, ['email', 'profile.firstName', 'profile.lastName', 'username']),
 		emailVerified,
-		iss: 'http://pickside.com',
+		iss: 'https://pickside.net',
 		sub: data.id,
 		//aud: 'http://pickside.com',
 	}
