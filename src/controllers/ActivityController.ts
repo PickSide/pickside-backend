@@ -26,7 +26,21 @@ export const getAllActivities = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Ok, { results: activities })
 }
 export const createActivity = async (req: Request, res: Response) => {
-	const { address, date, images, maxPlayers, organiser, mode, price, rules, sport, time, title } = req.body.data
+	const {
+		address,
+		date,
+		images,
+		maxPlayers,
+		organiser: organiserId,
+		mode,
+		price,
+		rules,
+		sport,
+		time,
+		title,
+	} = req.body.data
+
+	const organiser = await User.findById({ _id: organiserId }, { fullName: 1, username: 1, reliability: 1 })
 
 	const activity = await Activity.create({
 		address,
