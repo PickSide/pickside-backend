@@ -110,6 +110,7 @@ export interface MessageReponseProps {
 	status: Status
 	timeStamp?: Date
 	payload?: any
+	redirectUri?: string
 }
 
 export function SendErrorResponse({
@@ -123,6 +124,7 @@ export function SendErrorResponse({
 	timeStamp = new Date(),
 	jobType,
 	jobStatus,
+	redirectUri,
 }: MessageReponseProps) {
 	if (!res) return
 
@@ -132,6 +134,7 @@ export function SendErrorResponse({
 		jobStatus,
 		jobType,
 		timeStamp,
+		redirectUri,
 		error: {
 			failReason,
 			message,
@@ -146,6 +149,7 @@ export function SendSuccessPayloadResponse({
 	payload,
 	timeStamp = new Date(),
 	res,
+	redirectUri,
 	status,
 }: MessageReponseProps) {
 	if (!res) return
@@ -153,6 +157,7 @@ export function SendSuccessPayloadResponse({
 	return res.status(status).json({
 		context,
 		timeStamp,
+		redirectUri,
 		...payload,
 	})
 }
@@ -165,6 +170,24 @@ export function SendSuccessListPayloadResponse({ callback, context, results, tim
 		context,
 		results,
 		timeStamp,
+	})
+}
+
+export function SendSuccessResponseMessage({
+	context,
+	timeStamp = new Date(),
+	res,
+	message,
+	redirectUri,
+	status,
+}: Omit<MessageReponseProps, 'payload'>) {
+	if (!res) return
+
+	return res.status(status).json({
+		context,
+		message,
+		timeStamp,
+		redirectUri,
 	})
 }
 
