@@ -9,5 +9,5 @@ cd $HOME/pickside-backend &&
     git pull origin release &&
     npm ci &&
     pm2 delete all &&
-    pm2 start "npm run start" --name "pickside-api" &&
+    pm2 delete pickside-api || : && pm2 start "npm run start" --name "pickside-api" &&
     pm2 save
