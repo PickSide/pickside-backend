@@ -8,6 +8,5 @@ cd $HOME/pickside-backend &&
     git reset --hard origin/release &&
     git pull origin release &&
     npm ci &&
-    pm2 delete all
-    pm2 start "npm run start" --name "pickside-api"
+    pm2 delete all || pm2 start "npm run start" --name "pickside-api" &&
     pm2 save
