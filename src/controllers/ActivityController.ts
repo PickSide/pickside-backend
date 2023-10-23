@@ -38,6 +38,7 @@ export const createActivity = async (req: Request, res: Response) => {
 		sport,
 		time,
 		title,
+		isPrivate,
 	} = req.body.data
 
 	const organiser = await User.findById({ _id: organiserId }, { fullName: 1, username: 1, reliability: 1 })
@@ -54,6 +55,7 @@ export const createActivity = async (req: Request, res: Response) => {
 		sport: sport.id,
 		time,
 		title,
+		isPrivate,
 	})
 
 	return SendSuccessPayloadResponse({
@@ -296,9 +298,8 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 }
 
 export const getUserFavorites = async (req: Request, res: Response) => {
-	console.log(req)
 	const user = await User.findById(req.params.userId).populate('favorites')
-	console.log(user)
+
 	if (!user) {
 		return SendErrorResponse({
 			context: AppContext.Activity,

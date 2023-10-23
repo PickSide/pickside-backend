@@ -4,19 +4,20 @@ import { schemaProps } from '../utils'
 
 export interface IActivity extends Document {
 	address: any
-	date: any,
-	description: string,
-	duration: number,
-	maxPlayers: number,
-	mode: string,
-	organiser: any,
-	participants: any[],
-	recommandedLevel: string,
-	rules: string,
-	sport: string,
-	time: string,
-	title: string,
-	price: number,
+	date: any
+	description: string
+	duration: number
+	maxPlayers: number
+	mode: string
+	organiser: any
+	participants: any[]
+	recommandedLevel: string
+	rules: string
+	sport: string
+	time: string
+	title: string
+	price: number
+	isPrivate: boolean
 }
 
 export const ActivitySchema = new Schema(
@@ -36,11 +37,11 @@ export const ActivitySchema = new Schema(
 		time: { type: Date, require: false },
 		title: { type: String, require: false },
 		price: { type: Number, require: false },
+		isPrivate: { type: Boolean, require: false },
 	},
 	{
-		...schemaProps
+		...schemaProps,
 	},
 )
-
 
 export default model<IActivity>('Activity', ActivitySchema)
