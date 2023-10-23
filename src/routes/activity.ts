@@ -13,4 +13,5 @@ router.get('/groups/:groupId', ActivityController.getActivityByGroupId)
 router.put('/:activityId/favorites', ActivityController.updateFavorites)
 router.put('/:activityId/register', ActivityController.registerParticipant)
 router.put('/:activityId/unregister', ActivityController.unregisterParticipant)
+router.get('/user/:userId/favorites', validateAccessToken, ActivityController.getUserFavorites)
 export default router
