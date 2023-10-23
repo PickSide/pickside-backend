@@ -294,3 +294,31 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		},
 	})
 }
+
+export const getUserFavorites = async (req: Request, res: Response) => {
+	console.log(req)
+	const user = await User.findById(req.params.userId).populate('favorites')
+	console.log(user)
+	if (!user) {
+		return SendErrorResponse({
+			context: AppContext.Activity,
+			failReason: FailReason.UserNotFound,
+			jobStatus: 'FAILED',
+			jobType: JobType.ActivityRegister,
+			message: `User doesn't exists`,
+			res,
+			status: Status.NotFound,
+		})
+	}
+
+	return SendSuccessPayloadResponse({
+		res,
+		status: Status.Ok,
+		payload: {
+			jobStatus: 'COMPLETED',
+			status: 'Registered',
+			result: user.favorites,
+			message: 'Successfully registered to activity.',
+		},
+	})
+}
