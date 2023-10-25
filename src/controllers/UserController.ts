@@ -16,6 +16,11 @@ import { omit } from 'lodash'
 
 export const get = async (req: Request, res: Response) => {}
 
+export const getUsers = async (req: Request, res: Response) => {
+	const users = await User.find().select('name username email reliability').exec()
+	return SendResponse(res, Status.Ok, { results: users })
+}
+
 export const create = async (req: Request, res: Response) => {
 	const user = req.body.data
 	const pwd = req.body.data.password

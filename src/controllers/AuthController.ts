@@ -19,6 +19,7 @@ import Locale from '../schemas/Locale'
 import User from '../schemas/User'
 import VerifiedEmail from '../schemas/Email'
 import { compare } from 'bcrypt'
+import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 
 interface TokenClaims extends JwtPayload {
@@ -95,6 +96,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 	let user = await User.findOne({ email })
 
 	const preferredLocale = await Locale.findOne({ value: locale })
+	const username = 'user' + crypto.randomBytes(8).toString('base64')
 
 	if (!user) {
 		user = await User.create({
@@ -103,6 +105,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 			emailVerified: verified_email,
 			preferredLocale,
 			fullName: name,
+			username,
 			isExternalAccount: true,
 		})
 	}

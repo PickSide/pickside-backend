@@ -44,11 +44,13 @@ export enum JobType {
 	Register = 'register',
 	GetAccessToken = 'getaccesstoken',
 	GetCourt = 'getcourt',
+	GetGroupForUser = 'getgroupforuser',
 	UpdateUser = 'updateuser',
 	GetCustomCourts = 'getcustomcourts',
 	GetCustomCourt = 'getcustomcourt',
 	AddCutomCourt = 'addcustomcourt',
 	DeleteCustomCourt = 'deletecustomcourt',
+	DeleteGroup = 'deletegroup',
 	VerifyEmail = 'vertifyemail',
 	DeactivateAccount = 'deactivateaccount',
 	ReactivateAccount = 'deactivateaccount',
@@ -63,6 +65,8 @@ export enum FailReason {
 	TokenInvalid = 'tokeninvalid',
 	BadPayload = 'wrongpayload',
 	BadParams = 'wrongparams',
+	GroupCreationError = 'groupcreationerror',
+	GroupDeletionError = 'groupdeletionerror',
 	UserDeactivateAccount = 'userdeactivateaccount',
 	UserReactivateAccount = 'userreactivateaccount',
 	UserInactive = 'userinactive',
@@ -221,6 +225,14 @@ export const ParticipantAlreadyRegistered = {
 
 export const ParticipantSuccessfullyRegistered = {
 	message: 'Successfully registered to activity',
+}
+
+export const GroupCreatedSuccess = {
+	message: 'Group created successfully',
+}
+
+export const GroupDeletedSuccess = {
+	message: 'Group deleted successfully',
 }
 
 export const InvalidToken = {
