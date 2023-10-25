@@ -166,7 +166,7 @@ definitions:
         type: string
       sport:
         type: string
-      organiser:
+      organizer:
         type: string
 
 components:

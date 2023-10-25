@@ -4,9 +4,10 @@ import { validateAccessToken } from '../middleware'
 
 const router = express.Router()
 
-router.get('/', UserController.get)
-router.put('/deactivate/:userId', UserController.deactivate)
-router.get('/reactivate/:userId', UserController.reactivate)
+router.get('/', UserController.getUsers)
+router.get('/:id', validateAccessToken, UserController.get)
+router.put('/deactivate/:userId', validateAccessToken, UserController.deactivate)
+router.get('/reactivate/:userId', validateAccessToken, UserController.reactivate)
 router.post('/create', UserController.create)
 router.put('/:id/settings', validateAccessToken, UserController.update)
 

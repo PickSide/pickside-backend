@@ -9,7 +9,7 @@ export interface IActivity extends Document {
 	duration: number
 	maxPlayers: number
 	mode: string
-	organiser: any
+	organizer: any
 	participants: any[]
 	recommandedLevel: string
 	rules: string
@@ -29,7 +29,7 @@ export const ActivitySchema = new Schema(
 		images: { type: [Object], require: false },
 		maxPlayers: { type: Number, require: true },
 		mode: { type: Object, require: true },
-		organiser: { type: Schema.Types.ObjectId, ref: 'User', require: false },
+		organizer: { type: Schema.Types.ObjectId, ref: 'User', require: false },
 		participants: [{ type: Schema.Types.ObjectId, ref: 'User', require: false }],
 		recommandedLevel: { type: String, require: false },
 		rules: { type: String, require: false },

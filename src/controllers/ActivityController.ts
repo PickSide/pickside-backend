@@ -18,7 +18,7 @@ import User from '../schemas/User'
 export const getAllActivities = async (req: Request, res: Response) => {
 	const activities = await Activity.find()
 		.populate([
-			{ path: 'organiser', select: { id: 1, fullName: 1, username: 1, avatar: 1 } },
+			{ path: 'organizer', select: { id: 1, fullName: 1, username: 1, avatar: 1 } },
 			{ path: 'participants', select: { fullName: 1, username: 1, avatar: 1 } },
 			'sport',
 		])
@@ -31,7 +31,7 @@ export const createActivity = async (req: Request, res: Response) => {
 		date,
 		images,
 		maxPlayers,
-		organiser: organiserId,
+		organizer: organizerId,
 		mode,
 		price,
 		rules,
@@ -41,15 +41,15 @@ export const createActivity = async (req: Request, res: Response) => {
 		isPrivate,
 	} = req.body.data
 
-	const organiser = await User.findById({ _id: organiserId }, { fullName: 1, username: 1, reliability: 1 })
+	const organizer = await User.findById({ _id: organizerId }, { fullName: 1, username: 1, reliability: 1 })
 
 	const activity = await Activity.create({
 		address,
 		date,
 		maxPlayers,
-		participants: [organiser],
+		participants: [organizer],
 		mode,
-		organiser,
+		organizer,
 		price,
 		rules,
 		sport: sport.id,
