@@ -1,6 +1,7 @@
+import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, ROLES } from '../schemas/User'
+
 import Playable from '../schemas/Court'
 import { Types } from 'mongoose'
-import User from '../schemas/User'
 import { hashSync } from 'bcrypt'
 
 interface UserProps {
@@ -27,6 +28,7 @@ export function createUser(props: UserProps[]) {
 		props.map(
 			async ({ email, fullName, username, preferredLocale, preferredRegion, preferredSport }) =>
 				await User.create({
+					accountType: ACCOUNT_TYPE.DEFAULT,
 					attendedEventsCount: 0,
 					avatar: undefined,
 					bio: 'A bio',
@@ -35,13 +37,13 @@ export function createUser(props: UserProps[]) {
 					fullName,
 					fitnessLevel: 'average',
 					groups: [],
-					isOrganizer: false,
 					joinDate: new Date().toISOString(),
 					localeRegion: 'montreal',
 					locationCommonlyPlayedIn: 'montreal',
 					matchOrganizedCount: 0,
 					matchPlayedCount: 0,
 					password: hashSync('123', 10),
+					permissions: DEFAULT_USER_PERMISSIONS,
 					phone: '514-966-8481',
 					preferredLocale,
 					preferredRegion,
@@ -56,6 +58,7 @@ export function createUser(props: UserProps[]) {
 					},
 					reasonsForJoining: [],
 					reliability: _rand(100),
+					role: ROLES.USER,
 					sexe: 'male',
 					socialNetworks: [],
 					subscriptionType: 'none',

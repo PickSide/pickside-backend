@@ -2,8 +2,66 @@ import { Schema, model } from 'mongoose'
 
 import { schemaProps } from '../utils'
 
+export enum ACCOUNT_TYPE {
+	GOOGLE = 'google',
+	FACEBOOK = 'facebook',
+	APPLE = 'apple',
+	DEFAULT = 'default',
+}
+
+export enum ROLES {
+	ADMIN = 'admin',
+	USER = 'user',
+	GUEST = 'guest',
+}
+
+export enum USER_PERMISSIONS {
+	ACTIVITIES_VIEW = 'activities-view',
+	ACTIVITIES_CREATE = 'activities-create',
+	ACTIVITIES_DELETE = 'activities-delete',
+	ACTIVITIES_REGISTER = 'activities-register',
+	GROUP_CREATE = 'group-create',
+	GROUP_DELETE = 'group-delete',
+	GROUP_SEARCH = 'group-search',
+	USERS_VIEW_ALL = 'see-all-users',
+	SEND_MESSAGES = 'send-messages',
+	NOTIFICATIONS_SYSTEM_RECEIVE = 'notifications-system-receive',
+	NOTIFICATIONS_GLOBAL_RECEIVE = 'notifications-global-receive',
+	GOOGLE_SEARCH = 'google-search',
+	MAP_VIEW = 'map-view',
+}
+
+export enum GROUP_ROLES {
+	OWNER = 'owner',
+	ADMIN = 'admin',
+	MEMBER = 'member',
+}
+
+const GUEST_PERMISSIONS = [
+	USER_PERMISSIONS.ACTIVITIES_VIEW,
+	USER_PERMISSIONS.NOTIFICATIONS_GLOBAL_RECEIVE,
+	USER_PERMISSIONS.GOOGLE_SEARCH,
+	USER_PERMISSIONS.MAP_VIEW,
+]
+const REGISTERED_USER = [
+	USER_PERMISSIONS.ACTIVITIES_CREATE,
+	USER_PERMISSIONS.ACTIVITIES_DELETE,
+	USER_PERMISSIONS.ACTIVITIES_REGISTER,
+	USER_PERMISSIONS.GROUP_CREATE,
+	USER_PERMISSIONS.GROUP_DELETE,
+	USER_PERMISSIONS.GROUP_SEARCH,
+	USER_PERMISSIONS.NOTIFICATIONS_SYSTEM_RECEIVE,
+	USER_PERMISSIONS.SEND_MESSAGES,
+]
+export const GUEST_USER_PERMISSIONS = GUEST_PERMISSIONS
+export const GOOGLE_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
+export const FACEBOOK_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
+export const APPLE_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
+export const DEFAULT_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
+
 export const UserSchema = new Schema(
 	{
+		accountType: { type: String, require: true },
 		attendedEventsCount: { type: String, require: false },
 		avatar: { type: String, require: false },
 		bio: { type: String, require: false },
@@ -16,8 +74,6 @@ export const UserSchema = new Schema(
 		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
 		inactive: { type: Boolean, default: false, require: false },
 		inactiveDate: { type: Date, default: null, require: false },
-		isExternalAccount: { type: Boolean, default: false, require: true },
-		isOrganizer: { type: Boolean, require: false },
 		joinDate: { type: Date, require: false },
 		localeRegion: { type: String, require: false },
 		locationCommonlyPlayedIn: { type: String, require: true },
@@ -25,6 +81,7 @@ export const UserSchema = new Schema(
 		matchOrganizedCount: { type: Number, require: false },
 		matchPlayedCount: { type: Number, require: false },
 		password: { type: String, require: false },
+		permissions: [{ type: String, require: true }],
 		phone: { type: String, require: false },
 		preferredLocale: { type: Schema.Types.ObjectId, ref: 'Locale', require: false },
 		preferredRegion: { type: Schema.Types.ObjectId, ref: 'PredefinedArea', require: false },
@@ -39,6 +96,7 @@ export const UserSchema = new Schema(
 		},
 		reasonsForJoining: { type: [String], require: false },
 		reliability: { type: Number, require: false },
+		role: { type: String, require: true },
 		sexe: { type: String, default: 'male', require: false },
 		socialNetworks: { type: [String], require: false },
 		subscriptionType: { type: String, require: false },
@@ -52,6 +110,7 @@ export const UserSchema = new Schema(
 )
 
 export interface IUser extends Document {
+	accountType: ACCOUNT_TYPE
 	attendedEventsCount: number
 	avatar: string
 	bio: string
@@ -64,8 +123,6 @@ export interface IUser extends Document {
 	groups: any[]
 	inactive: boolean
 	inactiveDate: Date
-	isExternalAccount: boolean
-	isOrganizer: boolean
 	joinDate: Date
 	localeRegion: string
 	locationCommonlyPlayedIn: string
@@ -73,6 +130,7 @@ export interface IUser extends Document {
 	matchOrganizedCount: number
 	matchPlayedCount: number
 	password: string
+	permissions: [USER_PERMISSIONS]
 	phone: string
 	preferredLocale: any
 	preferredRegion: any

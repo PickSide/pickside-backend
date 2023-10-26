@@ -9,8 +9,8 @@ import {
 	Status,
 } from '../utils/responses'
 import { Request, Response } from 'express'
+import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, ROLES } from '../schemas/User'
 
-import User from '../schemas/User'
 import { hashSync } from 'bcrypt'
 import { omit } from 'lodash'
 
@@ -40,11 +40,14 @@ export const create = async (req: Request, res: Response) => {
 	}
 
 	const account = await User.create({
+		accountType: ACCOUNT_TYPE.DEFAULT,
 		email: user.email,
 		password: hashSync(pwd, 10),
 		fullName: user.fullName,
 		phone: user.phone,
 		sexe: user.sexe,
+		permissions: DEFAULT_USER_PERMISSIONS,
+		role: ROLES.USER,
 	})
 
 	return SendResponse(res, Status.Ok, { ...AccountCreatedSuccess, payload: { ...omit(account, ['password']) } })

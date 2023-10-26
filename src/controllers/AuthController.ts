@@ -13,10 +13,16 @@ import {
 } from '../utils'
 import { JsonWebTokenError, JwtPayload, TokenExpiredError, sign, verify } from 'jsonwebtoken'
 import { Request, Response } from 'express'
+import User, {
+	ACCOUNT_TYPE,
+	DEFAULT_USER_PERMISSIONS,
+	GOOGLE_USER_PERMISSIONS,
+	GUEST_USER_PERMISSIONS,
+	ROLES,
+} from '../schemas/User'
 import { omit, pick } from 'lodash'
 
 import Locale from '../schemas/Locale'
-import User from '../schemas/User'
 import VerifiedEmail from '../schemas/Email'
 import { compare } from 'bcrypt'
 import crypto from 'crypto'
@@ -100,13 +106,15 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 
 	if (!user) {
 		user = await User.create({
+			accountType: ACCOUNT_TYPE.GOOGLE,
 			avatar: picture,
 			email,
 			emailVerified: verified_email,
 			preferredLocale,
 			fullName: name,
 			username,
-			isExternalAccount: true,
+			permissions: GOOGLE_USER_PERMISSIONS,
+			role: ROLES.USER,
 		})
 	}
 
