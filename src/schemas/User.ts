@@ -145,6 +145,7 @@ export interface IUser extends Document {
 	}
 	reasonsForJoining: string[]
 	reliability: number
+	role: ROLES
 	sexe: 'male' | 'female'
 	socialNetworks: any[]
 	subscriptionType: string
