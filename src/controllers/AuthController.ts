@@ -13,13 +13,7 @@ import {
 } from '../utils'
 import { JsonWebTokenError, JwtPayload, TokenExpiredError, sign, verify } from 'jsonwebtoken'
 import { Request, Response } from 'express'
-import User, {
-	ACCOUNT_TYPE,
-	DEFAULT_USER_PERMISSIONS,
-	GOOGLE_USER_PERMISSIONS,
-	GUEST_USER_PERMISSIONS,
-	ROLES,
-} from '../schemas/User'
+import User, { ACCOUNT_TYPE, GOOGLE_USER_PERMISSIONS, GUEST_USER_PERMISSIONS, ROLES } from '../schemas/User'
 import { omit, pick } from 'lodash'
 
 import Locale from '../schemas/Locale'
@@ -220,6 +214,29 @@ export const login = async (req: Request, res: Response) => {
 	})
 }
 
+export const loginAsGuest = async (req: Request, res: Response) => {
+	const username = 'guest' + crypto.randomBytes(8).toString('base64')
+
+	const guestUser = new User({
+		accountType: ACCOUNT_TYPE.GUEST,
+		permissions: GUEST_USER_PERMISSIONS,
+		username,
+	})
+
+	const claims = getTokenClaims(guestUser, false)
+	const accessToken = generateAT(claims)
+	const refreshToken = generateRT(claims)
+
+	return SendSuccessPayloadResponse({
+		context: AppContext.User,
+		jobType: JobType.Login,
+		payload: { user: guestUser, accessToken, refreshToken },
+		redirectUri: '/',
+		res,
+		status: Status.Ok,
+	})
+}
+
 export const logout = async (req: Request, res: Response) => {
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
 	if (refreshToken) {
@@ -246,11 +263,11 @@ export const logout = async (req: Request, res: Response) => {
 }
 
 function generateAT(claims) {
-	return sign(claims, secrets['ACCESS_TOKEN_SECRET'], { expiresIn: '1h' })
+	return sign(claims, secrets['ACCESS_TOKEN_SECRET'], { expiresIn: '1d' })
 }
 
 function generateRT(claims) {
-	return sign(claims, secrets['REFRESH_TOKEN_SECRET'], { expiresIn: '1d' })
+	return sign(claims, secrets['REFRESH_TOKEN_SECRET'], { expiresIn: '7d' })
 }
 
 function getTokenClaims(data, emailVerified: boolean = false): TokenClaims {
