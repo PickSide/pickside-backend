@@ -7,12 +7,12 @@ export enum ACCOUNT_TYPE {
 	FACEBOOK = 'facebook',
 	APPLE = 'apple',
 	DEFAULT = 'default',
+	GUEST = 'guest',
 }
 
 export enum ROLES {
 	ADMIN = 'admin',
 	USER = 'user',
-	GUEST = 'guest',
 }
 
 export enum USER_PERMISSIONS {
