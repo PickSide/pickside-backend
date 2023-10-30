@@ -1,19 +1,22 @@
+import { ISport, Mode } from './Sport'
 import { Schema, model } from 'mongoose'
 
+import { IUser } from './User'
+import dayjs from 'dayjs'
 import { schemaProps } from '../utils'
 
 export interface IActivity extends Document {
-	address: any
-	date: any
+	address: google.maps.places.PlaceResult
+	date: dayjs.Dayjs
 	description: string
 	duration: number
 	maxPlayers: number
-	mode: string
+	mode: Mode
 	organizer: any
 	participants: any[]
 	recommandedLevel: string
 	rules: string
-	sport: string
+	sport: ISport
 	time: string
 	title: string
 	price: number
