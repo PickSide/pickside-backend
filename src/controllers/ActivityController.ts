@@ -158,6 +158,7 @@ export const registerParticipant = async (req: Request, res: Response) => {
 	const activity = await Activity.findById(req.params.activityId)
 		.populate({ path: 'participants', select: { id: 1 } })
 		.exec()
+	//@ts-ignore
 	const isUserRegistered = activity?.participants.some((participant) => participant.equals(userId))
 
 	if (!activity) {

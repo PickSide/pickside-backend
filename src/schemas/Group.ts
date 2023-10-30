@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose'
 
+import { IUser } from './User'
 import { schemaProps } from '../utils'
 
 export const GroupSchema = new Schema(
@@ -21,9 +22,9 @@ export const GroupSchema = new Schema(
 export interface IGroup extends Document {
 	coverPhoto: string
 	description: string
-	members: string[]
+	members: IUser[]
 	name: string
-	organizer: any
+	organizer: IUser
 	requireApproval: any
 	sport: string
 	visibility: 'public' | 'private'
