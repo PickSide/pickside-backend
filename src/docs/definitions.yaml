@@ -28,56 +28,6 @@ Activity:
     organizer:
       type: string
 
-Court:
-  type: object
-  properties:
-    id:
-      type: string
-    coordinates:
-      type: object
-      properties:
-        lat:
-          type: number
-        lng:
-          type: number
-    country:
-      type: string
-    state:
-      type: string
-    city:
-      type: string
-    district:
-      type: string
-    zip:
-      type: string
-    schedule:
-      type: object
-
-CustomCourt:
-  type: object
-  properties:
-    id:
-      type: string
-    coordinates:
-      type: object
-      properties:
-        lat:
-          type: number
-        lng:
-          type: number
-    country:
-      type: string
-    state:
-      type: string
-    city:
-      type: string
-    district:
-      type: string
-    zip:
-      type: string
-    schedule:
-      type: object
-
 Group:
   type: object
   properties:

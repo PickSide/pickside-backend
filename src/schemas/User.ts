@@ -85,9 +85,9 @@ export const UserSchema = new Schema(
 		permissions: [{ type: String, require: true }],
 		phone: { type: String, require: false },
 		preferredLocale: { type: Schema.Types.ObjectId, ref: 'Locale', require: false },
-		preferredRegion: { type: Schema.Types.ObjectId, ref: 'PredefinedArea', require: false },
 		preferredSport: { type: Schema.Types.ObjectId, ref: 'Sport', require: false },
 		preferredTheme: { type: String, default: 'light', require: false },
+		preferredRegion: { type: String, require: false },
 		profilePrivacy: {
 			allowLocationTracking: { type: Boolean, default: false, require: false },
 			showAge: { type: Boolean, default: true, require: false },
@@ -135,7 +135,7 @@ export interface IUser extends Document {
 	permissions: [USER_PERMISSIONS]
 	phone: string
 	preferredLocale: any
-	preferredRegion: any
+	preferredRegion?: any
 	preferredSport: any
 	preferredTheme: 'light' | 'dark'
 	profilePrivacy: {
