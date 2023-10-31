@@ -1,7 +1,5 @@
 import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, ROLES } from '../schemas/User'
 
-import Playable from '../schemas/Court'
-import { Types } from 'mongoose'
 import { hashSync } from 'bcrypt'
 
 interface UserProps {
@@ -9,7 +7,6 @@ interface UserProps {
 	fullName: string
 	username: string
 	preferredLocale: any
-	preferredRegion: any
 	preferredSport: any
 }
 
@@ -26,7 +23,7 @@ interface PlayablesProps {
 export function createUser(props: UserProps[]) {
 	return Promise.all(
 		props.map(
-			async ({ email, fullName, username, preferredLocale, preferredRegion, preferredSport }) =>
+			async ({ email, fullName, username, preferredLocale, preferredSport }) =>
 				await User.create({
 					accountType: ACCOUNT_TYPE.DEFAULT,
 					attendedEventsCount: 0,
@@ -46,7 +43,6 @@ export function createUser(props: UserProps[]) {
 					permissions: DEFAULT_USER_PERMISSIONS,
 					phone: '514-966-8481',
 					preferredLocale,
-					preferredRegion,
 					preferredSport,
 					preferredTheme: 'light',
 					profilePrivacy: {
@@ -68,40 +64,6 @@ export function createUser(props: UserProps[]) {
 				}),
 		),
 	)
-}
-
-export function createCourt(props: PlayablesProps[]) {
-	return Promise.all(
-		props.map(
-			async ({ available, districtCode, coords, type, fieldName, schedule, isMultisportZone }) =>
-				await Playable.create({
-					id: new Types.ObjectId(),
-					districtCode,
-					available,
-					coords,
-					fieldName,
-					schedule,
-					type,
-					isMultisportZone,
-				}),
-		),
-	)
-}
-
-export function getPlayables() {
-	return [
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-		// 	{ districtCode: 'anj', type: 'outdoor', coords: _toCoordsObj(), fieldName: '' },
-	]
 }
 
 function _rand(max) {
