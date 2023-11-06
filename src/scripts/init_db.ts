@@ -1,7 +1,9 @@
 import { Connection, Types, connect } from 'mongoose'
+import Message, { IMessage } from '../schemas/Message'
 import { _toCoordsObj, createUser } from './helper'
 
 import Activity from '../schemas/Activity'
+import ChatRoom from '../schemas/ChatRoom'
 import Locale from '../schemas/Locale'
 import Notification from '../schemas/Notification'
 import Sport from '../schemas/Sport'
@@ -109,7 +111,6 @@ async function populateCollections() {
 			username: 'tony',
 			preferredLocale: locales[0],
 			preferredSport: sports[2],
-			email: 'tonyown12@gmail.com',
 		},
 		{
 			fullName: 'Ali Idrici',
@@ -185,66 +186,43 @@ async function populateCollections() {
 		},
 	])
 
-	//const date = dayjs().add(5, 'day')
+	const chatrooms = await ChatRoom.insertMany([
+		{
+			id: new Types.ObjectId(),
+			title: 'Foot 33',
+			participants: [users[0].id, users[1]],
+			openedChatroom: [users[0].id, users[1]],
+			startedBy: users[0].id,
+			numberOfMessages: 4,
+		},
+	])
 
-	// await Activity.insertMany([
-	// 	{
-	// 		date: dayjs().add(5, 'day').toDate(),
-	// 		description: 'Simple game',
-	// 		duration: 59,
-	// 		maxPlayers: 10,
-	// 		mode: '7v7',
-	// 		organizer: users[0],
-	// 		participants: [
-	// 			users[1],
-	// 			users[2],
-	// 			users[3],
-	// 			users[4],
-	// 			users[5],
-	// 			users[1],
-	// 			users[2],
-	// 			users[3],
-	// 			users[4],
-	// 			users[5],
-	// 		],
-	// 		recommandedLevel: 'beginner',
-	// 		rules: 'Relaxing game, no slide tackles, 1 goal we switch',
-	// 		sport: sports[2],
-	// 		time: undefined,
-	// 		title: 'Soccer game 5v5',
-	// 		price: 5,
-	// 	},
-	// 	{
-	// 		date: dayjs().add(7, 'day').toDate(),
-	// 		description: 'Simple game',
-	// 		duration: 59,
-	// 		maxPlayers: 14,
-	// 		mode: '7v7',
-	// 		organizer: users[0],
-	// 		participants: [],
-	// 		recommandedLevel: 'beginner',
-	// 		rules: 'Relaxing game, no slide tackles, 1 goal we switch',
-	// 		sport: sports[2],
-	// 		time: undefined,
-	// 		title: 'Soccer game 7v7',
-	// 		price: 5,
-	// 	},
-	// 	{
-	// 		date: dayjs().add(10, 'day').toDate(),
-	// 		description: 'Simple game',
-	// 		duration: 59,
-	// 		maxPlayers: 22,
-	// 		mode: '7v7',
-	// 		organizer: users[0],
-	// 		participants: [],
-	// 		recommandedLevel: 'beginner',
-	// 		rules: 'Relaxing game, no slide tackles, 1 goal we switch',
-	// 		sport: sports[2],
-	// 		time: undefined,
-	// 		title: 'Soccer game 11v11',
-	// 		price: 5,
-	// 	},
-	// ])
+	await Message.insertMany([
+		{
+			id: new Types.ObjectId(),
+			messgae: 'Fdp repond',
+			chatRoomId: chatrooms[0].id,
+			sentBy: users[1],
+		},
+		{
+			id: new Types.ObjectId(),
+			messgae: 'YO CHECK MON FKNG COB SAL NEG',
+			chatRoomId: chatrooms[0].id,
+			sentBy: users[1],
+		},
+		{
+			id: new Types.ObjectId(),
+			messgae: 'BDV JVAIS PULL UP TA CAILLE',
+			chatRoomId: chatrooms[0].id,
+			sentBy: users[1],
+		},
+		{
+			id: new Types.ObjectId(),
+			messgae: 'Ayt on te kimb ma neg. T ded',
+			chatRoomId: chatrooms[0].id,
+			sentBy: users[1],
+		},
+	])
 
 	await Notification.insertMany([
 		{

@@ -1,5 +1,6 @@
 export * as UserController from './UserController'
 export * as ActivityController from './ActivityController'
+export * as ChatRoomController from './ChatRoomController'
 export * as AuthController from './AuthController'
 export * as EmailController from './EmailController'
 export * as GroupController from './GroupController'

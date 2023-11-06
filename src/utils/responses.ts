@@ -24,12 +24,12 @@ export enum Status {
 
 export enum AppContext {
 	Activity = 'Activity',
-	Court = 'Court',
-	CustomCourt = 'Custom Court',
+	Chatroom = 'Chatroom',
 	DB = 'DB',
 	Email = 'Email',
 	Group = 'Group',
 	Locale = 'Locale',
+	Message = 'Message',
 	Notification = 'Notification',
 	Schedule = 'Schedule',
 	Sport = 'Sport',
@@ -38,18 +38,18 @@ export enum AppContext {
 }
 
 export enum JobType {
+	SendMessage = 'sendmessage',
+	InitializeChatroom = 'initializechatroom',
+	GetChatroom = 'getchatroom',
+	UpdateChatroom = 'updatechatroom',
+	DeleteChatroom = 'deletechatroom',
 	ResetDb = 'resetdb',
 	Login = 'login',
 	Logout = 'logout',
 	Register = 'register',
 	GetAccessToken = 'getaccesstoken',
-	GetCourt = 'getcourt',
 	GetGroupForUser = 'getgroupforuser',
 	UpdateUser = 'updateuser',
-	GetCustomCourts = 'getcustomcourts',
-	GetCustomCourt = 'getcustomcourt',
-	AddCutomCourt = 'addcustomcourt',
-	DeleteCustomCourt = 'deletecustomcourt',
 	DeleteGroup = 'deletegroup',
 	VerifyEmail = 'vertifyemail',
 	DeactivateAccount = 'deactivateaccount',
@@ -65,6 +65,8 @@ export enum FailReason {
 	TokenInvalid = 'tokeninvalid',
 	BadPayload = 'wrongpayload',
 	BadParams = 'wrongparams',
+	ChatRoomNotFoundError = 'chatroomnotfoundrror',
+	ChatroomInitializationError = 'chatroominitializationerror',
 	GroupCreationError = 'groupcreationerror',
 	GroupDeletionError = 'groupdeletionerror',
 	UserDeactivateAccount = 'userdeactivateaccount',
@@ -117,6 +119,10 @@ export interface MessageReponseProps {
 	redirectUri?: string
 }
 
+type SendSuccessPayloadResponseProps = MessageReponseProps & { payload: any }
+type SendSuccessListPayloadResponseProps = MessageReponseProps & { results: any[] }
+type SendSuccessResponseMessageProps = MessageReponseProps
+
 export function SendErrorResponse({
 	callback,
 	context,
@@ -155,7 +161,7 @@ export function SendSuccessPayloadResponse({
 	res,
 	redirectUri,
 	status,
-}: MessageReponseProps) {
+}: SendSuccessPayloadResponseProps) {
 	if (!res) return
 
 	return res.status(status).json({
@@ -166,7 +172,14 @@ export function SendSuccessPayloadResponse({
 	})
 }
 
-export function SendSuccessListPayloadResponse({ callback, context, results, timeStamp = new Date(), res, status }) {
+export function SendSuccessListPayloadResponse({
+	callback,
+	context,
+	results,
+	timeStamp = new Date(),
+	res,
+	status,
+}: SendSuccessListPayloadResponseProps) {
 	if (!res) return
 
 	return res.status(status).json({
@@ -184,7 +197,7 @@ export function SendSuccessResponseMessage({
 	message,
 	redirectUri,
 	status,
-}: Omit<MessageReponseProps, 'payload'>) {
+}: SendSuccessResponseMessageProps) {
 	if (!res) return
 
 	return res.status(status).json({

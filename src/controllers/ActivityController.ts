@@ -7,6 +7,7 @@ import {
 	ParticipantSuccessfullyRegistered,
 	SendErrorResponse,
 	SendResponse,
+	SendSuccessListPayloadResponse,
 	SendSuccessPayloadResponse,
 	Status,
 } from '../utils/responses'
@@ -23,7 +24,7 @@ export const getAllActivities = async (req: Request, res: Response) => {
 			'sport',
 		])
 		.exec()
-	return SendResponse(res, Status.Ok, { results: activities })
+	return SendSuccessListPayloadResponse({ res, results: activities, status: Status.Ok })
 }
 export const createActivity = async (req: Request, res: Response) => {
 	const {

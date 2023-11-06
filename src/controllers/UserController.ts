@@ -17,7 +17,19 @@ import { omit } from 'lodash'
 export const get = async (req: Request, res: Response) => {}
 
 export const getUsers = async (req: Request, res: Response) => {
-	const users = await User.find().select('name username email reliability').exec()
+	let users
+	const query = {}
+
+	if (req.query.startsWith) {
+		users = await User.find({
+			$or: [{ username: { $regex: '^' + req.query.startsWith } }, { fullName: { $regex: '^' + req.query.startsWith } }],
+		})
+			.select('avatar name username fullName email reliability')
+			.exec()
+	} else {
+		users = await User.find().select('avatar name username fullName email reliability').exec()
+	}
+
 	return SendResponse(res, Status.Ok, { results: users })
 }
 

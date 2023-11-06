@@ -8,6 +8,7 @@ import { createServer } from 'http'
 import databaseUtils from './utils/databaseUtils'
 import express from 'express'
 import groupHandler from './socketHandlers/groupHandler'
+import messageHandler from './socketHandlers/messageHandler'
 import swaggerDefinition from './swaggerDefinition'
 import swaggerJsDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
@@ -25,10 +26,13 @@ const swaggerSpecs = swaggerJsDoc({
 })
 
 const { createGroup } = groupHandler(io)
+const { receiveMessage, sendMessage } = messageHandler(io)
 
 const onConnection = (socket) => {
+	console.log(socket.id)
 	console.log('socket is connected')
 	socket.on('group:create', createGroup(socket))
+	socket.on('message:send', createGroup(socket))
 }
 
 app

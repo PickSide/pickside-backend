@@ -3,7 +3,6 @@ import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, ROLES } from '../schemas/
 import { hashSync } from 'bcrypt'
 
 interface UserProps {
-	email?: string
 	fullName: string
 	username: string
 	preferredLocale: any
@@ -23,14 +22,14 @@ interface PlayablesProps {
 export function createUser(props: UserProps[]) {
 	return Promise.all(
 		props.map(
-			async ({ email, fullName, username, preferredLocale, preferredSport }) =>
+			async ({ fullName, username, preferredLocale, preferredSport }) =>
 				await User.create({
 					accountType: ACCOUNT_TYPE.DEFAULT,
 					attendedEventsCount: 0,
 					avatar: undefined,
 					bio: 'A bio',
 					city: 'string',
-					email: email ? email : `t${fullName.trim()}@gmail.com`,
+					email: `${fullName.trim()}@gmail.com`,
 					fullName,
 					fitnessLevel: 'average',
 					groups: [],

@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 
 export default (io) => {
 	const createGroup = (socket: Socket) => (payload: IGroup & { organizerId?: string; organizerUserame?: string }) => {
-		console.log(payload)
 		payload.members.forEach(async (memberId) => {
 			const nowDate = dayjs()
 			const expireDate = nowDate.add(3, 'day')
