@@ -4,9 +4,9 @@ import { IMessage } from './Message'
 import { IUser } from './User'
 import { schemaProps } from '../utils'
 
-export const ChatRoomSchema = new Schema(
+export const ChatroomSchema = new Schema(
 	{
-		title: { type: String, require: false },
+		name: { type: String, require: false },
 		participants: { type: [Schema.Types.ObjectId], ref: 'User', require: true },
 		openedChatroom: { type: [Schema.Types.ObjectId], ref: 'User', require: true },
 		startedBy: { type: Schema.Types.ObjectId, ref: 'User', require: true },
@@ -18,8 +18,9 @@ export const ChatRoomSchema = new Schema(
 	},
 )
 
-export interface IChatRoom extends Document {
-	title: string
+export interface IChatroom extends Document {
+	id: string
+	name: string
 	participants: IUser[]
 	openedChatroom: IUser[]
 	numberOfMessages: number
@@ -27,4 +28,4 @@ export interface IChatRoom extends Document {
 	startedBy: IUser
 }
 
-export default model<IChatRoom>('ChatRoom', ChatRoomSchema)
+export default model<IChatroom>('Chatroom', ChatroomSchema)

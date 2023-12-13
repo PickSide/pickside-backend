@@ -44,7 +44,7 @@ export const getAllGroupsForUserId = async (req: Request, res: Response) => {
 
 	return SendResponse(res, Status.Ok, { results: groups })
 }
-export const createGroup = async (req: Request, res: Response) => {
+export const notificationHandler = async (req: Request, res: Response) => {
 	const { description, members, name, requireApproval, sport, organizer, visibility } = req.body.data
 
 	await Group.create({
@@ -144,4 +144,13 @@ export const deleteGroupById = async (req: Request, res: Response) => {
 			status: Status.BadRequest,
 		})
 	}
+}
+
+export default {
+	getAllGroups,
+	getAllGroupsForUserId,
+	notificationHandler,
+	getByGroupdId,
+	updateGroupById,
+	deleteGroupById,
 }

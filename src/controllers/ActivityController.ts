@@ -86,7 +86,6 @@ export const updateActivityById = async (req: Request, res: Response) => {
 }
 export const removeActivityById = async (req: Request, res: Response) => {}
 export const getActivityByGroupId = async (req: Request, res: Response) => {}
-
 export const updateFavorites = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
 
@@ -127,7 +126,6 @@ export const updateFavorites = async (req: Request, res: Response) => {
 		})
 	}
 }
-
 export const registerParticipant = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
 
@@ -213,7 +211,6 @@ export const registerParticipant = async (req: Request, res: Response) => {
 		},
 	})
 }
-
 export const unregisterParticipant = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
 
@@ -298,7 +295,6 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		},
 	})
 }
-
 export const getUserFavorites = async (req: Request, res: Response) => {
 	const user = await User.findById(req.params.userId).populate('favorites')
 
@@ -324,4 +320,17 @@ export const getUserFavorites = async (req: Request, res: Response) => {
 			message: 'Successfully registered to activity.',
 		},
 	})
+}
+
+export default {
+	getAllActivities,
+	createActivity,
+	getActivityById,
+	updateActivityById,
+	removeActivityById,
+	getActivityByGroupId,
+	updateFavorites,
+	registerParticipant,
+	unregisterParticipant,
+	getUserFavorites,
 }

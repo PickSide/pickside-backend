@@ -1,4 +1,4 @@
-import { ActivityController } from '../controllers'
+import ActivityController from '../controllers/ActivityController'
 import express from 'express'
 import { validateAccessToken } from '../middleware'
 

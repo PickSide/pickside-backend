@@ -6,11 +6,13 @@ import {
 	ProfileSuccessfullyUpdated,
 	SendErrorResponse,
 	SendResponse,
+	SendSuccessListPayloadResponse,
 	Status,
 } from '../utils/responses'
 import { Request, Response } from 'express'
 import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, ROLES } from '../schemas/User'
 
+import OnlineUser from '../schemas/OnlineUser'
 import { hashSync } from 'bcrypt'
 import { omit } from 'lodash'
 
@@ -18,7 +20,6 @@ export const get = async (req: Request, res: Response) => {}
 
 export const getUsers = async (req: Request, res: Response) => {
 	let users
-	const query = {}
 
 	if (req.query.startsWith) {
 		users = await User.find({
@@ -26,11 +27,18 @@ export const getUsers = async (req: Request, res: Response) => {
 		})
 			.select('avatar name username fullName email reliability')
 			.exec()
+	} else if (req.query['status']) {
+		if (req.query['status'] === 'online') {
+			users = await OnlineUser.find()
+				.populate({ path: 'user', select: 'avatar name username fullName email reliability' })
+				.exec()
+				.then((result) => result.flatMap((x) => x.user))
+		}
 	} else {
 		users = await User.find().select('avatar name username fullName email reliability').exec()
 	}
 
-	return SendResponse(res, Status.Ok, { results: users })
+	return SendSuccessListPayloadResponse({ res, status: Status.Ok, results: users })
 }
 
 export const create = async (req: Request, res: Response) => {
@@ -120,4 +128,18 @@ export const deactivate = async (req: Request, res: Response) => {
 		)
 }
 
+export const clearOnlineUsers = async (req: Request, res: Response) => {
+	return await OnlineUser.deleteMany().then(() => 'success')
+}
+
 export const remove = async (req: Request, res: Response) => {}
+
+export default {
+	get,
+	getUsers,
+	create,
+	update,
+	reactivate,
+	deactivate,
+	clearOnlineUsers,
+}

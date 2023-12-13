@@ -7,17 +7,18 @@ import corsOptions from './corsOptions'
 import { createServer } from 'http'
 import databaseUtils from './utils/databaseUtils'
 import express from 'express'
-import groupHandler from './socketHandlers/groupHandler'
 import messageHandler from './socketHandlers/messageHandler'
+import notificationHandler from './socketHandlers/notificationHandler'
 import swaggerDefinition from './swaggerDefinition'
 import swaggerJsDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
+import userHandler from './socketHandlers/userHandler'
 
 config()
 
 const app = express()
-const server = createServer(app)
-const io = new Server(server, {
+const httpServer = createServer(app)
+const io = new Server(httpServer, {
 	cors: corsOptions,
 })
 const swaggerSpecs = swaggerJsDoc({
@@ -25,14 +26,17 @@ const swaggerSpecs = swaggerJsDoc({
 	apis: ['src/docs/**/*.yaml'],
 })
 
-const { createGroup } = groupHandler(io)
+const { notify } = notificationHandler(io)
 const { receiveMessage, sendMessage } = messageHandler(io)
+const { addOnlineUser, removeOnlineUser } = userHandler(io)
 
 const onConnection = (socket) => {
-	console.log(socket.id)
+	//console.log(socket)
 	console.log('socket is connected')
-	socket.on('group:create', createGroup(socket))
-	socket.on('message:send', createGroup(socket))
+	socket.on('group:create', notify(socket))
+	socket.on('message:send', notify(socket))
+	socket.on('user:login', addOnlineUser(socket))
+	socket.on('user:logout', removeOnlineUser(socket))
 }
 
 app
@@ -41,10 +45,10 @@ app
 	.use('/api/v1', Routes)
 	.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
 
-server.listen(process.env.API_SERVER_PORT, () =>
+io.on('connection', onConnection)
+
+httpServer.listen(process.env.API_SERVER_PORT, () =>
 	console.log('Connected to server on port', process.env.API_SERVER_PORT),
 )
 
 connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))
-
-io.on('connection', onConnection)

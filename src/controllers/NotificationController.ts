@@ -20,3 +20,5 @@ export const markNotificationRead = async (req: Request, res: Response) => {
 
 	return SendResponse(res, Status.Created, { message: 'Read' })
 }
+
+export default { getAllNotifications, markNotificationRead }

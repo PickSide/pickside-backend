@@ -3,9 +3,10 @@ import Message, { IMessage } from '../schemas/Message'
 import { _toCoordsObj, createUser } from './helper'
 
 import Activity from '../schemas/Activity'
-import ChatRoom from '../schemas/ChatRoom'
+import Chatroom from '../schemas/Chatroom'
 import Locale from '../schemas/Locale'
 import Notification from '../schemas/Notification'
+import OnlineUser from '../schemas/OnlineUser'
 import Sport from '../schemas/Sport'
 import Token from '../schemas/Token'
 import User from '../schemas/User'
@@ -52,6 +53,7 @@ async function initCollections() {
 
 	await Activity.createCollection()
 	await Locale.createCollection()
+	await OnlineUser.createCollection()
 	await Sport.createCollection()
 	await Token.createCollection()
 	await User.createCollection()
@@ -125,7 +127,7 @@ async function populateCollections() {
 			preferredSport: sports[2],
 		},
 		{
-			fullName: 'Niloofar hakim',
+			fullName: 'Niloofar khastavan',
 			username: 'niloo',
 			preferredLocale: locales[0],
 			preferredSport: sports[2],
@@ -186,14 +188,30 @@ async function populateCollections() {
 		},
 	])
 
-	const chatrooms = await ChatRoom.insertMany([
+	const chatrooms = await Chatroom.insertMany([
 		{
 			id: new Types.ObjectId(),
-			title: 'Foot 33',
-			participants: [users[0].id, users[1]],
-			openedChatroom: [users[0].id, users[1]],
+			name: users[1].fullName,
+			participants: [users[0].id, users[1].id],
+			openedChatroom: [users[0].id, users[1].id],
 			startedBy: users[0].id,
 			numberOfMessages: 4,
+		},
+		{
+			id: new Types.ObjectId(),
+			name: users[2].fullName,
+			participants: [users[0].id, users[2].id],
+			openedChatroom: [users[0].id, users[2].id],
+			startedBy: users[0].id,
+			numberOfMessages: 0,
+		},
+		{
+			id: new Types.ObjectId(),
+			name: users[3].fullName,
+			participants: [users[0].id, users[3].id],
+			openedChatroom: [users[0].id, users[3].id],
+			startedBy: users[0].id,
+			numberOfMessages: 0,
 		},
 	])
 
@@ -202,25 +220,29 @@ async function populateCollections() {
 			id: new Types.ObjectId(),
 			messgae: 'Fdp repond',
 			chatRoomId: chatrooms[0].id,
-			sentBy: users[1],
+			sender: users[1],
+			delivered: true,
 		},
 		{
 			id: new Types.ObjectId(),
 			messgae: 'YO CHECK MON FKNG COB SAL NEG',
 			chatRoomId: chatrooms[0].id,
-			sentBy: users[1],
+			sender: users[1],
+			delivered: true,
 		},
 		{
 			id: new Types.ObjectId(),
 			messgae: 'BDV JVAIS PULL UP TA CAILLE',
 			chatRoomId: chatrooms[0].id,
-			sentBy: users[1],
+			sender: users[1],
+			delivered: true,
 		},
 		{
 			id: new Types.ObjectId(),
 			messgae: 'Ayt on te kimb ma neg. T ded',
 			chatRoomId: chatrooms[0].id,
-			sentBy: users[1],
+			sender: users[1],
+			delivered: true,
 		},
 	])
 

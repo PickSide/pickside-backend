@@ -7,13 +7,14 @@ import {
 	SendSuccessPayloadResponse,
 	Status,
 } from '../utils'
+import Chatroom, { IChatroom } from '../schemas/Chatroom'
 import { Request, Response } from 'express'
 
-import ChatRoom from '../schemas/ChatRoom'
+import Message from '../schemas/Message'
 
 export const initializeChatroom = async (req: Request, res: Response) => {
 	const { participants, startedBy: initiator } = req.body.data
-	await ChatRoom.create({
+	await Chatroom.create({
 		participants,
 		startedBy: initiator,
 		openedChatroom: [initiator],
@@ -39,7 +40,9 @@ export const initializeChatroom = async (req: Request, res: Response) => {
 		)
 }
 export const getChatroomByInitiatorId = async (req: Request, res: Response) => {
-	const chatrooms = await ChatRoom.find({ startedBy: { $eq: req.params.id } }).populate('participants startedBy openedChatroom').exec()
+	const chatrooms = await Chatroom.find({ startedBy: { $eq: req.params.id } })
+		.populate('_id participants startedBy openedChatroom')
+		.exec()
 
 	if (!chatrooms.length) {
 		return SendErrorResponse({
@@ -59,5 +62,42 @@ export const getChatroomByInitiatorId = async (req: Request, res: Response) => {
 		status: Status.Ok,
 	})
 }
+export const sendMessageToChatroom = async (req: Request, res: Response) => {
+	const { message, chatroom, sentBy } = req.body.data
+
+	let chatroomObj = chatroom
+
+	if (!chatroom) {
+		chatroomObj = _initializeChatroom(chatroom)
+	}
+
+	await Message.create({
+		message,
+		chatroomId: chatroomObj.id,
+		sentBy,
+	})
+		.then((result) =>
+			SendSuccessPayloadResponse({
+				res,
+				status: Status.Created,
+				payload: result,
+			}),
+		)
+		.catch((error) =>
+			SendErrorResponse({
+				res,
+				jobType: JobType.SendMessage,
+				jobStatus: 'FAILED',
+				context: AppContext.Message,
+				message: 'Something went wrong while sending the message.',
+				status: Status.InternalServerError,
+			}),
+		)
+}
 export const updateChatroom = (req: Request, res: Response) => {}
 export const deleteChatroom = (req: Request, res: Response) => {}
+
+async function _initializeChatroom(chatroom: Partial<IChatroom>) {
+	return await Chatroom.create({ ...chatroom })
+}
+export default { initializeChatroom, getChatroomByInitiatorId, sendMessageToChatroom, updateChatroom, deleteChatroom }

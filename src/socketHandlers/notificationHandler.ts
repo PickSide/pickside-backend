@@ -1,26 +1,26 @@
-import { IGroup } from 'src/schemas'
+import { IGroup } from '../schemas/Group'
 import Notification from '../schemas/Notification'
 import { Socket } from 'socket.io'
 import dayjs from 'dayjs'
 
 export default (io) => {
-	const createGroup = (socket: Socket) => (payload: IGroup & { organizerId?: string; organizerUserame?: string }) => {
+	const notify = (socket: Socket) => (payload: IGroup & { organizerId?: string; organizerUsername?: string }) => {
 		payload.members.forEach(async (memberId) => {
 			const nowDate = dayjs()
 			const expireDate = nowDate.add(3, 'day')
 			const organizerId = payload.organizerId
-			const organizerUserame = payload.organizerUserame
+			const organizerUsername = payload.organizerUsername
 			const notification = await Notification.create({
 				created: nowDate,
 				expires: expireDate,
 				type: 'group-invite',
 				sender: organizerId,
 				receiver: memberId,
-				message: `${organizerUserame} is inviting you to join his group.`,
+				message: `${organizerUsername} is inviting you to join his group.`,
 			})
 			socket.broadcast.emit('group:notify', notification)
 		})
 	}
 
-	return { createGroup }
+	return { notify }
 }

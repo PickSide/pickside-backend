@@ -239,6 +239,9 @@ export const loginAsGuest = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
+
+	const { userId } = req.body.data
+
 	if (refreshToken) {
 		await revokeToken(refreshToken)
 
@@ -313,4 +316,12 @@ function sendActivationEmail(user) {
 			console.log('Email sent: ' + info.response)
 		}
 	})
+}
+
+export default {
+	getAccessToken,
+	login,
+	loginAsGuest,
+	loginWithGoogle,
+	logout,
 }

@@ -7,3 +7,7 @@ export const getAllSports = async (req: Request, res: Response) => {
 	const sports = await Sport.find()
 	SendResponse(res, Status.Ok, { results: sports })
 }
+
+export default {
+	getAllSports,
+}
