@@ -57,3 +57,6 @@ export function validateAccessToken(req, res, next) {
 		return SendResponse(res, Status.Unauthorized, DefaultServerResponseMap[Status.Unauthorized])
 	}
 }
+export default {
+	validateAccessToken,
+}

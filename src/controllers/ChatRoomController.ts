@@ -7,10 +7,10 @@ import {
 	SendSuccessPayloadResponse,
 	Status,
 } from '../utils'
-import Chatroom, { IChatroom } from '../schemas/Chatroom'
+import Chatroom, { IChatroom } from '@schemas/Chatroom'
 import { Request, Response } from 'express'
 
-import Message from '../schemas/Message'
+import Message from '@schemas/Message'
 
 export const initializeChatroom = async (req: Request, res: Response) => {
 	const { participants, startedBy: initiator } = req.body.data
@@ -39,7 +39,8 @@ export const initializeChatroom = async (req: Request, res: Response) => {
 			}),
 		)
 }
-export const getChatroomByInitiatorId = async (req: Request, res: Response) => {
+export const getOrInitializeChatroom = async (req: Request, res: Response) => {
+	const recipient = req.body.data.recipient
 	const chatrooms = await Chatroom.find({ startedBy: { $eq: req.params.id } })
 		.populate('_id participants startedBy openedChatroom')
 		.exec()
@@ -100,4 +101,4 @@ export const deleteChatroom = (req: Request, res: Response) => {}
 async function _initializeChatroom(chatroom: Partial<IChatroom>) {
 	return await Chatroom.create({ ...chatroom })
 }
-export default { initializeChatroom, getChatroomByInitiatorId, sendMessageToChatroom, updateChatroom, deleteChatroom }
+export default { initializeChatroom, getOrInitializeChatroom, sendMessageToChatroom, updateChatroom, deleteChatroom }

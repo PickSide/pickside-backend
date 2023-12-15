@@ -1,6 +1,6 @@
 import ActivityController from '../controllers/ActivityController'
 import express from 'express'
-import { validateAccessToken } from '../middleware'
+import { validateAccessToken } from '../middleware/auth.middleware'
 
 const router = express.Router()
 
