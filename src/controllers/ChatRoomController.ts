@@ -101,4 +101,5 @@ export const deleteChatroom = (req: Request, res: Response) => {}
 async function _initializeChatroom(chatroom: Partial<IChatroom>) {
 	return await Chatroom.create({ ...chatroom })
 }
+
 export default { initializeChatroom, getOrInitializeChatroom, sendMessageToChatroom, updateChatroom, deleteChatroom }

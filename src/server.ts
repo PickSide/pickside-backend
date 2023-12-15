@@ -1,4 +1,4 @@
-import Routes from '@routes'
+import Routes from './routes'
 import { Server } from 'socket.io'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
@@ -12,7 +12,7 @@ import notificationHandler from './socketHandlers/notificationHandler'
 import swaggerDefinition from './swaggerDefinition'
 import swaggerJsDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
-import userHandler from '@socketHandlers/userHandler'
+import userHandler from './socketHandlers/userHandler'
 
 config()
 
