@@ -4,8 +4,6 @@ import { IChatroom } from './Chatroom'
 import { IUser } from './User'
 import { schemaProps } from '../utils'
 
-type MessageType = 'outgoing' | 'incoming'
-
 export const MessageSchema = new Schema(
 	{
 		message: { type: String, require: true },

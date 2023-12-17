@@ -4,13 +4,17 @@ import { SendSuccessListPayloadResponse, Status } from '../utils'
 import Message from '../schemas/Message'
 
 export const getAllMessagesByChatroomId = async (req: Request, res: Response) => {
-	const chatroomId = req.body.data?.chatroomId
+	if (!req.params) {
+		return
+	}
+	const { chatroomId } = req.params
 
 	if (!chatroomId) {
 		return
 	}
 
 	const messages = await Message.find({ chatroomId: { $eq: chatroomId } }).exec()
+	console.log(messages)
 	return SendSuccessListPayloadResponse({
 		res,
 		results: messages,

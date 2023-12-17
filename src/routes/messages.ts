@@ -3,6 +3,6 @@ import express from 'express'
 
 const router = express.Router()
 
-router.get('/', MessageController.getAllMessagesByChatroomId)
+router.get('/:chatroomId', MessageController.getAllMessagesByChatroomId)
 
 export default router

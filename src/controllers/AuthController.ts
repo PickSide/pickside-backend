@@ -196,6 +196,7 @@ export const login = async (req: Request, res: Response) => {
 			status: Status.Unauthorized,
 		})
 	}
+
 	const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user.id }).exec())
 	const claims = getTokenClaims(user, emailVerified)
 	const accessToken = generateAT(claims)
@@ -239,8 +240,6 @@ export const loginAsGuest = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
-
-	const { userId } = req.body.data
 
 	if (refreshToken) {
 		await revokeToken(refreshToken)

@@ -6,12 +6,10 @@ import { schemaProps } from '../utils'
 
 export const ChatroomSchema = new Schema(
 	{
-		name: { type: String, require: false },
+		name: { type: String, require: true },
 		participants: { type: [Schema.Types.ObjectId], ref: 'User', require: true },
-		openedChatroom: { type: [Schema.Types.ObjectId], ref: 'User', require: true },
-		startedBy: { type: Schema.Types.ObjectId, ref: 'User', require: true },
-		lastMessage: { type: Schema.Types.ObjectId, ref: 'Message', require: false },
-		numberOfMessages: { type: Number, require: false, default: 0 },
+		lastMessage: { type: Schema.Types.ObjectId, ref: 'Message', default: null, require: false },
+		numberOfMessages: { type: Number, default: 0, require: false },
 	},
 	{
 		...schemaProps,
@@ -22,10 +20,8 @@ export interface IChatroom extends Document {
 	id: string
 	name: string
 	participants: IUser[]
-	openedChatroom: IUser[]
 	numberOfMessages: number
 	lastMessage: IMessage
-	startedBy: IUser
 }
 
 export default model<IChatroom>('Chatroom', ChatroomSchema)

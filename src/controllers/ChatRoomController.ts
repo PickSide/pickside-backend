@@ -1,81 +1,67 @@
-import {
-	AppContext,
-	FailReason,
-	JobType,
-	SendErrorResponse,
-	SendSuccessListPayloadResponse,
-	SendSuccessPayloadResponse,
-	Status,
-} from '../utils'
-import Chatroom, { IChatroom } from '@schemas/Chatroom'
+import { AppContext, JobType, SendErrorResponse, SendSuccessPayloadResponse, Status } from '../utils'
 import { Request, Response } from 'express'
 
-import Message from '@schemas/Message'
+import Chatroom from '../schemas/Chatroom'
+import Message from '../schemas/Message'
 
-export const initializeChatroom = async (req: Request, res: Response) => {
-	const { participants, startedBy: initiator } = req.body.data
-	await Chatroom.create({
-		participants,
-		startedBy: initiator,
-		openedChatroom: [initiator],
-	})
-		.then((result) =>
-			SendSuccessPayloadResponse({
-				context: AppContext.Token,
-				payload: result,
-				res,
-				status: Status.Created,
-			}),
-		)
-		.catch((error) =>
-			SendErrorResponse({
-				context: AppContext.Chatroom,
-				failReason: FailReason.ChatroomInitializationError,
-				jobStatus: 'FAILED',
-				jobType: JobType.InitializeChatroom,
-				message: `Something went wrong during chat room initialization`,
-				res,
-				status: Status.InternalServerError,
-			}),
-		)
-}
 export const getOrInitializeChatroom = async (req: Request, res: Response) => {
-	const recipient = req.body.data.recipient
-	const chatrooms = await Chatroom.find({ startedBy: { $eq: req.params.id } })
-		.populate('_id participants startedBy openedChatroom')
-		.exec()
+	const { participants, name } = req.body.data
 
-	if (!chatrooms.length) {
+	if (!participants.length) {
 		return SendErrorResponse({
-			context: AppContext.Chatroom,
-			failReason: FailReason.ChatroomInitializationError,
-			jobStatus: 'FAILED',
-			jobType: JobType.GetChatroom,
-			message: 'Chatroom(s) not found',
 			res,
-			status: Status.NotFound,
+			jobType: JobType.GetChatroom,
+			jobStatus: 'FAILED',
+			context: AppContext.Message,
+			message: 'Something went wrong fetching chatroom.',
+			status: Status.InternalServerError,
 		})
 	}
 
-	return SendSuccessListPayloadResponse({
+	const chatroom = await Chatroom.findOne({ participants: { $all: participants } })
+		.populate('name participants')
+		.exec()
+
+	if (!!chatroom) {
+		return SendSuccessPayloadResponse({
+			res,
+			status: Status.Ok,
+			payload: {
+				jobStatus: 'COMPLETED',
+				status: 'Ok',
+				payload: chatroom,
+				message: 'Found chatroom.',
+			},
+		})
+	}
+
+	const newChatroom = await Chatroom.create({
+		participants,
+		name,
+	})
+
+	return SendSuccessPayloadResponse({
 		res,
-		results: chatrooms,
 		status: Status.Ok,
+		payload: {
+			jobStatus: 'COMPLETED',
+			status: 'Ok',
+			payload: newChatroom,
+			message: 'Created chatroom.',
+		},
 	})
 }
 export const sendMessageToChatroom = async (req: Request, res: Response) => {
-	const { message, chatroom, sentBy } = req.body.data
-
-	let chatroomObj = chatroom
-
-	if (!chatroom) {
-		chatroomObj = _initializeChatroom(chatroom)
+	if (!req.body.data) {
+		return
 	}
+
+	const { message, chatroomId, sender } = req.body.data
 
 	await Message.create({
 		message,
-		chatroomId: chatroomObj.id,
-		sentBy,
+		chatroomId,
+		sender,
 	})
 		.then((result) =>
 			SendSuccessPayloadResponse({
@@ -98,8 +84,4 @@ export const sendMessageToChatroom = async (req: Request, res: Response) => {
 export const updateChatroom = (req: Request, res: Response) => {}
 export const deleteChatroom = (req: Request, res: Response) => {}
 
-async function _initializeChatroom(chatroom: Partial<IChatroom>) {
-	return await Chatroom.create({ ...chatroom })
-}
-
-export default { initializeChatroom, getOrInitializeChatroom, sendMessageToChatroom, updateChatroom, deleteChatroom }
+export default { getOrInitializeChatroom, sendMessageToChatroom, updateChatroom, deleteChatroom }
