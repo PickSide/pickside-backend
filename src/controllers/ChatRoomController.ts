@@ -57,7 +57,7 @@ export const sendMessageToChatroom = async (req: Request, res: Response) => {
 	}
 
 	const { message, chatroomId, sender } = req.body.data
-
+	console.log(message, chatroomId, sender)
 	await Message.create({
 		message,
 		chatroomId,
