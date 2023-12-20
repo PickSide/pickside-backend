@@ -14,7 +14,7 @@ export const getAllMessagesByChatroomId = async (req: Request, res: Response) =>
 	}
 
 	const messages = await Message.find({ chatroomId: { $eq: chatroomId } }).exec()
-	console.log(messages)
+
 	return SendSuccessListPayloadResponse({
 		res,
 		results: messages,

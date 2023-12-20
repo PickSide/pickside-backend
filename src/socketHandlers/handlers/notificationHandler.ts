@@ -1,5 +1,5 @@
-import { IGroup } from '../schemas/Group'
-import Notification from '../schemas/Notification'
+import { IGroup } from '../../schemas/Group'
+import Notification from '../../schemas/Notification'
 import { Socket } from 'socket.io'
 import dayjs from 'dayjs'
 

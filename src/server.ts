@@ -1,5 +1,7 @@
+import { Server, Socket } from 'socket.io'
+
 import Routes from './routes'
-import { Server } from 'socket.io'
+import chatroomHandler from './socketHandlers/handlers/chatroomHandler'
 import { config } from 'dotenv'
 import { connect } from 'mongoose'
 import cors from 'cors'
@@ -7,12 +9,11 @@ import corsOptions from './corsOptions'
 import { createServer } from 'http'
 import databaseUtils from './utils/databaseUtils'
 import express from 'express'
-import messageHandler from './socketHandlers/messageHandler'
-import notificationHandler from './socketHandlers/notificationHandler'
+import notificationHandler from './socketHandlers/handlers/notificationHandler'
 import swaggerDefinition from './swaggerDefinition'
 import swaggerJsDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
-import userHandler from './socketHandlers/userHandler'
+import userHandler from './socketHandlers/handlers/userHandler'
 
 config()
 
@@ -27,25 +28,41 @@ const swaggerSpecs = swaggerJsDoc({
 })
 
 const { notify } = notificationHandler(io)
-const { receiveMessage, sendMessage } = messageHandler(io)
+const { handleIncomingMessage } = chatroomHandler(io)
 const { addOnlineUser, removeOnlineUser } = userHandler(io)
 
-const onConnection = (socket) => {
-	//console.log(socket)
-	console.log('socket is connected')
+const onChatroomConnection = (socket: Socket) => {
+	console.log('chatroom socket connected', socket.id)
+	socket.on('chatroom:sending-message', handleIncomingMessage(socket))
+	socket.use(([event, ...args], next) => {
+		console.log(event)
+		if (event === 'chatroom:open') {
+			socket.join(`room-${args[0].id}`)
+		}
+		next()
+	})
+}
+
+const onGroupConnection = (socket: Socket) => {
+	console.log('group socket open')
 	socket.on('group:create', notify(socket))
-	socket.on('message:send', notify(socket))
+}
+
+const onUserConnection = (socket: Socket) => {
+	console.log('users socket open')
 	socket.on('user:login', addOnlineUser(socket))
 	socket.on('user:logout', removeOnlineUser(socket))
 }
+
+io.of('/chatrooms').on('connection', onChatroomConnection)
+io.of('/groups').on('connection', onGroupConnection)
+io.of('/users').on('connection', onUserConnection)
 
 app
 	.use(cors(corsOptions))
 	.use(express.json())
 	.use('/api/v1', Routes)
 	.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
-
-io.on('connection', onConnection)
 
 httpServer.listen(process.env.API_SERVER_PORT, () =>
 	console.log('Connected to server on port', process.env.API_SERVER_PORT),
