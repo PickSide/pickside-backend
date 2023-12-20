@@ -1,4 +1,4 @@
-import { NotificationController } from '../controllers'
+import NotificationController from '../controllers/NotificationController'
 import express from 'express'
 
 const router = express.Router()

@@ -1,7 +1,6 @@
 import { ISport, Mode } from './Sport'
 import { Schema, model } from 'mongoose'
 
-import { IUser } from './User'
 import dayjs from 'dayjs'
 import { schemaProps } from '../utils'
 

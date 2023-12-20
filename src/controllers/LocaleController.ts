@@ -16,3 +16,5 @@ export const update = async (req: Request, res: Response) => {
 export const destroy = async (req: Request, res: Response) => {
 	// Not implemented
 }
+
+export default { get }

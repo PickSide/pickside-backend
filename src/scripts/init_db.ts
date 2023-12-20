@@ -1,9 +1,12 @@
 import { Connection, Types, connect } from 'mongoose'
+import Message, { IMessage } from '../schemas/Message'
 import { _toCoordsObj, createUser } from './helper'
 
 import Activity from '../schemas/Activity'
+import Chatroom from '../schemas/Chatroom'
 import Locale from '../schemas/Locale'
 import Notification from '../schemas/Notification'
+import OnlineUser from '../schemas/OnlineUser'
 import Sport from '../schemas/Sport'
 import Token from '../schemas/Token'
 import User from '../schemas/User'
@@ -50,6 +53,7 @@ async function initCollections() {
 
 	await Activity.createCollection()
 	await Locale.createCollection()
+	await OnlineUser.createCollection()
 	await Sport.createCollection()
 	await Token.createCollection()
 	await User.createCollection()
@@ -109,7 +113,6 @@ async function populateCollections() {
 			username: 'tony',
 			preferredLocale: locales[0],
 			preferredSport: sports[2],
-			email: 'tonyown12@gmail.com',
 		},
 		{
 			fullName: 'Ali Idrici',
@@ -124,7 +127,7 @@ async function populateCollections() {
 			preferredSport: sports[2],
 		},
 		{
-			fullName: 'Niloofar hakim',
+			fullName: 'Niloofar khastavan',
 			username: 'niloo',
 			preferredLocale: locales[0],
 			preferredSport: sports[2],
@@ -185,66 +188,61 @@ async function populateCollections() {
 		},
 	])
 
-	//const date = dayjs().add(5, 'day')
+	const chatrooms = await Chatroom.insertMany([
+		{
+			id: new Types.ObjectId(),
+			name: users[1].fullName,
+			participants: [users[0].id, users[1].id],
+		},
+		{
+			id: new Types.ObjectId(),
+			name: users[2].fullName,
+			participants: [users[0].id, users[2].id],
+		},
+		{
+			id: new Types.ObjectId(),
+			name: users[3].fullName,
+			participants: [users[0].id, users[3].id],
+		},
+	])
 
-	// await Activity.insertMany([
-	// 	{
-	// 		date: dayjs().add(5, 'day').toDate(),
-	// 		description: 'Simple game',
-	// 		duration: 59,
-	// 		maxPlayers: 10,
-	// 		mode: '7v7',
-	// 		organizer: users[0],
-	// 		participants: [
-	// 			users[1],
-	// 			users[2],
-	// 			users[3],
-	// 			users[4],
-	// 			users[5],
-	// 			users[1],
-	// 			users[2],
-	// 			users[3],
-	// 			users[4],
-	// 			users[5],
-	// 		],
-	// 		recommandedLevel: 'beginner',
-	// 		rules: 'Relaxing game, no slide tackles, 1 goal we switch',
-	// 		sport: sports[2],
-	// 		time: undefined,
-	// 		title: 'Soccer game 5v5',
-	// 		price: 5,
-	// 	},
-	// 	{
-	// 		date: dayjs().add(7, 'day').toDate(),
-	// 		description: 'Simple game',
-	// 		duration: 59,
-	// 		maxPlayers: 14,
-	// 		mode: '7v7',
-	// 		organizer: users[0],
-	// 		participants: [],
-	// 		recommandedLevel: 'beginner',
-	// 		rules: 'Relaxing game, no slide tackles, 1 goal we switch',
-	// 		sport: sports[2],
-	// 		time: undefined,
-	// 		title: 'Soccer game 7v7',
-	// 		price: 5,
-	// 	},
-	// 	{
-	// 		date: dayjs().add(10, 'day').toDate(),
-	// 		description: 'Simple game',
-	// 		duration: 59,
-	// 		maxPlayers: 22,
-	// 		mode: '7v7',
-	// 		organizer: users[0],
-	// 		participants: [],
-	// 		recommandedLevel: 'beginner',
-	// 		rules: 'Relaxing game, no slide tackles, 1 goal we switch',
-	// 		sport: sports[2],
-	// 		time: undefined,
-	// 		title: 'Soccer game 11v11',
-	// 		price: 5,
-	// 	},
-	// ])
+	await Message.insertMany([
+		{
+			id: new Types.ObjectId(),
+			message: 'Fdp repond',
+			chatroomId: chatrooms[0].id,
+			sender: users[1],
+			delivered: true,
+		},
+		{
+			id: new Types.ObjectId(),
+			message: 'YO CHECK MON FKNG COB SAL NEG',
+			chatroomId: chatrooms[0].id,
+			sender: users[1],
+			delivered: true,
+		},
+		{
+			id: new Types.ObjectId(),
+			message: 'BDV JVAIS PULL UP TA CAILLE',
+			chatroomId: chatrooms[0].id,
+			sender: users[1],
+			delivered: true,
+		},
+		{
+			id: new Types.ObjectId(),
+			message: 'Ayt on te kimb ma neg. T ded',
+			chatroomId: chatrooms[0].id,
+			sender: users[1],
+			delivered: true,
+		},
+		{
+			id: new Types.ObjectId(),
+			message: 'Xplik',
+			chatroomId: chatrooms[0].id,
+			sender: users[0],
+			delivered: true,
+		},
+	])
 
 	await Notification.insertMany([
 		{

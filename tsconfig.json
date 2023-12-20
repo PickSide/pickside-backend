@@ -1,48 +1,26 @@
 {
 	"compilerOptions": {
-		"allowJs": true,
-		"allowSyntheticDefaultImports": true,
-		"baseUrl": ".",
-		"emitDecoratorMetadata": true,
+		"allowJs": false,
+		"skipLibCheck": true,
 		"esModuleInterop": true,
-		"experimentalDecorators": true,
-		"moduleResolution": "node",
-		"noImplicitAny": false,
-		"target": "es6",
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"noFallthroughCasesInSwitch": true,
 		"module": "CommonJS",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"noImplicitAny": false,
+		"noEmit": true,
+		"baseUrl": ".",
 		"paths": {
-			"configs": [
-				"src/config/*"
-			],
-			"controllers": [
-				"src/controllers/*"
-			],
-			"middleware": [
-				"src/middleware/*"
-			],
-			"models": [
-				"src/models/*"
-			],
-			"utils": [
-				"src/utils/*"
-			],
-			"schemas": [
-				"../schemas/*"
-			],
-			"scripts": [
-				"src/scripts/*"
-			]
+			"@*": ["src/*"]
 		},
 		"outDir": "./dist",
 		"sourceMap": true,
 		"strict": true,
+		"typeRoots": ["node_modules/@types", "src/@types"]
 	},
-	"exclude": [
-		"node_modules",
-		"build",
-		"scripts"
-	],
-	"include": [
-		"src/**/*.ts"
-	]
+	"exclude": ["node_modules", "build", "scripts"],
+	"include": ["src"]
 }
