@@ -1,6 +1,6 @@
 import UserController from '../controllers/UserController'
 import express from 'express'
-import { validateAccessToken } from '../middleware/auth.middleware'
+import { validateAccessToken } from '../middleware/session.middleware'
 
 const router = express.Router()
 

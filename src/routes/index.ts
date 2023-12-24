@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import activities from './activity'
-import auth from './auth'
 import chatrooms from './chatrooms'
 import emails from './emails'
 import groups from './groups'
@@ -9,12 +8,13 @@ import messages from './messages'
 import notifications from './notifications'
 import resetDb from './resetdb'
 import schedules from './schedules'
+import session from './session'
 import sports from './sport'
 import users from './user'
 
 const rootRouter = Router()
 
-rootRouter.use('/', auth)
+rootRouter.use('/', session)
 rootRouter.use('/', resetDb)
 rootRouter.use('/activities', activities)
 rootRouter.use('/chatrooms', chatrooms)

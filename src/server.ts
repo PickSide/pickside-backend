@@ -3,12 +3,13 @@ import { Server, Socket } from 'socket.io'
 import Routes from './routes'
 import chatroomHandler from './socketHandlers/handlers/chatroomHandler'
 import { config } from 'dotenv'
-import { connect } from 'mongoose'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import corsOptions from './corsOptions'
 import { createServer } from 'http'
 import databaseUtils from './utils/databaseUtils'
 import express from 'express'
+import mongoose from 'mongoose'
 import notificationHandler from './socketHandlers/handlers/notificationHandler'
 import swaggerDefinition from './swaggerDefinition'
 import swaggerJsDoc from 'swagger-jsdoc'
@@ -60,6 +61,7 @@ io.of('/users').on('connection', onUserConnection)
 
 app
 	.use(cors(corsOptions))
+	.use(cookieParser())
 	.use(express.json())
 	.use('/api/v1', Routes)
 	.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
@@ -68,4 +70,5 @@ httpServer.listen(process.env.API_SERVER_PORT, () =>
 	console.log('Connected to server on port', process.env.API_SERVER_PORT),
 )
 
-connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))
+mongoose.set('strictQuery', false)
+mongoose.connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))

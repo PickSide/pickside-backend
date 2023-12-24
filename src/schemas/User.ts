@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose'
 
-import { schemaProps } from '../utils'
+import { schemaProps } from '../utils/databaseUtils'
 
 export enum ACCOUNT_TYPE {
 	GOOGLE = 'google',
@@ -131,7 +131,7 @@ export interface IUser extends Document {
 	locationTracking: boolean
 	matchOrganizedCount: number
 	matchPlayedCount: number
-	password: string
+	password?: string
 	permissions: [USER_PERMISSIONS]
 	phone: string
 	preferredLocale: any

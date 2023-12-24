@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "server.ts",
 	"scripts": {
-		"start": "concurrently --kill-others \"npm run server\"",
+		"dev": "concurrently --kill-others \"npm run server\"",
 		"build": "tsc",
 		"server": "nodemon",
 		"createdb": "ts-node src/scripts/init_db.ts",
@@ -16,6 +16,7 @@
 	"dependencies": {
 		"@types/google.maps": "^3.54.5",
 		"bcrypt": "^5.1.0",
+		"cookie-parser": "^1.4.6",
 		"cors": "^2.8.5",
 		"crypto": "^1.0.1",
 		"dayjs": "^1.11.9",
