@@ -6,8 +6,11 @@ import {
 	SendSuccessPayloadResponse,
 	SendSuccessResponseMessage,
 	Status,
-	addToList,
-	isTokenValid,
+	addToBlacklist,
+	generateAT,
+	generateRT,
+	getTokenClaims,
+	isBlackListed,
 	revokeToken,
 	secrets,
 } from '../utils'
@@ -21,14 +24,6 @@ import VerifiedEmail from '../schemas/Email'
 import { compare } from 'bcrypt'
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
-
-interface TokenClaims extends JwtPayload {
-	emailVerified?: boolean
-	email?: string
-	firstName?: string
-	lastName?: string
-	username?: string
-}
 
 export const getAccessToken = async (req: Request, res: Response) => {
 	const user = req.body.data
@@ -64,10 +59,10 @@ export const getAccessToken = async (req: Request, res: Response) => {
 		})
 
 		//if token is valid
-		const tokenValid = await isTokenValid(refreshToken)
+		const tokenValid = await isBlackListed(refreshToken)
 		if (tokenValid) {
 			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
-			const claims = getTokenClaims(user, emailVerified)
+			const claims = getTokenClaims(user)
 			const accessToken = generateAT(claims)
 
 			return SendSuccessPayloadResponse({
@@ -127,12 +122,12 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 		})
 	}
 
-	const claims = getTokenClaims(user, verified_email)
+	const claims = getTokenClaims(user)
 	const accessToken = generateAT(claims)
 	const refreshToken = generateRT(claims)
 
-	await addToList(accessToken)
-	await addToList(refreshToken)
+	await addToBlacklist(accessToken)
+	await addToBlacklist(refreshToken)
 
 	return SendSuccessPayloadResponse({
 		context: AppContext.User,
@@ -197,18 +192,31 @@ export const login = async (req: Request, res: Response) => {
 		})
 	}
 
-	const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user.id }).exec())
-	const claims = getTokenClaims(user, emailVerified)
-	const accessToken = generateAT(claims)
+	const claims = getTokenClaims(user)
 	const refreshToken = generateRT(claims)
+	const accessToken = generateAT(claims)
 
-	await addToList(accessToken)
-	await addToList(refreshToken)
+	addToBlacklist(refreshToken)
+	addToBlacklist(accessToken)
+
+	res.cookie('accessToken', accessToken, {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 300000, //5 mins
+		httpOnly: true,
+	})
+
+	res.cookie('refreshToken', refreshToken, {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 3.154e10, //1 year
+		httpOnly: true,
+	})
+
+	delete user['password']
 
 	return SendSuccessPayloadResponse({
 		context: AppContext.User,
 		jobType: JobType.Login,
-		payload: { user: omit(user, ['password']), accessToken, refreshToken },
+		payload: { user },
 		redirectUri: '/',
 		res,
 		status: Status.Ok,
@@ -224,7 +232,7 @@ export const loginAsGuest = async (req: Request, res: Response) => {
 		username,
 	})
 
-	const claims = getTokenClaims(guestUser, false)
+	const claims = getTokenClaims(guestUser)
 	const accessToken = generateAT(claims)
 	const refreshToken = generateRT(claims)
 
@@ -239,47 +247,17 @@ export const loginAsGuest = async (req: Request, res: Response) => {
 }
 
 export const logout = async (req: Request, res: Response) => {
-	const refreshToken = req.headers['authorization']?.split(' ')[1]
+	res.clearCookie('accessToken')
+	res.clearCookie('refreshToken')
 
-	if (refreshToken) {
-		await revokeToken(refreshToken)
-
-		return SendSuccessResponseMessage({
-			context: AppContext.User,
-			jobType: JobType.Logout,
-			message: 'Successfully logged out',
-			redirectUri: '/login',
-			res,
-			status: Status.Ok,
-		})
-	}
-	return SendErrorResponse({
+	return SendSuccessResponseMessage({
 		context: AppContext.User,
-		failReason: FailReason.UserLogout,
-		jobStatus: 'FAILED',
 		jobType: JobType.Logout,
-		message: 'Error while logging out.',
+		message: 'Successfully logged out',
+		redirectUri: '/login',
 		res,
-		status: Status.BadRequest,
+		status: Status.Ok,
 	})
-}
-
-function generateAT(claims) {
-	return sign(claims, secrets['ACCESS_TOKEN_SECRET'], { expiresIn: '1d' })
-}
-
-function generateRT(claims) {
-	return sign(claims, secrets['REFRESH_TOKEN_SECRET'], { expiresIn: '7d' })
-}
-
-function getTokenClaims(data, emailVerified: boolean = false): TokenClaims {
-	return {
-		...pick(data, ['email', 'profile.firstName', 'profile.lastName', 'username']),
-		emailVerified,
-		iss: 'https://pickside.net',
-		sub: data.id,
-		//aud: 'http://pickside.com',
-	}
 }
 
 function sendActivationEmail(user) {
