@@ -22,7 +22,7 @@ export const getOrInitializeChatroom = async (req: Request, res: Response) => {
 		.populate('name participants')
 		.exec()
 
-	if (!!chatroom) {
+	if (chatroom) {
 		return SendSuccessPayloadResponse({
 			res,
 			status: Status.Ok,

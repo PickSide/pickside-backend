@@ -18,7 +18,7 @@ export const MessageSchema = new Schema(
 )
 
 export interface IMessage extends Document {
-	message: String
+	message: string
 	chatroomId: IChatroom
 	sender: IUser
 	delivered: boolean

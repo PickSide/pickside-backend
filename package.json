@@ -4,11 +4,9 @@
 	"description": "",
 	"main": "server.ts",
 	"scripts": {
-		"dev": "concurrently --kill-others \"npm run server\"",
-		"build": "tsc",
-		"server": "nodemon",
-		"createdb": "ts-node src/scripts/init_db.ts",
-		"scheduler": "nodemon src/scripts/scheduler.ts"
+		"dev": "concurrently --kill-others \"nodemon\"",
+		"prod": "ts-node src/server.ts",
+		"createdb": "ts-node src/scripts/init_db.ts"
 	},
 	"keywords": [],
 	"author": "thenoobgrammer",

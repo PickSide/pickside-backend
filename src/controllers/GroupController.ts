@@ -109,7 +109,7 @@ export const deleteGroupById = async (req: Request, res: Response) => {
 
 	const group = await Group.find({ id: { $eq: groupId }, organizer: { $eq: organizerId } })
 
-	if (!!group) {
+	if (group) {
 		await Group.findByIdAndRemove(groupId)
 			.exec()
 			.then(() =>

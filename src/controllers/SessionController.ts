@@ -28,10 +28,10 @@ import nodemailer from 'nodemailer'
 export const getAccessToken = async (req: Request, res: Response) => {
 	const user = req.body.data
 	const refreshToken = req.headers['authorization']?.split(' ')[1]
-	if (!!refreshToken) {
+	if (refreshToken) {
 		verify(refreshToken, secrets['REFRESH_TOKEN_SECRET'], async (err) => {
 			// if token is expired, invalidate token
-			if (!!err) {
+			if (err) {
 				if (err.name === TokenExpiredError.name) {
 					await revokeToken(refreshToken)
 					return SendErrorResponse({
