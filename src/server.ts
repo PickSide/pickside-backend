@@ -21,9 +21,6 @@ config()
 const app = express()
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
-	allowRequest: (req, callback) => {
-		callback(null, true)
-	},
 	cors: corsOptions,
 })
 const swaggerSpecs = swaggerJsDoc({
