@@ -3,20 +3,36 @@ import {
 	AppContext,
 	FailReason,
 	JobType,
-	ProfileSuccessfullyUpdated,
 	SendErrorResponse,
 	SendResponse,
 	SendSuccessListPayloadResponse,
+	SendSuccessPayloadResponse,
 	Status,
 } from '../utils/responses'
 import { Request, Response } from 'express'
-import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, ROLES } from '../schemas/User'
+import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, IUser, ROLES } from '../schemas/User'
 
 import OnlineUser from '../schemas/OnlineUser'
+import { decode } from 'jsonwebtoken'
 import { hashSync } from 'bcrypt'
 import { omit } from 'lodash'
 
-export const get = async (req: Request, res: Response) => {}
+export const getMe = async (req: Request, res: Response) => {
+	const refreshToken = req.cookies.refreshToken
+
+	if (refreshToken) {
+		const { username = null, email = null }: any = decode(req.cookies.refreshToken)
+
+		if (!username || !email) {
+			return SendErrorResponse({ res, status: Status.Forbidden, jobStatus: 'FAILED', jobType: JobType.GetMe })
+		}
+
+		return await User.findOne({ $and: [{ username }, { email }] }).exec()
+			.then((response) =>
+				SendSuccessPayloadResponse({ res, payload: { result: response }, status: Status.Ok })
+			)
+	}
+}
 
 export const getUsers = async (req: Request, res: Response) => {
 	let users
@@ -79,7 +95,8 @@ export const update = async (req: Request, res: Response) => {
 	return await User.findByIdAndUpdate(req.params.id, { ...setting })
 		.exec()
 		.then((data) => {
-			return SendResponse(res, Status.Ok, { ...ProfileSuccessfullyUpdated })
+			console.log(data)
+			return SendSuccessPayloadResponse({ res, status: Status.Ok, payload: { result: setting, message: 'Setting updated' } })
 		})
 		.catch((error) => {
 			return SendErrorResponse({
@@ -132,10 +149,10 @@ export const clearOnlineUsers = async (req: Request, res: Response) => {
 	return await OnlineUser.deleteMany().then(() => 'success')
 }
 
-export const remove = async (req: Request, res: Response) => {}
+export const remove = async (req: Request, res: Response) => { }
 
 export default {
-	get,
+	getMe,
 	getUsers,
 	create,
 	update,

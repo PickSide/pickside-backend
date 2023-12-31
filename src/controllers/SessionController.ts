@@ -10,80 +10,15 @@ import {
 	generateAT,
 	generateRT,
 	getTokenClaims,
-	isBlackListed,
-	revokeToken,
-	secrets,
 } from '../utils'
-import { JsonWebTokenError, JwtPayload, TokenExpiredError, sign, verify } from 'jsonwebtoken'
 import { Request, Response } from 'express'
 import User, { ACCOUNT_TYPE, GOOGLE_USER_PERMISSIONS, GUEST_USER_PERMISSIONS, ROLES } from '../schemas/User'
-import { omit, pick } from 'lodash'
 
 import Locale from '../schemas/Locale'
-import VerifiedEmail from '../schemas/Email'
 import { compare } from 'bcrypt'
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
-
-export const getAccessToken = async (req: Request, res: Response) => {
-	const user = req.body.data
-	const refreshToken = req.headers['authorization']?.split(' ')[1]
-	if (refreshToken) {
-		verify(refreshToken, secrets['REFRESH_TOKEN_SECRET'], async (err) => {
-			// if token is expired, invalidate token
-			if (err) {
-				if (err.name === TokenExpiredError.name) {
-					await revokeToken(refreshToken)
-					return SendErrorResponse({
-						context: AppContext.User,
-						failReason: FailReason.TokenExpired,
-						jobStatus: 'FAILED',
-						jobType: JobType.GetAccessToken,
-						message: 'Token expired. Please relogin',
-						res,
-						status: Status.Forbidden,
-					})
-				}
-				if (err.name === JsonWebTokenError.name) {
-					return SendErrorResponse({
-						context: AppContext.User,
-						failReason: FailReason.TokenError,
-						jobStatus: 'FAILED',
-						jobType: JobType.GetAccessToken,
-						message: 'Unauthorized action.',
-						res,
-						status: Status.Unauthorized,
-					})
-				}
-			}
-		})
-
-		//if token is valid
-		const tokenValid = await isBlackListed(refreshToken)
-		if (tokenValid) {
-			const emailVerified = !!(await VerifiedEmail.findOne({ userIdAssociated: user._id }))
-			const claims = getTokenClaims(user)
-			const accessToken = generateAT(claims)
-
-			return SendSuccessPayloadResponse({
-				context: AppContext.Token,
-				payload: accessToken,
-				res,
-				status: Status.Ok,
-			})
-		}
-	}
-
-	return SendErrorResponse({
-		context: AppContext.Token,
-		failReason: FailReason.TokenError,
-		jobStatus: 'FAILED',
-		jobType: JobType.GetAccessToken,
-		message: 'Unauthorized action.',
-		res,
-		status: Status.Unauthorized,
-	})
-}
+import { omit } from 'lodash'
 
 export const loginWithGoogle = async (req: Request, res: Response) => {
 	const { email, name, locale, picture, verified_email } = req.body.data
@@ -125,6 +60,18 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 	const claims = getTokenClaims(user)
 	const accessToken = generateAT(claims)
 	const refreshToken = generateRT(claims)
+
+	res.cookie('accessToken', accessToken, {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 300000, //5 mins
+		httpOnly: true,
+	})
+
+	res.cookie('refreshToken', refreshToken, {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 3.154e10, //1 year
+		httpOnly: true,
+	})
 
 	await addToBlacklist(accessToken)
 	await addToBlacklist(refreshToken)
@@ -236,6 +183,18 @@ export const loginAsGuest = async (req: Request, res: Response) => {
 	const accessToken = generateAT(claims)
 	const refreshToken = generateRT(claims)
 
+	res.cookie('accessToken', accessToken, {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 300000, //5 mins
+		httpOnly: true,
+	})
+
+	res.cookie('refreshToken', refreshToken, {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 3.154e10, //1 year
+		httpOnly: true,
+	})
+
 	return SendSuccessPayloadResponse({
 		context: AppContext.User,
 		jobType: JobType.Login,
@@ -296,7 +255,6 @@ function sendActivationEmail(user) {
 }
 
 export default {
-	getAccessToken,
 	login,
 	loginAsGuest,
 	loginWithGoogle,

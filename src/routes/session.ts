@@ -3,7 +3,6 @@ import SessionController from '../controllers/SessionController'
 
 const router = Router()
 
-router.get('/token', SessionController.getAccessToken)
 router.post('/login', SessionController.login)
 router.post('/guest-login', SessionController.loginAsGuest)
 router.post('/google-login', SessionController.loginWithGoogle)
