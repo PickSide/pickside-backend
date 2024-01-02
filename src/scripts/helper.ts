@@ -9,16 +9,6 @@ interface UserProps {
 	preferredSport: any
 }
 
-interface PlayablesProps {
-	districtCode: string
-	type: string
-	coords: any
-	fieldName: string
-	schedule: any
-	available: boolean
-	isMultisportZone: boolean
-}
-
 export function createUser(props: UserProps[]) {
 	return Promise.all(
 		props.map(

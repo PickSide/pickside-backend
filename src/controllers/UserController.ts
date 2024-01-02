@@ -17,6 +17,14 @@ import { decode } from 'jsonwebtoken'
 import { hashSync } from 'bcrypt'
 import { omit } from 'lodash'
 
+export interface MulterFile {
+	key: string // Available using `S3`.
+	path: string // Available using `DiskStorage`.
+	mimetype: string
+	originalname: string
+	size: number
+}
+
 export const getMe = async (req: Request, res: Response) => {
 	const refreshToken = req.cookies.refreshToken
 
@@ -89,7 +97,14 @@ export const create = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Ok, { ...AccountCreatedSuccess, payload: { ...omit(account, ['password']) } })
 }
 
-export const update = async (req: Request, res: Response) => {
+export const updateAvatar = async (req: Request, res: Response) => {
+	await User.findByIdAndUpdate(req.params.id, { avatar: req.body.data.avatar })
+		.exec()
+		.then((result) => SendSuccessPayloadResponse({ res, status: Status.Ok, payload: { result }, message: 'Avatar updated' }))
+		.catch((error) => SendErrorResponse({ res, status: Status.InternalServerError, message: error.message }))
+}
+
+export const updateSettings = async (req: Request, res: Response) => {
 	const setting = req.body.data
 
 	return await User.findByIdAndUpdate(req.params.id, { ...setting })
@@ -155,7 +170,8 @@ export default {
 	getMe,
 	getUsers,
 	create,
-	update,
+	updateAvatar,
+	updateSettings,
 	reactivate,
 	deactivate,
 	clearOnlineUsers,

@@ -62,7 +62,8 @@ io.of('/users').on('connection', onUserConnection)
 app
 	.use(cors(corsOptions))
 	.use(cookieParser())
-	.use(express.json())
+	.use(express.json({ limit: '200mb' }))
+	.use(express.urlencoded({ extended: true, limit: "200mb" }))
 	.use('/api/v1', Routes)
 	.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
 
