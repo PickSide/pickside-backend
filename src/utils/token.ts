@@ -1,3 +1,4 @@
+import { IUser } from '@schemas/User'
 import Token from '../schemas/Token'
 import { pick } from 'lodash'
 import { secrets } from './secrets'
@@ -23,10 +24,10 @@ export function generateRT(claims) {
 	return sign(claims, secrets['REFRESH_TOKEN_SECRET'], { expiresIn: '1y' })
 }
 
-export function getTokenClaims(user: any) {
+export function getTokenClaims(user: IUser) {
 	return {
 		...pick(user, ['email', 'profile.firstName', 'profile.lastName', 'username']),
 		iss: 'https://pickside.net',
-		sub: user.id,
+		sub: user?.id,
 	}
 }
