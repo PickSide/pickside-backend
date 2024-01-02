@@ -160,6 +160,7 @@ export function SendSuccessPayloadResponse({
 	payload,
 	timeStamp = new Date(),
 	res,
+	message,
 	redirectUri,
 	status,
 }: SendSuccessPayloadResponseProps) {
@@ -169,6 +170,7 @@ export function SendSuccessPayloadResponse({
 		context,
 		timeStamp,
 		redirectUri,
+		message,
 		...payload,
 	})
 }

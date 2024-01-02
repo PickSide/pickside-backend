@@ -191,17 +191,14 @@ async function populateCollections() {
 	const chatrooms = await Chatroom.insertMany([
 		{
 			id: new Types.ObjectId(),
-			name: users[1].fullName,
 			participants: [users[0].id, users[1].id],
 		},
 		{
 			id: new Types.ObjectId(),
-			name: users[2].fullName,
 			participants: [users[0].id, users[2].id],
 		},
 		{
 			id: new Types.ObjectId(),
-			name: users[3].fullName,
 			participants: [users[0].id, users[3].id],
 		},
 	])

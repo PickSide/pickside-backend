@@ -9,7 +9,8 @@ router.get('/me', validateAccessToken, UserController.getMe)
 router.put('/deactivate/:userId', validateAccessToken, UserController.deactivate)
 router.get('/reactivate/:userId', validateAccessToken, UserController.reactivate)
 router.post('/create', UserController.create)
-router.put('/:id/settings', validateAccessToken, UserController.update)
+router.put('/:id/avatar', validateAccessToken, UserController.updateAvatar)
+router.put('/:id/settings', validateAccessToken, UserController.updateSettings)
 router.get('/clear-online', UserController.clearOnlineUsers)
 
 export default router

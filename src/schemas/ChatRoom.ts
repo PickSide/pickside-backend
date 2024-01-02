@@ -6,7 +6,7 @@ import { schemaProps } from '../utils'
 
 export const ChatroomSchema = new Schema(
 	{
-		name: { type: String, require: true },
+		name: { type: String, require: false },
 		participants: { type: [Schema.Types.ObjectId], ref: 'User', require: true },
 		lastMessage: { type: Schema.Types.ObjectId, ref: 'Message', default: null, require: false },
 		numberOfMessages: { type: Number, default: 0, require: false },

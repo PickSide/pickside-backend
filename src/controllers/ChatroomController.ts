@@ -5,7 +5,7 @@ import Chatroom from '../schemas/Chatroom'
 import Message from '../schemas/Message'
 
 export const getOrInitializeChatroom = async (req: Request, res: Response) => {
-	const { participants, name } = req.body.data
+	const { participants } = req.body.data
 
 	if (!participants.length) {
 		return SendErrorResponse({
@@ -37,7 +37,6 @@ export const getOrInitializeChatroom = async (req: Request, res: Response) => {
 
 	const newChatroom = await Chatroom.create({
 		participants,
-		name,
 	})
 
 	return SendSuccessPayloadResponse({
@@ -81,7 +80,7 @@ export const sendMessageToChatroom = async (req: Request, res: Response) => {
 			}),
 		)
 }
-export const updateChatroom = (req: Request, res: Response) => {}
-export const deleteChatroom = (req: Request, res: Response) => {}
+export const updateChatroom = (req: Request, res: Response) => { }
+export const deleteChatroom = (req: Request, res: Response) => { }
 
 export default { getOrInitializeChatroom, sendMessageToChatroom, updateChatroom, deleteChatroom }
