@@ -62,10 +62,11 @@ export const createActivity = async (req: Request, res: Response) => {
 	return SendSuccessPayloadResponse({
 		res,
 		status: Status.Created,
-		payload: { ...ActivityCreatedSuccess, response: { activity }, status: 'Created' },
+		message: ActivityCreatedSuccess.message,
+		payload: { result: { activity } },
 	})
 }
-export const getActivityById = async (req: Request, res: Response) => {}
+export const getActivityById = async (req: Request, res: Response) => { }
 export const updateActivityById = async (req: Request, res: Response) => {
 	const { activityId } = req.params
 	const { userId } = req.body.data
@@ -84,8 +85,8 @@ export const updateActivityById = async (req: Request, res: Response) => {
 
 	return SendResponse(res, Status.Ok, { ...ParticipantSuccessfullyRegistered, response: updated, status: 'Registered' })
 }
-export const removeActivityById = async (req: Request, res: Response) => {}
-export const getActivityByGroupId = async (req: Request, res: Response) => {}
+export const removeActivityById = async (req: Request, res: Response) => { }
+export const getActivityByGroupId = async (req: Request, res: Response) => { }
 export const updateFavorites = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
 
