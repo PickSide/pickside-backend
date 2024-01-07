@@ -33,7 +33,7 @@ export async function validateAccessToken(req: Request, res: Response, next: Nex
 	if (refreshToken && !accessToken) {
 		try {
 			const payload = verify(refreshToken, secrets['REFRESH_TOKEN_SECRET'])
-			regenAccessToken(payload, res)
+			await regenAccessToken(payload, res)
 		} catch (e) {
 			return SendErrorResponse({
 				context: AppContext.Token,
@@ -52,10 +52,9 @@ export async function validateAccessToken(req: Request, res: Response, next: Nex
 			verify(accessToken, secrets['ACCESS_TOKEN_SECRET'])
 		} catch (e) {
 			const payload = decode(accessToken)
-			regenAccessToken(payload, res)
+			await regenAccessToken(payload, res)
 		}
 	}
-
 	next()
 }
 
@@ -72,7 +71,7 @@ const regenAccessToken = async (payload, res) => {
 
 	res.cookie('accessToken', newAT, {
 		secure: process.env.NODE_ENV === 'production',
-		maxAge: 300000,
+		maxAge: 5000,//300000,
 		httpOnly: true,
 	})
 }

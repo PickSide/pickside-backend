@@ -110,7 +110,6 @@ export const updateSettings = async (req: Request, res: Response) => {
 	return await User.findByIdAndUpdate(req.params.id, { ...setting })
 		.exec()
 		.then((data) => {
-			console.log(data)
 			return SendSuccessPayloadResponse({ res, status: Status.Ok, payload: { result: setting, message: 'Setting updated' } })
 		})
 		.catch((error) => {
