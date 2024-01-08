@@ -20,6 +20,11 @@ import crypto from 'crypto'
 import nodemailer from 'nodemailer'
 import { omit } from 'lodash'
 
+const cookieOpts = {
+	sameSite: true,
+	httpOnly: true,
+}
+
 export const loginWithGoogle = async (req: Request, res: Response) => {
 	const { email, name, locale, picture, verified_email } = req.body.data
 
@@ -64,13 +69,13 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 	res.cookie('accessToken', accessToken, {
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 300000, //5 mins
-		httpOnly: true,
+		...cookieOpts
 	})
 
 	res.cookie('refreshToken', refreshToken, {
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 3.154e10, //1 year
-		httpOnly: true,
+		...cookieOpts
 	})
 
 	await addToBlacklist(accessToken)
@@ -149,13 +154,13 @@ export const login = async (req: Request, res: Response) => {
 	res.cookie('accessToken', accessToken, {
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 5000,//300000, //5 mins
-		httpOnly: true,
+		...cookieOpts
 	})
 
 	res.cookie('refreshToken', refreshToken, {
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 3.154e10, //1 year
-		httpOnly: true,
+		...cookieOpts
 	})
 
 	delete user['password']
@@ -186,13 +191,13 @@ export const loginAsGuest = async (req: Request, res: Response) => {
 	res.cookie('accessToken', accessToken, {
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 300000, //5 mins
-		httpOnly: true,
+		...cookieOpts
 	})
 
 	res.cookie('refreshToken', refreshToken, {
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 3.154e10, //1 year
-		httpOnly: true,
+		...cookieOpts
 	})
 
 	return SendSuccessPayloadResponse({

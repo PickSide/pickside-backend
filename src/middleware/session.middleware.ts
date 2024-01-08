@@ -73,6 +73,7 @@ const regenAccessToken = async (payload, res) => {
 		secure: process.env.NODE_ENV === 'production',
 		maxAge: 5000,//300000,
 		httpOnly: true,
+		sameSite: true
 	})
 }
 
