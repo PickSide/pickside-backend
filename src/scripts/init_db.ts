@@ -1,25 +1,15 @@
-import { Connection, Types, connect } from 'mongoose'
-import Message, { IMessage } from '../schemas/Message'
+import { ActivityModel, ChatroomModel, LocaleModel, MessageModel, OnlineUserModel, SportModel, TokenModel, UserModel } from '@schemas'
+import { Connection, connect } from 'mongoose'
 import { _toCoordsObj, createUser } from './helper'
 
-import Activity from '../schemas/Activity'
-import Chatroom from '../schemas/Chatroom'
-import Locale from '../schemas/Locale'
-import Notification from '../schemas/Notification'
-import OnlineUser from '../schemas/OnlineUser'
-import Sport from '../schemas/Sport'
-import Token from '../schemas/Token'
-import User from '../schemas/User'
+import { LOCALES } from '@schemas/User'
 import { config } from 'dotenv'
 import databaseUtils from '../utils/databaseUtils'
 
 async function run() {
 	config()
 
-	const connection = await connect(databaseUtils.getDatabaseURI()).then((db) => {
-		console.log('Connected to db!')
-		return db.connection
-	})
+	const connection = await connect(databaseUtils.getDatabaseURI()).then((db) => db.connection)
 
 	await dropCollections(connection)
 	await initCollections()
@@ -31,32 +21,23 @@ async function run() {
 async function dropCollections(connection: Connection) {
 	console.log('dropping collections...')
 
-	await connection.db.listCollections().toArray((err, collections) => {
-		if (err) {
-			console.log(err)
-		} else {
-			collections?.forEach((collection, idx) => {
-				connection.dropCollection(collection.name, (error) => {
-					if (error?.name === 'NamespaceNotFound') {
-						return
-					}
-				})
-			})
-		}
-	})
+	const collections = await connection.db.listCollections().toArray()
 
-	console.log('collections dropped!')
+	await collections.forEach((collection, idx) => {
+		connection.dropCollection(collection.name)
+		console.log('collections dropped!')
+	})
 }
 
 async function initCollections() {
 	console.log('initializing collections...')
 
-	await Activity.createCollection()
-	await Locale.createCollection()
-	await OnlineUser.createCollection()
-	await Sport.createCollection()
-	await Token.createCollection()
-	await User.createCollection()
+	await ActivityModel.createCollection()
+	await LocaleModel.createCollection()
+	await OnlineUserModel.createCollection()
+	await SportModel.createCollection()
+	await TokenModel.createCollection()
+	await UserModel.createCollection()
 
 	console.log('collections initialized')
 }
@@ -64,21 +45,18 @@ async function initCollections() {
 async function populateCollections() {
 	console.log('populating collections...')
 
-	const sports = await Sport.insertMany([
+	const sports = await SportModel.create([
 		{
-			id: new Types.ObjectId(),
 			value: 'afootball',
 			name: 'American Football',
 			featureAvailable: false,
 		},
 		{
-			id: new Types.ObjectId(),
 			value: 'basketball',
 			name: 'Basketball',
 			featureAvailable: false,
 		},
 		{
-			id: new Types.ObjectId(),
 			value: 'soccer',
 			name: 'Soccer',
 			featureAvailable: true,
@@ -90,182 +68,136 @@ async function populateCollections() {
 			],
 		},
 		{
-			id: new Types.ObjectId(),
 			value: 'tennis',
 			name: 'Tennis',
 			featureAvailable: false,
 		},
 	])
 
-	const locales = await Locale.insertMany([
-		{
-			id: new Types.ObjectId(),
-			value: 'en',
-			description: 'English (US)',
-			flagCode: 'us',
-		},
-		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
-	])
-
+	const locales = [LOCALES.EN, LOCALES.FR]
 	const users = await createUser([
 		{
 			fullName: 'Tony Hakim',
 			username: 'tony',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Ali Idrici',
 			username: 'ali',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Omer Bos',
 			username: 'bos',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Niloofar khastavan',
 			username: 'niloo',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Ian Piluganov',
 			username: 'ian',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Rafic Haddad',
 			username: 'rafic',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Marc Bartik',
 			username: 'marc',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Fadi Bartik',
 			username: 'fadi',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Philippe Kuret',
 			username: 'phil',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Rami Kuret',
 			username: 'rami',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Kevin Moniz',
 			username: 'kevin',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Karim Abou-Khalil',
 			username: 'karim',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 		{
 			fullName: 'Mohammed Rabbani',
 			username: 'momo',
 			preferredLocale: locales[0],
-			preferredSport: sports[2],
+			preferredSport: sports[2].id,
 		},
 	])
 
-	const chatrooms = await Chatroom.insertMany([
+	const chatrooms = await ChatroomModel.create([
 		{
-			id: new Types.ObjectId(),
 			participants: [users[0].id, users[1].id],
 		},
 		{
-			id: new Types.ObjectId(),
 			participants: [users[0].id, users[2].id],
 		},
 		{
-			id: new Types.ObjectId(),
 			participants: [users[0].id, users[3].id],
 		},
 	])
 
-	await Message.insertMany([
+	await MessageModel.create([
 		{
-			id: new Types.ObjectId(),
 			message: 'Fdp repond',
 			chatroomId: chatrooms[0].id,
-			sender: users[1],
+			sender: users[1].id,
 			delivered: true,
 		},
 		{
-			id: new Types.ObjectId(),
 			message: 'YO CHECK MON FKNG COB SAL NEG',
 			chatroomId: chatrooms[0].id,
-			sender: users[1],
+			sender: users[1].id,
 			delivered: true,
 		},
 		{
-			id: new Types.ObjectId(),
 			message: 'BDV JVAIS PULL UP TA CAILLE',
 			chatroomId: chatrooms[0].id,
-			sender: users[1],
+			sender: users[1].id,
 			delivered: true,
 		},
 		{
-			id: new Types.ObjectId(),
 			message: 'Ayt on te kimb ma neg. T ded',
 			chatroomId: chatrooms[0].id,
-			sender: users[1],
+			sender: users[1].id,
 			delivered: true,
 		},
 		{
-			id: new Types.ObjectId(),
 			message: 'Xplik',
 			chatroomId: chatrooms[0].id,
-			sender: users[0],
+			sender: users[0].id,
 			delivered: true,
-		},
-	])
-
-	await Notification.insertMany([
-		{
-			id: new Types.ObjectId(),
-			created: Date.now(),
-			isRead: false,
-			message: 'This is a system notification',
-			receiver: users[2],
-			type: 'system',
-		},
-		{
-			id: new Types.ObjectId(),
-			created: Date.now(),
-			isRead: false,
-			message: 'This is a global notification',
-			receiver: users[2],
-			type: 'global',
-		},
-		{
-			id: new Types.ObjectId(),
-			created: Date.now(),
-			isRead: false,
-			message: 'This is a user notification',
-			receiver: users[2],
-			sender: users[0],
-			type: 'user',
 		},
 	])
 

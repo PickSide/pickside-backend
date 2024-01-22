@@ -1,5 +1,6 @@
 import User, { ACCOUNT_TYPE, DEFAULT_USER_PERMISSIONS, ROLES } from '../schemas/User'
 
+import { UserModel } from '@schemas'
 import { hashSync } from 'bcrypt'
 
 interface UserProps {
@@ -13,23 +14,21 @@ export function createUser(props: UserProps[]) {
 	return Promise.all(
 		props.map(
 			async ({ fullName, username, preferredLocale, preferredSport }) =>
-				await User.create({
+				await UserModel.create({
 					accountType: ACCOUNT_TYPE.DEFAULT,
 					attendedEventsCount: 0,
 					avatar: undefined,
 					bio: 'A bio',
 					city: 'string',
-					email: `${fullName.trim()}@gmail.com`,
+					email: `${username}@gmail.com`,
 					fullName,
 					fitnessLevel: 'average',
-					groups: [],
 					joinDate: new Date().toISOString(),
 					localeRegion: 'montreal',
 					locationCommonlyPlayedIn: 'montreal',
 					matchOrganizedCount: 0,
 					matchPlayedCount: 0,
 					password: hashSync('123', 10),
-					permissions: DEFAULT_USER_PERMISSIONS,
 					phone: '514-966-8481',
 					preferredLocale,
 					preferredSport,

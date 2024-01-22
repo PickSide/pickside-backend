@@ -1,3 +1,4 @@
+import { ACCOUNT_TYPE, GOOGLE_USER_PERMISSIONS, GUEST_USER_PERMISSIONS, ROLES, User } from '@schemas/User'
 import {
 	AppContext,
 	FailReason,
@@ -6,35 +7,70 @@ import {
 	SendSuccessPayloadResponse,
 	SendSuccessResponseMessage,
 	Status,
-	addToBlacklist,
-	generateAT,
-	generateRT,
-	getTokenClaims,
-} from '../utils'
+} from '@utils'
+import { LocaleModel, OnlineUserModel, UserModel } from '@schemas'
 import { Request, Response } from 'express'
-import User, { ACCOUNT_TYPE, GOOGLE_USER_PERMISSIONS, GUEST_USER_PERMISSIONS, ROLES } from '../schemas/User'
 
-import Locale from '../schemas/Locale'
-import { compare } from 'bcrypt'
 import crypto from 'crypto'
 import nodemailer from 'nodemailer'
-import { omit } from 'lodash'
+import { setRefreshAndAccessTokens } from '@utils/token'
 
-const cookieOpts = {
-	sameSite: true,
-	httpOnly: true,
+export const login = async (req: Request, res: Response) => {
+	const { username: usernameOrEmail, password } = req.body.data
+
+	const user = await UserModel
+		.findOne({ $or: [{ username: usernameOrEmail }, { email: usernameOrEmail }] })
+		.exec()
+
+	if (!user || !user.validatePassword(password)) {
+		return SendErrorResponse({
+			context: AppContext.User,
+			failReason: FailReason.UserWrongCredentials,
+			jobStatus: 'FAILED',
+			jobType: JobType.Login,
+			message: 'Username/Email or Password is incorrect.',
+			res,
+			status: Status.Unauthorized,
+		})
+	}
+
+	if (user.inactive) {
+		sendActivationEmail(user)
+
+		return SendErrorResponse({
+			context: AppContext.User,
+			extra: { userId: user.id },
+			failReason: FailReason.UserInactive,
+			jobStatus: 'FAILED',
+			jobType: JobType.Login,
+			message: 'This user is inactive.',
+			res,
+			status: Status.Unauthorized,
+		})
+	}
+
+	await setRefreshAndAccessTokens(user, res)
+	await OnlineUserModel.addAsOnlineIfNotPresent(user)
+
+	return SendSuccessPayloadResponse({
+		context: AppContext.User,
+		jobType: JobType.Login,
+		payload: { result: user },
+		redirectUri: '/',
+		res,
+		status: Status.Ok,
+	})
 }
 
 export const loginWithGoogle = async (req: Request, res: Response) => {
 	const { email, name, locale, picture, verified_email } = req.body.data
-
-	let user = await User.findOne({ email })
-
-	const preferredLocale = await Locale.findOne({ value: locale })
+	const preferredLocale = await LocaleModel.findOne({ value: locale })
 	const username = 'user' + crypto.randomBytes(8).toString('base64')
 
+	let user = await UserModel.findByEmail(email)
+
 	if (!user) {
-		user = await User.create({
+		user = await UserModel.create({
 			accountType: ACCOUNT_TYPE.GOOGLE,
 			avatar: picture,
 			email,
@@ -62,113 +98,13 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
 		})
 	}
 
-	const claims = getTokenClaims(user)
-	const accessToken = generateAT(claims)
-	const refreshToken = generateRT(claims)
-
-	res.cookie('accessToken', accessToken, {
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: 300000, //5 mins
-		...cookieOpts
-	})
-
-	res.cookie('refreshToken', refreshToken, {
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: 3.154e10, //1 year
-		...cookieOpts
-	})
-
-	await addToBlacklist(accessToken)
-	await addToBlacklist(refreshToken)
+	await setRefreshAndAccessTokens(user, res)
+	await OnlineUserModel.addAsOnlineIfNotPresent(user)
 
 	return SendSuccessPayloadResponse({
 		context: AppContext.User,
 		jobType: JobType.Login,
-		payload: {
-			user: omit(user, ['password']),
-			accessToken,
-			refreshToken,
-		},
-		redirectUri: '/',
-		res,
-		status: Status.Ok,
-	})
-}
-
-export const login = async (req: Request, res: Response) => {
-	const { username: usernameOrEmail, password } = req.body.data
-	const user = await User.findOne({
-		$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
-	})
-		.populate(['preferredLocale', 'preferredRegion', 'preferredSport', 'groups'])
-		.exec()
-
-	if (!usernameOrEmail || !password || !user) {
-		return SendErrorResponse({
-			context: AppContext.User,
-			failReason: FailReason.UserWrongCredentials,
-			jobStatus: 'FAILED',
-			jobType: JobType.Login,
-			message: 'Username/Email or Password is incorrect.',
-			res,
-			status: Status.Unauthorized,
-		})
-	}
-
-	const match = await compare(password, user?.password)
-
-	if (!match) {
-		return SendErrorResponse({
-			context: AppContext.User,
-			failReason: FailReason.UserWrongCredentials,
-			jobStatus: 'FAILED',
-			jobType: JobType.Login,
-			message: 'Username/Email or Password is incorrect.',
-			res,
-			status: Status.Unauthorized,
-		})
-	}
-
-	if (user.inactive) {
-		sendActivationEmail(user)
-
-		return SendErrorResponse({
-			context: AppContext.User,
-			extra: { userId: user.id },
-			failReason: FailReason.UserInactive,
-			jobStatus: 'FAILED',
-			jobType: JobType.Login,
-			message: 'This user is inactive.',
-			res,
-			status: Status.Unauthorized,
-		})
-	}
-
-	const claims = getTokenClaims(user)
-	const refreshToken = generateRT(claims)
-	const accessToken = generateAT(claims)
-
-	addToBlacklist(refreshToken)
-	addToBlacklist(accessToken)
-
-	res.cookie('accessToken', accessToken, {
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: 5000,//300000, //5 mins
-		...cookieOpts
-	})
-
-	res.cookie('refreshToken', refreshToken, {
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: 3.154e10, //1 year
-		...cookieOpts
-	})
-
-	delete user['password']
-
-	return SendSuccessPayloadResponse({
-		context: AppContext.User,
-		jobType: JobType.Login,
-		payload: { user },
+		payload: { result: user },
 		redirectUri: '/',
 		res,
 		status: Status.Ok,
@@ -178,32 +114,19 @@ export const login = async (req: Request, res: Response) => {
 export const loginAsGuest = async (req: Request, res: Response) => {
 	const username = 'guest' + crypto.randomBytes(8).toString('base64')
 
-	const guestUser = new User({
+	const guestUser = new UserModel({
 		accountType: ACCOUNT_TYPE.GUEST,
 		permissions: GUEST_USER_PERMISSIONS,
 		username,
 	})
 
-	const claims = getTokenClaims(guestUser)
-	const accessToken = generateAT(claims)
-	const refreshToken = generateRT(claims)
-
-	res.cookie('accessToken', accessToken, {
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: 300000, //5 mins
-		...cookieOpts
-	})
-
-	res.cookie('refreshToken', refreshToken, {
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: 3.154e10, //1 year
-		...cookieOpts
-	})
+	await setRefreshAndAccessTokens(guestUser, res)
+	await OnlineUserModel.addAsOnlineIfNotPresent(guestUser)
 
 	return SendSuccessPayloadResponse({
 		context: AppContext.User,
 		jobType: JobType.Login,
-		payload: { user: guestUser, accessToken, refreshToken },
+		payload: { result: guestUser },
 		redirectUri: '/',
 		res,
 		status: Status.Ok,
@@ -211,8 +134,26 @@ export const loginAsGuest = async (req: Request, res: Response) => {
 }
 
 export const logout = async (req: Request, res: Response) => {
+	const { userId = null } = req.body.data
+
 	res.clearCookie('accessToken')
 	res.clearCookie('refreshToken')
+
+	const user = await UserModel.findById(userId).exec()
+
+	if (!user) {
+		return SendErrorResponse({
+			context: AppContext.User,
+			failReason: FailReason.UserLogout,
+			jobStatus: 'FAILED',
+			jobType: JobType.Logout,
+			message: 'Something went wrong logging out. Please refresh your page.',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+
+	await OnlineUserModel.removeIfPresent(user)
 
 	return SendSuccessResponseMessage({
 		context: AppContext.User,
@@ -223,6 +164,8 @@ export const logout = async (req: Request, res: Response) => {
 		status: Status.Ok,
 	})
 }
+
+
 
 function sendActivationEmail(user) {
 	const transporter = nodemailer.createTransport({

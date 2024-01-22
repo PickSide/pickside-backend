@@ -3,29 +3,38 @@ import {
 	AppContext,
 	FailReason,
 	JobType,
-	ParticipantAlreadyRegistered,
-	ParticipantSuccessfullyRegistered,
 	SendErrorResponse,
-	SendResponse,
 	SendSuccessListPayloadResponse,
 	SendSuccessPayloadResponse,
 	Status,
 } from '../utils/responses'
+import { ActivityModel, UserModel } from '@schemas'
 import { Request, Response } from 'express'
 
-import Activity from '../schemas/Activity'
-import User from '../schemas/User'
-
+/**
+ * @description - Gets list of all activities
+ * @param req - Request's object
+ * @param res - Response's object
+ * @returns - Payload with the activities
+ */
 export const getAllActivities = async (req: Request, res: Response) => {
-	const activities = await Activity.find()
+	const activities = await ActivityModel.find()
 		.populate([
-			{ path: 'organizer', select: { id: 1, fullName: 1, username: 1, avatar: 1 } },
-			{ path: 'participants', select: { fullName: 1, username: 1, avatar: 1 } },
+			{ path: 'organizer', select: 'fullName username avatar' },
+			{ path: 'participants', select: 'fullName username avatar' },
 			'sport',
 		])
 		.exec()
+
 	return SendSuccessListPayloadResponse({ res, results: activities, status: Status.Ok })
 }
+
+/**
+ * @description - Creates an activity
+ * @param req - Request's object
+ * @param res - Response's object
+ * @returns - Payload with the created activity
+ */
 export const createActivity = async (req: Request, res: Response) => {
 	const {
 		address,
@@ -42,9 +51,11 @@ export const createActivity = async (req: Request, res: Response) => {
 		isPrivate,
 	} = req.body.data
 
-	const organizer = await User.findById({ _id: organizerId }, { fullName: 1, username: 1, reliability: 1 })
+	const organizer = await UserModel
+		.findById(organizerId)
+		.select('fullName username email reliability')
 
-	const activity = await Activity.create({
+	const activity = await ActivityModel.create({
 		address,
 		date,
 		maxPlayers,
@@ -63,30 +74,16 @@ export const createActivity = async (req: Request, res: Response) => {
 		res,
 		status: Status.Created,
 		message: ActivityCreatedSuccess.message,
-		payload: { result: { activity } },
+		payload: { result: activity },
 	})
 }
-export const getActivityById = async (req: Request, res: Response) => { }
-export const updateActivityById = async (req: Request, res: Response) => {
-	const { activityId } = req.params
-	const { userId } = req.body.data
 
-	const participants = await Activity.findById({ id: activityId })
-		.exec()
-		.then((response) => response?.participants)
-
-	if (participants?.includes(userId)) {
-		return SendResponse(res, Status.Conflict, ParticipantAlreadyRegistered)
-	}
-
-	participants?.push(userId)
-
-	const updated = await Activity.findOneAndUpdate({ id: activityId }, { participants }, { new: true }).exec()
-
-	return SendResponse(res, Status.Ok, { ...ParticipantSuccessfullyRegistered, response: updated, status: 'Registered' })
-}
-export const removeActivityById = async (req: Request, res: Response) => { }
-export const getActivityByGroupId = async (req: Request, res: Response) => { }
+/**
+ * @description - Updates the user's favorites
+ * @param req - Request's object
+ * @param res - Response's object
+ * @returns - Payload with an array of the user's favorites
+ */
 export const updateFavorites = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
 
@@ -102,15 +99,18 @@ export const updateFavorites = async (req: Request, res: Response) => {
 		})
 	}
 
-	const user = await User.findById(userId).exec()
+	const user = await UserModel.findById(userId).exec()
 
 	if (user) {
-		const idx = user.favorites.findIndex((favId) => favId == req.params.activityId)
+		const idx = user.favorites?.findIndex((favId) => favId.id == req.params.activityId) || -1
 
-		if (idx === -1) {
-			user.favorites.push(req.params.activityId)
+		if (idx > -1) {
+			user.favorites?.splice(idx, 1)
 		} else {
-			user.favorites.splice(idx, 1)
+			const activity = await ActivityModel.findById(req.params.activityId)
+			if (activity) {
+				user.favorites?.push(activity)
+			}
 		}
 
 		await user.save()
@@ -127,6 +127,13 @@ export const updateFavorites = async (req: Request, res: Response) => {
 		})
 	}
 }
+
+/**
+ * @description Registers a participant to an activity
+ * @param req - Request's object
+ * @param res - Response's object
+ * @returns - Payload with an array of the activity's participants
+ */
 export const registerParticipant = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
 
@@ -154,12 +161,12 @@ export const registerParticipant = async (req: Request, res: Response) => {
 		})
 	}
 
-	const user = await User.findById(userId).exec()
-	const activity = await Activity.findById(req.params.activityId)
+	const user = await UserModel.findById(userId).exec()
+	const activity = await ActivityModel.findById(req.params.activityId)
 		.populate({ path: 'participants', select: { id: 1 } })
 		.exec()
-	//@ts-ignore
-	const isUserRegistered = activity?.participants.some((participant) => participant.equals(userId))
+
+	const isUserRegistered = activity?.participants.some((participant) => participant.id === userId)
 
 	if (!activity) {
 		return SendErrorResponse({
@@ -197,7 +204,7 @@ export const registerParticipant = async (req: Request, res: Response) => {
 		})
 	}
 
-	activity.participants.push(user)
+	activity.participants?.push(user)
 
 	await activity.save()
 
@@ -212,6 +219,13 @@ export const registerParticipant = async (req: Request, res: Response) => {
 		},
 	})
 }
+
+/**
+ * @description Unregisters a participant from an activity
+ * @param req - Request's object
+ * @param res - Response's object
+ * @returns - Payload with an array of the activity's participants
+ */
 export const unregisterParticipant = async (req: Request, res: Response) => {
 	const { userId } = req.body.data
 
@@ -239,9 +253,9 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		})
 	}
 
-	const activity = await Activity.findById(req.params.activityId).exec()
-	const user = await User.findById(userId).exec()
-	const isUserRegistered = activity?.participants.some((participant) => participant.equals(userId))
+	const activity = await ActivityModel.findById(req.params.activityId).exec()
+	const user = await UserModel.findById(userId).exec()
+	const isUserRegistered = activity?.participants?.some((participant) => participant.id === userId)
 
 	if (!activity) {
 		return SendErrorResponse({
@@ -279,9 +293,9 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		})
 	}
 
-	const activityParticipantIdx = activity.participants.findIndex((participant) => participant === user.id)
+	const activityParticipantIdx = activity.participants?.findIndex((participant) => participant === user.id) || -1
 
-	activity.participants.splice(activityParticipantIdx, 1)
+	activity.participants?.splice(activityParticipantIdx, 1)
 
 	await activity.save()
 
@@ -296,8 +310,15 @@ export const unregisterParticipant = async (req: Request, res: Response) => {
 		},
 	})
 }
+
+/**
+ * @description Returns a user's favorites
+ * @param req - Request's object
+ * @param res - Response's object
+ * @returns - Payload with an array of the user's favorites
+ */
 export const getUserFavorites = async (req: Request, res: Response) => {
-	const user = await User.findById(req.params.userId).populate('favorites')
+	const user = await UserModel.findById(req.params.userId).populate('favorites')
 
 	if (!user) {
 		return SendErrorResponse({
@@ -326,10 +347,6 @@ export const getUserFavorites = async (req: Request, res: Response) => {
 export default {
 	getAllActivities,
 	createActivity,
-	getActivityById,
-	updateActivityById,
-	removeActivityById,
-	getActivityByGroupId,
 	updateFavorites,
 	registerParticipant,
 	unregisterParticipant,

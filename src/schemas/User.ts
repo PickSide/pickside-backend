@@ -1,6 +1,10 @@
-import { Schema, model } from 'mongoose'
+import { Document, Model, Schema, model } from 'mongoose'
+import { compare, hash, } from 'bcrypt'
 
-import { schemaProps } from '../utils/databaseUtils'
+import { Activity } from './Activity'
+import { Group } from './Group'
+import { Sport } from './Sport'
+import { schemaProps } from '../utils'
 
 export enum ACCOUNT_TYPE {
 	GOOGLE = 'google',
@@ -13,6 +17,21 @@ export enum ACCOUNT_TYPE {
 export enum ROLES {
 	ADMIN = 'admin',
 	USER = 'user',
+}
+
+export enum LOCALES {
+	EN = 'en',
+	FR = 'fr'
+}
+
+export enum SEXES {
+	MALE = 'male',
+	FEMALe = 'female'
+}
+
+export enum THEMES {
+	LIGHT = 'light',
+	DARK = 'dark'
 }
 
 export enum USER_PERMISSIONS {
@@ -37,7 +56,7 @@ export enum GROUP_ROLES {
 	MEMBER = 'member',
 }
 
-const GUEST_PERMISSIONS = [
+const BASE_PERMISSIONS = [
 	USER_PERMISSIONS.ACTIVITIES_VIEW,
 	USER_PERMISSIONS.NOTIFICATIONS_RECEIVE,
 	USER_PERMISSIONS.GOOGLE_SEARCH,
@@ -54,16 +73,71 @@ const REGISTERED_USER = [
 	USER_PERMISSIONS.NOTIFICATIONS_RECEIVE,
 	USER_PERMISSIONS.SEND_MESSAGES,
 ]
-export const GUEST_USER_PERMISSIONS = GUEST_PERMISSIONS
-export const GOOGLE_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
-export const FACEBOOK_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
-export const APPLE_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
-export const DEFAULT_USER_PERMISSIONS = [...GUEST_PERMISSIONS, ...REGISTERED_USER]
+export const GUEST_USER_PERMISSIONS = BASE_PERMISSIONS
+export const GOOGLE_USER_PERMISSIONS = [...BASE_PERMISSIONS, ...REGISTERED_USER]
+export const FACEBOOK_USER_PERMISSIONS = [...BASE_PERMISSIONS, ...REGISTERED_USER]
+export const APPLE_USER_PERMISSIONS = [...BASE_PERMISSIONS, ...REGISTERED_USER]
+export const DEFAULT_USER_PERMISSIONS = [...BASE_PERMISSIONS, ...REGISTERED_USER]
 
-export const UserSchema = new Schema(
+export type ProfilePrivacy = {
+	allowLocationTracking?: boolean
+	showAge?: boolean
+	showEmail?: boolean
+	showPhone?: boolean
+	showGroups?: boolean
+}
+
+export type User = {
+	id?: string
+	accountType: ACCOUNT_TYPE
+	avatar?: string
+	bio?: string
+	city?: string
+	email: string
+	emailVerified?: boolean
+	favorites?: Activity[]
+	fullName: string
+	groups?: Group[]
+	inactive?: boolean
+	inactiveDate?: Date
+	joinDate?: Date
+	localeRegion?: google.maps.places.PlaceResult
+	locationCommonlyPlayedIn?: google.maps.places.PlaceResult
+	locationTracking?: boolean
+	matchOrganizedCount?: number
+	matchPlayedCount?: number
+	password: string
+	permissions?: USER_PERMISSIONS[]
+	phone?: string
+	preferredLocale?: LOCALES
+	preferredRegion?: google.maps.places.PlaceResult
+	preferredSport?: Sport
+	preferredTheme?: THEMES
+	profilePrivacy?: ProfilePrivacy
+	reliability?: number
+	role?: ROLES
+	sexe: SEXES
+	socialNetworks?: any[]
+	timezone?: string
+	username: string
+
+}
+
+export type UserDocument = User & Document & {
+	encryptPassword(pwd: string): Promise<void>
+	validatePassword(unhashedPwd: string): boolean
+}
+
+export type UserModel = Model<UserDocument> & {
+	findByUsername(username: string): Promise<UserDocument>
+	findByEmail(email: string): Promise<UserDocument>
+	findByEmailAndUsername(email: string, username: string): Promise<UserDocument>
+	findByEmailOrUsername(email: string, username: string): Promise<UserDocument>
+}
+
+const UserSchema: Schema<UserDocument> = new Schema(
 	{
 		accountType: { type: String, require: true },
-		attendedEventsCount: { type: String, require: false },
 		avatar: { type: String, require: false },
 		bio: { type: String, require: false },
 		city: { type: String, require: false },
@@ -71,7 +145,6 @@ export const UserSchema = new Schema(
 		emailVerified: { type: Boolean, default: false, require: true },
 		favorites: { type: [Schema.Types.ObjectId], ref: 'Activity', require: false },
 		fullName: { type: String, require: false },
-		fitnessLevel: { type: String, default: 'average', require: false },
 		groups: { type: [Schema.Types.ObjectId], ref: 'Group', require: false },
 		inactive: { type: Boolean, default: false, require: false },
 		inactiveDate: { type: Date, default: null, require: false },
@@ -82,9 +155,9 @@ export const UserSchema = new Schema(
 		matchOrganizedCount: { type: Number, require: false },
 		matchPlayedCount: { type: Number, require: false },
 		password: { type: String, require: false },
-		permissions: [{ type: String, require: true }],
+		permissions: { type: [String], enum: USER_PERMISSIONS, default: DEFAULT_USER_PERMISSIONS, require: false },
 		phone: { type: String, require: false },
-		preferredLocale: { type: Schema.Types.ObjectId, ref: 'Locale', require: false },
+		preferredLocale: { type: String, enum: LOCALES, default: 'en' },
 		preferredSport: { type: Schema.Types.ObjectId, ref: 'Sport', require: false },
 		preferredTheme: { type: String, default: 'light', require: false },
 		preferredRegion: { type: String, require: false },
@@ -95,65 +168,30 @@ export const UserSchema = new Schema(
 			showPhone: { type: Boolean, default: false, require: false },
 			showGroups: { type: Boolean, default: true, require: false },
 		},
-		reasonsForJoining: { type: [String], require: false },
 		reliability: { type: Number, require: false },
 		role: { type: String, require: true },
-		sexe: { type: String, default: 'male', require: false },
+		sexe: { type: String, require: false },
 		socialNetworks: { type: [String], require: false },
-		subscriptionType: { type: String, require: false },
 		timezone: { type: String, require: false },
 		username: { type: String, require: false },
-		zip: { type: String, require: false },
 	},
 	{
 		...schemaProps,
 	},
 )
 
-export interface IUser extends Document {
-	id: string
-	accountType: ACCOUNT_TYPE
-	attendedEventsCount: number
-	avatar: string
-	bio: string
-	city: string
-	email: string
-	emailVerified: boolean
-	favorites: any[]
-	fullName: string
-	fitnessLevel: 'retired' | 'average' | 'athletic' | 'very athletic'
-	groups: any[]
-	inactive: boolean
-	inactiveDate: Date
-	joinDate: Date
-	localeRegion: string
-	locationCommonlyPlayedIn: string
-	locationTracking: boolean
-	matchOrganizedCount: number
-	matchPlayedCount: number
-	password?: string
-	permissions: [USER_PERMISSIONS]
-	phone: string
-	preferredLocale: any
-	preferredRegion?: any
-	preferredSport: any
-	preferredTheme: 'light' | 'dark'
-	profilePrivacy: {
-		allowLocationTracking: boolean
-		showAge: boolean
-		showEmail: boolean
-		showPhone: boolean
-		showGroups: boolean
+UserSchema.pre('save', async function (next) {
+	if (this.isNew) {
+		this.password = await hash(this.password, 10)
 	}
-	reasonsForJoining: string[]
-	reliability: number
-	role: ROLES
-	sexe: 'male' | 'female'
-	socialNetworks: any[]
-	subscriptionType: string
-	timezone: string
-	username: string
-	zip: string
-}
+	next()
+})
 
-export default model<IUser>('User', UserSchema)
+UserSchema.method('encryptPassword', async function (pwd) {
+	this.password = await hash(pwd, 10)
+})
+UserSchema.method('validatePassword', async function (unhashed) {
+	return await compare(unhashed, this.password)
+})
+
+export default model<UserDocument, UserModel>('User', UserSchema)

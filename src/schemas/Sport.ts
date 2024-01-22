@@ -1,8 +1,22 @@
-import { Schema, model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
 import { schemaProps } from '../utils'
 
-export const SportSchema = new Schema(
+export type Sport = Document & {
+	id?: string
+	featureAvailable: boolean
+	modes?: SportMode[]
+	name: string
+	value: string
+}
+
+export type SportMode = {
+	defaultMaxPlayers: number
+	name: string
+	value: string
+}
+
+const SportSchema = new Schema(
 	{
 		featureAvailable: { type: Boolean, require: true },
 		name: { type: String, require: true },
@@ -20,18 +34,4 @@ export const SportSchema = new Schema(
 	},
 )
 
-export interface ISport extends Document {
-	featureAvailable: boolean
-	modes: Mode[]
-	name: string
-	value: string
-}
-
-export interface Mode {
-	defaultMaxPlayers: number
-	description: string
-	name: string
-	value: string
-}
-
-export default model<ISport>('Sport', SportSchema)
+export default model<Sport>('Sport', SportSchema)

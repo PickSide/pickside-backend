@@ -1,19 +1,36 @@
-import { Schema, model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
-import { IUser } from './User'
-import dayjs from 'dayjs'
+import { User } from './User'
 import { schemaProps } from '../utils'
 
-export type NotificationType = 'system' | 'global' | 'like' | 'group-invite' | 'message-reminder' | 'friend-invite'
+export enum NOTIFICATIONS {
+	SYSTEM = 'system',
+	GLOBAL = 'global',
+	LIKE = 'like',
+	GROUP_INVITE = 'group-invite',
+	MESSAGE_REMINDER = 'message-reminder',
+	FRIEND_INVITE = 'friend-invite'
+}
 
-export const NotificationSchema = new Schema(
+export type Notification = Document & {
+	id?: string
+	expires: Date
+	isRead: boolean
+	message: string
+	receiver: User
+	sender: User
+	type: NOTIFICATIONS
+	extra?: any
+}
+
+const NotificationSchema = new Schema(
 	{
 		created: { type: String, require: true },
 		expires: { type: Date, require: true },
-		isRead: { type: Boolean, require: false },
+		isRead: { type: Boolean, default: false },
 		message: { type: String, require: true },
-		receiver: { type: Schema.Types.ObjectId, ref: 'User', require: false },
-		sender: { type: Schema.Types.ObjectId, ref: 'User', require: false },
+		receiver: { type: Schema.Types.ObjectId, ref: 'User', require: true },
+		sender: { type: Schema.Types.ObjectId, ref: 'User', require: true },
 		type: { type: String, require: true },
 	},
 	{
@@ -21,14 +38,4 @@ export const NotificationSchema = new Schema(
 	},
 )
 
-export interface INotification extends Document {
-	created: dayjs.Dayjs
-	expires: dayjs.Dayjs
-	isRead: boolean
-	message: string
-	receiver: IUser
-	sender: IUser
-	type: NotificationType
-}
-
-export default model<INotification>('Notification', NotificationSchema)
+export default model<Notification>('Notification', NotificationSchema)

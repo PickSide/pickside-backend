@@ -1,10 +1,18 @@
-import { Schema, model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
-import { IChatroom } from './Chatroom'
-import { IUser } from './User'
+import { Chatroom } from './Chatroom'
+import { User } from './User'
 import { schemaProps } from '../utils'
 
-export const MessageSchema = new Schema(
+export type Message = Document & {
+	id: string
+	message: string
+	chatroomId: Chatroom
+	sender: User
+	delivered: boolean
+}
+
+const MessageSchema = new Schema(
 	{
 		message: { type: String, require: true },
 		chatroomId: { type: Schema.Types.ObjectId, ref: 'Chatroom', require: true },
@@ -17,11 +25,4 @@ export const MessageSchema = new Schema(
 	},
 )
 
-export interface IMessage extends Document {
-	message: string
-	chatroomId: IChatroom
-	sender: IUser
-	delivered: boolean
-}
-
-export default model<IMessage>('Message', MessageSchema)
+export default model<Message>('Message', MessageSchema)
