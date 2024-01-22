@@ -1,19 +1,18 @@
+import { ACCOUNT_TYPE, GOOGLE_USER_PERMISSIONS, ROLES } from '@schemas/User'
 import {
 	AppContext,
 	FailReason,
 	JobType,
 	SendErrorResponse,
 	Status,
-	addToBlacklist,
-	generateAT,
-	getTokenClaims,
-	isBlackListed,
+	regenAccessToken,
 	secrets,
-} from '../utils'
+} from '@utils'
+import { LocaleModel, UserModel } from '@schemas'
 import { NextFunction, Request, Response } from 'express'
 import { decode, verify } from 'jsonwebtoken'
 
-import User from '../schemas/User'
+import crypto from 'crypto'
 
 export async function validateAccessToken(req: Request, res: Response, next: NextFunction) {
 	const { accessToken = null, refreshToken = null } = req.cookies
@@ -55,28 +54,40 @@ export async function validateAccessToken(req: Request, res: Response, next: Nex
 			await regenAccessToken(payload, res)
 		}
 	}
+
 	next()
 }
 
-const regenAccessToken = async (payload, res) => {
-	const user = await User.findById(payload?.sub).exec()
-	const claims = getTokenClaims(user)
-	let newAT = generateAT(claims)
+export async function handleGoogleLogin(req: Request, res: Response, next: NextFunction) {
+	const { email, name, locale, picture, verified_email } = req.body.data
+	const preferredLocale = await LocaleModel.findOne({ value: locale })
+	const username = 'user' + crypto.randomBytes(8).toString('base64')
 
-	while (!isBlackListed(newAT)) {
-		newAT = generateAT(claims)
+	let user = await UserModel.findByEmail(email)
+
+	if (!user) {
+		user = await UserModel.create({
+			accountType: ACCOUNT_TYPE.GOOGLE,
+			avatar: picture,
+			email,
+			emailVerified: verified_email,
+			preferredLocale,
+			fullName: name,
+			username,
+			permissions: GOOGLE_USER_PERMISSIONS,
+			role: ROLES.USER,
+		})
 	}
 
-	addToBlacklist(newAT)
+	next(user)
+}
 
-	res.cookie('accessToken', newAT, {
-		secure: process.env.NODE_ENV === 'production',
-		maxAge: 5000,//300000,
-		httpOnly: true,
-		sameSite: true
-	})
+export async function handleGuestLogin(req: Request, res: Response, next: NextFunction) {
+
 }
 
 export default {
 	validateAccessToken,
+	handleGoogleLogin,
+	handleGuestLogin
 }

@@ -1,9 +1,27 @@
-import { Schema, model } from 'mongoose'
+import { Document, Schema, model } from 'mongoose'
 
-import { IUser } from './User'
+import { Sport } from './Sport'
+import { User } from './User'
 import { schemaProps } from '../utils'
 
-export const GroupSchema = new Schema(
+export type Group = Document & {
+	id?: string
+	coverPhoto?: string
+	description?: string
+	members: User[]
+	name: string
+	organizer: User
+	requireApproval?: boolean
+	sport: Sport
+	visibility?: VISIBILITY
+}
+
+export enum VISIBILITY {
+	PUBLIC = 'public',
+	PRIVATE = 'private'
+}
+
+const GroupSchema = new Schema(
 	{
 		coverPhoto: { type: Object, require: false },
 		description: { type: String, require: false },
@@ -19,15 +37,4 @@ export const GroupSchema = new Schema(
 	},
 )
 
-export interface IGroup extends Document {
-	coverPhoto: string
-	description: string
-	members: IUser[]
-	name: string
-	organizer: IUser
-	requireApproval: any
-	sport: string
-	visibility: 'public' | 'private'
-}
-
-export default model<IGroup>('Group', GroupSchema)
+export default model<Group>('Group', GroupSchema)

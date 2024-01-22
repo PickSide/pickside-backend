@@ -1,8 +1,6 @@
 import { AppContext, JobType, SendErrorResponse, SendSuccessPayloadResponse, Status } from '../utils'
+import { ChatroomModel, MessageModel } from '@schemas'
 import { Request, Response } from 'express'
-
-import Chatroom from '../schemas/Chatroom'
-import Message from '../schemas/Message'
 
 export const getOrInitializeChatroom = async (req: Request, res: Response) => {
 	const { participants } = req.body.data
@@ -18,7 +16,7 @@ export const getOrInitializeChatroom = async (req: Request, res: Response) => {
 		})
 	}
 
-	const chatroom = await Chatroom.findOne({ participants: { $all: participants } })
+	const chatroom = await ChatroomModel.findOne({ participants: { $all: participants } })
 		.populate('name participants')
 		.exec()
 
@@ -35,7 +33,7 @@ export const getOrInitializeChatroom = async (req: Request, res: Response) => {
 		})
 	}
 
-	const newChatroom = await Chatroom.create({
+	const newChatroom = await ChatroomModel.create({
 		participants,
 	})
 
@@ -57,7 +55,7 @@ export const sendMessageToChatroom = async (req: Request, res: Response) => {
 
 	const { message, chatroomId, sender } = req.body.data
 
-	await Message.create({
+	await MessageModel.create({
 		message,
 		chatroomId,
 		sender,

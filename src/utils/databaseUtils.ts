@@ -1,3 +1,5 @@
+import mongoose from "mongoose"
+
 function getDatabaseURI() {
 	const dbAdminUsername = process.env.DB_ADMIN_USERNAME,
 		dbAdminPassword = process.env.DB_ADMIN_PASSWORD,
@@ -15,17 +17,21 @@ function getDatabaseOptions() {
 	}
 }
 
-export const schemaProps = {
+export const reshapingOptions = {
+	virtuals: true,
+	versionKey: false,
+	transform: function (doc, ret) {
+		ret.id = ret._id
+		delete ret._id
+		return ret;
+	},
+}
+
+export const schemaProps: mongoose.SchemaOptions = {
 	timestamps: true,
 	versionKey: false,
-	toJSON: {
-		transform(doc, ret) {
-			ret.id = ret._id
-			delete ret._id
-			delete ret.__v
-			return ret
-		},
-	},
+	toJSON: reshapingOptions,
+	toObject: reshapingOptions,
 }
 
 export default {

@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io'
 
+import OnlineUser from './schemas/OnlineUser'
 import Routes from './routes'
 import chatroomHandler from './socketHandlers/handlers/chatroomHandler'
 import { config } from 'dotenv'
@@ -14,7 +15,6 @@ import notificationHandler from './socketHandlers/handlers/notificationHandler'
 import swaggerDefinition from './swaggerDefinition'
 import swaggerJsDoc from 'swagger-jsdoc'
 import swaggerUi from 'swagger-ui-express'
-import userHandler from './socketHandlers/handlers/userHandler'
 
 config()
 
@@ -28,9 +28,7 @@ const swaggerSpecs = swaggerJsDoc({
 	apis: ['src/docs/**/*.yaml'],
 })
 
-const { notify } = notificationHandler(io)
 const { handleIncomingMessage } = chatroomHandler(io)
-const { addOnlineUser, removeOnlineUser } = userHandler(io)
 
 const onChatroomConnection = (socket: Socket) => {
 	console.log('chatroom socket connected', socket.id)
@@ -46,17 +44,14 @@ const onChatroomConnection = (socket: Socket) => {
 
 const onGroupConnection = (socket: Socket) => {
 	console.log('group socket open')
-	socket.on('group:create', notify(socket))
 }
 
 const onUserConnection = (socket: Socket) => {
 	console.log('users socket open')
-	socket.on('user:login', addOnlineUser(socket))
-	socket.on('user:logout', removeOnlineUser(socket))
 }
 
 io.of('/chatrooms').on('connection', onChatroomConnection)
-io.of('/groups').on('connection', onGroupConnection)
+// io.of('/groups').on('connection', onGroupConnection)
 io.of('/users').on('connection', onUserConnection)
 
 app
@@ -68,8 +63,35 @@ app
 	.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpecs))
 
 httpServer.listen(process.env.API_SERVER_PORT, () =>
-	console.log('Connected to server on port', process.env.API_SERVER_PORT),
+	console.log('Pickside API service active', process.env.API_SERVER_PORT),
 )
 
 mongoose.set('strictQuery', false)
-mongoose.connect(databaseUtils.getDatabaseURI()).then(() => console.log('Connected to db!'))
+mongoose.connect(databaseUtils.getDatabaseURI())
+mongoose.connection.once('open', async () => {
+	console.log('Connected to db!')
+	const sockets = await io.of('/users').fetchSockets()
+	const groupStreamConnection = mongoose.connection.collection('groups').watch()
+	const onlineUsersStreamConnection = mongoose.connection.collection('onlineusers').watch()
+
+	groupStreamConnection.on('change', (change) => {
+		if (change.operationType === 'insert') {
+			const members = [...change.fullDocument.members.filter(m => m === change.fullDocument.organizer)]
+			if (members.length > 0) {
+				members.forEach((member) => {
+					// const sockets = io.of('/users').sockets.forEach(x => x.)
+					// console.log(sockets)
+				})
+			}
+		}
+	})
+
+	onlineUsersStreamConnection.on('change', (change) => {
+		if (change.operationType === 'insert') {
+			console.log('insert', change.fullDocument._id)
+		}
+		if (change.operationType === 'delete') {
+			console.log('delete', change.documentKey._id)
+		}
+	})
+})

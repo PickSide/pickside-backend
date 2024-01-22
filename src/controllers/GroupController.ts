@@ -9,13 +9,11 @@ import {
 	SendSuccessPayloadResponse,
 	Status,
 } from '../utils/responses'
+import { GroupModel, UserModel } from '@schemas'
 import { Request, Response } from 'express'
 
-import Group from '../schemas/Group'
-import User from '../schemas/User'
-
 export const getAllGroups = async (req: Request, res: Response) => {
-	const groups = await Group.find().populate([
+	const groups = await GroupModel.find().populate([
 		{ path: 'members', select: 'fullName email username avatar' },
 		{ path: 'organizer', select: 'fullName email username avatar' },
 		{ path: 'sport', select: 'name' },
@@ -24,7 +22,7 @@ export const getAllGroups = async (req: Request, res: Response) => {
 	return SendResponse(res, Status.Ok, { results: groups })
 }
 export const getAllGroupsForUserId = async (req: Request, res: Response) => {
-	const user = await User.findById(req.params.userId)
+	const user = await UserModel.findById(req.params.userId)
 
 	if (!user) {
 		return SendErrorResponse({
@@ -38,16 +36,16 @@ export const getAllGroupsForUserId = async (req: Request, res: Response) => {
 		})
 	}
 
-	const groups = await Group.find({ organizer: { $eq: user.id } })
+	const groups = await GroupModel.find({ organizer: { $eq: user.id } })
 		.populate('organizer members sport')
 		.exec()
 
 	return SendResponse(res, Status.Ok, { results: groups })
 }
-export const notificationHandler = async (req: Request, res: Response) => {
+export const createGroup = async (req: Request, res: Response) => {
 	const { description, members, name, requireApproval, sport, organizer, visibility } = req.body.data
 
-	await Group.create({
+	await GroupModel.create({
 		description,
 		members,
 		name,
@@ -57,7 +55,7 @@ export const notificationHandler = async (req: Request, res: Response) => {
 		visibility,
 	})
 		.then(async (createdGroup) => {
-			const updatedUser = await User.findByIdAndUpdate(
+			const updatedUser = await UserModel.findByIdAndUpdate(
 				organizer,
 				{ $push: { groups: createdGroup } },
 				{ upsert: true, new: true },
@@ -65,7 +63,7 @@ export const notificationHandler = async (req: Request, res: Response) => {
 			return { createdGroup, updatedUser }
 		})
 		.then(({ createdGroup, updatedUser }) => {
-			if (updatedUser.groups.includes(createdGroup.id)) {
+			if (updatedUser.groups?.includes(createdGroup.id)) {
 				return SendSuccessPayloadResponse({
 					res,
 					status: Status.Created,
@@ -101,16 +99,46 @@ export const notificationHandler = async (req: Request, res: Response) => {
 			}),
 		)
 }
-export const getByGroupdId = async (req: Request, res: Response) => {}
-export const updateGroupById = async (req: Request, res: Response) => {}
+export const joinGroup = async (req: Request, res: Response) => {
+	const { groupId = null, userId = null } = req.body
+
+	if (!groupId || !userId) {
+		return SendErrorResponse({
+			context: AppContext.Group,
+			failReason: FailReason.GroupJoiningError,
+			jobStatus: 'FAILED',
+			jobType: JobType.JoinGroup,
+			message: 'Wrong payload',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+}
+export const leaveGroup = async (req: Request, res: Response) => {
+	const { groupId = null, userId = null } = req.body
+
+	if (!groupId || !userId) {
+		return SendErrorResponse({
+			context: AppContext.Group,
+			failReason: FailReason.GroupLeavingError,
+			jobStatus: 'FAILED',
+			jobType: JobType.LeaveGroup,
+			message: 'Wrong payload',
+			res,
+			status: Status.BadRequest,
+		})
+	}
+}
+export const getByGroupdId = async (req: Request, res: Response) => { }
+export const updateGroupById = async (req: Request, res: Response) => { }
 export const deleteGroupById = async (req: Request, res: Response) => {
 	const groupId = req.params.groupId
 	const organizerId = req.body.organizerId
 
-	const group = await Group.find({ id: { $eq: groupId }, organizer: { $eq: organizerId } })
+	const group = await GroupModel.find({ id: { $eq: groupId }, organizer: { $eq: organizerId } })
 
 	if (group) {
-		await Group.findByIdAndRemove(groupId)
+		await GroupModel.findByIdAndDelete(groupId)
 			.exec()
 			.then(() =>
 				SendSuccessPayloadResponse({
@@ -147,10 +175,12 @@ export const deleteGroupById = async (req: Request, res: Response) => {
 }
 
 export default {
+	createGroup,
+	deleteGroupById,
 	getAllGroups,
 	getAllGroupsForUserId,
-	notificationHandler,
 	getByGroupdId,
+	joinGroup,
+	leaveGroup,
 	updateGroupById,
-	deleteGroupById,
 }

@@ -1,9 +1,11 @@
-import Message, { IMessage } from '../../schemas/Message'
 import { Server, Socket } from 'socket.io'
 
+import { Message } from '@schemas/Message'
+import { MessageModel } from '@schemas'
+
 export default (io: Server) => {
-	const handleIncomingMessage = (socket: Socket) => async (payload: Partial<IMessage>) => {
-		await Message.create(payload)
+	const handleIncomingMessage = (socket: Socket) => async (payload: Partial<Message>) => {
+		await MessageModel.create(payload)
 			.then(() => {
 				socket.rooms.forEach((room) => {
 					if (room === `room-${payload.chatroomId}`) {
