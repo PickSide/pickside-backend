@@ -1,8 +1,8 @@
 import { ActivityModel, ChatroomModel, LocaleModel, MessageModel, OnlineUserModel, SportModel, TokenModel, UserModel } from '@schemas'
-import { Connection, connect } from 'mongoose'
+import { Connection, Types, connect } from 'mongoose'
 import { _toCoordsObj, createUser } from './helper'
 
-import { LOCALES } from '@schemas/User'
+import Locale from '@schemas/Locale'
 import { config } from 'dotenv'
 import databaseUtils from '../utils/databaseUtils'
 
@@ -74,7 +74,16 @@ async function populateCollections() {
 		},
 	])
 
-	const locales = [LOCALES.EN, LOCALES.FR]
+	const locales = await Locale.insertMany([
+		{
+			id: new Types.ObjectId(),
+			value: 'en',
+			description: 'English (US)',
+			flagCode: 'us',
+		},
+		{ id: new Types.ObjectId(), value: 'fr', description: 'Français (France)', flagCode: 'fr' },
+	])
+
 	const users = await createUser([
 		{
 			fullName: 'Tony Hakim',

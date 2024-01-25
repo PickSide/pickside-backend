@@ -157,7 +157,7 @@ const UserSchema: Schema<UserDocument> = new Schema(
 		password: { type: String, require: false },
 		permissions: { type: [String], enum: USER_PERMISSIONS, default: DEFAULT_USER_PERMISSIONS, require: false },
 		phone: { type: String, require: false },
-		preferredLocale: { type: String, enum: LOCALES, default: 'en' },
+		preferredLocale: { type: Schema.Types.ObjectId, ref: 'Locale', require: false },
 		preferredSport: { type: Schema.Types.ObjectId, ref: 'Sport', require: false },
 		preferredTheme: { type: String, default: 'light', require: false },
 		preferredRegion: { type: String, require: false },
