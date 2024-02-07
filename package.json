@@ -6,7 +6,9 @@
 	"scripts": {
 		"dev": "concurrently --kill-others \"nodemon\"",
 		"prod": "ts-node src/server.ts",
-		"createdb": "ts-node src/scripts/init_db.ts"
+		"create": "ts-node src/db/create.ts",
+		"drop": "ts-node src/db/drop.ts",
+		"seed": "ts-node src/db/seed.ts"
 	},
 	"keywords": [],
 	"author": "thenoobgrammer",
@@ -28,6 +30,7 @@
 		"jsonwebtoken": "^9.0.0",
 		"lodash": "^4.17.21",
 		"mongoose": "^8.0.4",
+		"mysql2": "^3.9.1",
 		"node-cron": "^3.0.2",
 		"node-vault": "^0.9.22",
 		"nodemailer": "^6.9.3",

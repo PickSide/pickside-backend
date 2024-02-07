@@ -11,6 +11,7 @@ import { createServer } from 'http'
 import databaseUtils from './utils/databaseUtils'
 import express from 'express'
 import mongoose from 'mongoose'
+import mysql from 'mysql2'
 import notificationHandler from './socketHandlers/handlers/notificationHandler'
 import swaggerDefinition from './swaggerDefinition'
 import swaggerJsDoc from 'swagger-jsdoc'
@@ -66,32 +67,33 @@ httpServer.listen(process.env.API_SERVER_PORT, () =>
 	console.log('Pickside API service active', process.env.API_SERVER_PORT),
 )
 
-mongoose.set('strictQuery', false)
-mongoose.connect(databaseUtils.getDatabaseURI())
-mongoose.connection.once('open', async () => {
-	console.log('Connected to db!')
-	const sockets = await io.of('/users').fetchSockets()
-	const groupStreamConnection = mongoose.connection.collection('groups').watch()
-	const onlineUsersStreamConnection = mongoose.connection.collection('onlineusers').watch()
 
-	groupStreamConnection.on('change', (change) => {
-		if (change.operationType === 'insert') {
-			const members = [...change.fullDocument.members.filter(m => m === change.fullDocument.organizer)]
-			if (members.length > 0) {
-				members.forEach((member) => {
-					// const sockets = io.of('/users').sockets.forEach(x => x.)
-					// console.log(sockets)
-				})
-			}
-		}
-	})
+// mongoose.set('strictQuery', false)
+// mongoose.connect(databaseUtils.getDatabaseURI())
+// mongoose.connection.once('open', async () => {
+// 	console.log('Connected to db!')
+// 	const sockets = await io.of('/users').fetchSockets()
+// 	const groupStreamConnection = mongoose.connection.collection('groups').watch()
+// 	const onlineUsersStreamConnection = mongoose.connection.collection('onlineusers').watch()
 
-	onlineUsersStreamConnection.on('change', (change) => {
-		if (change.operationType === 'insert') {
-			console.log('insert', change.fullDocument._id)
-		}
-		if (change.operationType === 'delete') {
-			console.log('delete', change.documentKey._id)
-		}
-	})
-})
+// 	groupStreamConnection.on('change', (change) => {
+// 		if (change.operationType === 'insert') {
+// 			const members = [...change.fullDocument.members.filter(m => m === change.fullDocument.organizer)]
+// 			if (members.length > 0) {
+// 				members.forEach((member) => {
+// 					// const sockets = io.of('/users').sockets.forEach(x => x.)
+// 					// console.log(sockets)
+// 				})
+// 			}
+// 		}
+// 	})
+
+// 	onlineUsersStreamConnection.on('change', (change) => {
+// 		if (change.operationType === 'insert') {
+// 			console.log('insert', change.fullDocument._id)
+// 		}
+// 		if (change.operationType === 'delete') {
+// 			console.log('delete', change.documentKey._id)
+// 		}
+// 	})
+// })

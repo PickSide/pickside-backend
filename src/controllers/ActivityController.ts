@@ -11,6 +11,8 @@ import {
 import { ActivityModel, UserModel } from '@schemas'
 import { Request, Response } from 'express'
 
+import db from '@utils/db'
+
 /**
  * @description - Gets list of all activities
  * @param req - Request's object
