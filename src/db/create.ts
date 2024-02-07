@@ -14,26 +14,31 @@ import {
 import { config } from 'dotenv'
 import db from '@utils/db'
 
-function createTables() {
-    db.connect()
+async function createTables() {
+    try {
+        db.connect()
 
-    console.info('Creating tables...')
+        console.info('Creating tables...')
 
-    db.execute(CreateActivityTable)
-    db.execute(CreateChatroomParticipantsTable)
-    db.execute(CreateChatroomTable)
-    db.execute(CreateGameModesTable)
-    db.execute(CreateGroupMembersTable)
-    db.execute(CreateGroupTable)
-    db.execute(CreateLocaleTable)
-    db.execute(CreateMessageTable)
-    db.execute(CreateSportGameModesTable)
-    db.execute(CreateSportTable)
+        await db.execute(CreateActivityTable)
+        await db.execute(CreateChatroomParticipantsTable)
+        await db.execute(CreateChatroomTable)
+        await db.execute(CreateGameModesTable)
+        await db.execute(CreateGroupMembersTable)
+        await db.execute(CreateGroupTable)
+        await db.execute(CreateLocaleTable)
+        await db.execute(CreateMessageTable)
+        await db.execute(CreateSportGameModesTable)
+        await db.execute(CreateSportTable)
 
+    } catch (error) {
+        console.error(error)
+    } finally {
+        console.info('Done')
 
-    console.info('Done')
+        db.end()
+    }
 
-    db.end()
 }
 
 config()

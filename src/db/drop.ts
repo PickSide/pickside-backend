@@ -14,25 +14,30 @@ import {
 import { config } from 'dotenv'
 import db from '@utils/db'
 
-function dropTables() {
-    db.connect()
+async function dropTables() {
+    try {
+        db.connect()
 
-    console.info('Dropping tables...')
+        console.info('Dropping tables...')
 
-    db.execute(DropActivitiesTable)
-    db.execute(DropChatroomParticipantsTable)
-    db.execute(DropChatroomsTable)
-    db.execute(DropGameModesTable)
-    db.execute(DropGroupMembersTable)
-    db.execute(DropGroupsTable)
-    db.execute(DropLocalesTable)
-    db.execute(DropMessagesTable)
-    db.execute(DropSportGameModesTable)
-    db.execute(DropSportsTable)
+        await db.execute(DropActivitiesTable)
+        await db.execute(DropChatroomParticipantsTable)
+        await db.execute(DropChatroomsTable)
+        await db.execute(DropGameModesTable)
+        await db.execute(DropGroupMembersTable)
+        await db.execute(DropGroupsTable)
+        await db.execute(DropLocalesTable)
+        await db.execute(DropMessagesTable)
+        await db.execute(DropSportGameModesTable)
+        await db.execute(DropSportsTable)
+    } catch (error) {
+        console.error(error)
+    } finally {
+        console.info('Done')
 
-    console.info('Done')
+        db.end()
+    }
 
-    db.end()
 }
 
 config()

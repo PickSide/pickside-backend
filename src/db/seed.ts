@@ -1,4 +1,4 @@
-import { InsertActivity, InsertIntoSport, } from '@utils/queries'
+import { InsertActivity, InsertIntoLocale, InsertIntoSport, } from '@utils/queries'
 
 import { config } from 'dotenv'
 import db from '@utils/db'
@@ -39,14 +39,33 @@ const sports = [
 	["american football", false]
 ]
 
+const locales = [
+	['english', 'en'],
+	['francais', 'fr']
+]
 
-function seed() {
-	db.connect()
+async function seed() {
+	try {
+		db.connect()
 
-	sports.forEach((sport) => db.query(InsertIntoSport, sport))
-	activities.forEach((activity) => db.query(InsertActivity, activity))
+		console.info('Seeding sports...')
+		sports.forEach((sport) => db.query(InsertIntoSport, sport))
 
-	db.end()
+		console.info('Seeding activities...')
+		activities.forEach((activity) => db.query(InsertActivity, activity))
+
+		console.info('Seeding locales...')
+		locales.forEach((locale) => db.query(InsertIntoLocale, locale))
+
+	} catch (error) {
+		console.error(error)
+	} finally {
+		console.info('Done')
+
+		db.end()
+	}
+
+
 }
 
 config()

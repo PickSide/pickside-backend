@@ -8,7 +8,8 @@
 		"prod": "ts-node src/server.ts",
 		"create": "ts-node src/db/create.ts",
 		"drop": "ts-node src/db/drop.ts",
-		"seed": "ts-node src/db/seed.ts"
+		"seed": "ts-node src/db/seed.ts",
+		"reset-db": "npm run drop && npm run create && npm run seed"
 	},
 	"keywords": [],
 	"author": "thenoobgrammer",
